@@ -1,18 +1,28 @@
 <template>
-  <div>
-    <form>
-      <label for="username">Username:</label>
-      <input v-model="username" type="text" id="username" :disabled="connecting" />
+  <nav v-if="!isLoginPage">
+    <router-link to="/home">Home</router-link>
+    <router-link to="/about">About</router-link>
+  </nav>
+  <div class="login-container">
+    <div class="center-box">
+      <form class="login-form">
+        <div class="input-group">
+          <label for="username">Username:</label>
+          <input v-model="username" type="text" id="username" :disabled="connecting" />
+        </div>
 
-      <label for="password">Password:</label>
-      <input v-model="password" type="password" id="password" :disabled="connecting" />
+        <div class="input-group">
+          <label for="password">Password:</label>
+          <input v-model="password" type="password" id="password" :disabled="connecting" />
+        </div>
 
-      <button @click.prevent="connect" :disabled="connecting">
-        Login
-      </button>
-      <p v-if="connecting" class="loading-message">Connecting to MQTT. This might take a few seconds. Please wait...</p>
-      <p v-else-if="errorMessage" class="error-message">{{ errorMessage }}</p>
-    </form>
+        <button @click.prevent="connect" :disabled="connecting">
+          Login
+        </button>
+        <p v-if="connecting" class="loading-message">Connecting to MQTT. This might take a few seconds. Please wait...</p>
+        <p v-else-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -20,6 +30,11 @@
 import Paho from 'paho-mqtt';
 
 export default {
+  computed: {
+    isLoginPage() {
+      return this.$route.name === 'Login';
+    },
+  },
   data() {
     return {
       client: null,
@@ -42,7 +57,7 @@ export default {
           console.log('Connected to MQTT broker');
           this.errorMessage = ''; // Clear any previous error message
           this.connecting = false; // Set connecting to false after successful connection
-          this.$router.push({ name: 'Main', params: { username: this.username } });
+          this.$router.push({ name: 'Main', props: { username: this.username } }); // Use props to pass data
         },
 
         onFailure: (error) => {
@@ -60,44 +75,5 @@ export default {
 </script>
 
 <style>
-form {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px;
-}
-
-label {
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-input {
-  padding: 5px;
-  margin-bottom: 10px;
-  border: 1px solid #ccc;
-}
-
-button {
-  padding: 10px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.loading-message {
-  font-size: 14px;
-  margin-top: 10px;
-}
-
-.error-message {
-  color: red;
-  font-size: 14px;
-  margin-top: 5px;
-}
+@import '../CSS/LoginPage.css';
 </style>
