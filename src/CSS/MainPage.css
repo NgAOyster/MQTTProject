@@ -19,3 +19,32 @@ nav a {
 nav a:hover {
   color: #007bff;
 }
+
+.connecting-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* Make sure the container takes up the full viewport height */
+  text-align: center;
+}
+
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+.styled-table th, .styled-table td {
+  text-align: center;
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+.styled-table th {
+  background-color: #f2f2f2;
+}
+
+.styled-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}

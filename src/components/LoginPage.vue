@@ -1,8 +1,8 @@
 <template>
-  <nav v-if="!isLoginPage">
+  <!-- <nav v-if="!isLoginPage">
     <router-link to="/home">Home</router-link>
     <router-link to="/about">About</router-link>
-  </nav>
+  </nav> -->
   <div class="login-container">
     <div class="center-box">
       <form class="login-form">
@@ -27,18 +27,18 @@
 </template>
 
 <script>
-import Paho from 'paho-mqtt';
+// import Paho from 'paho-mqtt';
 
 export default {
-  computed: {
-    isLoginPage() {
-      return this.$route.name === 'Login';
-    },
-  },
+  // computed: {
+  //   isLoginPage() {
+  //     return this.$route.name === 'Login';
+  //   },
+  // },
   data() {
     return {
-      client: null,
-      brokerUrl: 'ws://222.222.119.72:8083/mqtt', // Use ws for non-secure connection
+      // client: null,
+      // brokerUrl: 'ws://222.222.119.72:8083/mqtt', // Use ws for non-secure connection
       username: '',
       password: '',
       errorMessage: '', // New data property for error message
@@ -47,28 +47,30 @@ export default {
   },
   methods: {
     connect() {
-      this.connecting = true; // Set connecting to true while connecting
+      this.$emit('login-success', { username: this.username, password: this.password });
+      //this.connecting = true; // Set connecting to true while connecting
 
-      const options = {
-        useSSL: false, // Do not use SSL for non-secure connection
-        userName: this.username,
-        password: this.password,
-        onSuccess: () => {
-          console.log('Connected to MQTT broker');
-          this.errorMessage = ''; // Clear any previous error message
-          this.connecting = false; // Set connecting to false after successful connection
-          this.$router.push({ name: 'Main', props: { username: this.username } }); // Use props to pass data
-        },
+      // const options = {
+      //   useSSL: false, // Do not use SSL for non-secure connection
+      //   userName: this.username,
+      //   password: this.password,
+      //   onSuccess: () => {
+      //     console.log('Connected to MQTT broker');
+      //     this.errorMessage = ''; // Clear any previous error message
+      //     this.connecting = false; // Set connecting to false after successful connection
+      //     //this.$router.push({ name: 'Main', props: { username: this.username } }); // Use props to pass data
+          
+      //   },
 
-        onFailure: (error) => {
-          console.error('MQTT connection error:', error.errorMessage);
-          this.errorMessage = 'Failed to connect. Please check your credentials and try again.'; // Set error message
-          this.connecting = false; // Set connecting to false after connection attempt
-        },
-      };
+      //   onFailure: (error) => {
+      //     console.error('MQTT connection error:', error.errorMessage);
+      //     this.errorMessage = 'Failed to connect. Please check your credentials and try again.'; // Set error message
+      //     this.connecting = false; // Set connecting to false after connection attempt
+      //   },
+      // };
 
-      this.client = new Paho.Client(this.brokerUrl, 'clientId');
-      this.client.connect(options);
+      // this.client = new Paho.Client(this.brokerUrl, 'clientId');
+      // this.client.connect(options);
     },
   },
 };

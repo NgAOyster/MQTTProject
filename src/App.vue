@@ -1,16 +1,30 @@
 <template>
   <div id="app">
-    <router-view />
+    <LoginPage v-if="!loggedInUsername" @login-success="setUserCredentials" />
+    <MainPage v-else :username="loggedInUsername" :password="loggedInPassword"/>
   </div>
 </template>
 
 <script>
+import LoginPage from './components/LoginPage.vue';
+import MainPage from './components/MainPage.vue';
 export default {
-  computed: {
-    isLoginPage() {
-      return this.$route.name === 'Login';
-    }
-  }
+  components: {
+    LoginPage,
+    MainPage,
+  },
+  data() {
+    return {
+      loggedInUsername: '',
+      loggedInPassword: '',
+    };
+  },
+  methods: {
+    setUserCredentials(credentials) {
+      this.loggedInUsername = credentials.username;
+      this.loggedInPassword = credentials.password;
+    },
+  },
 };
 </script>
 
