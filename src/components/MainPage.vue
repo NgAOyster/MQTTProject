@@ -86,10 +86,11 @@ export default {
     },
     handleReceivedMessage(message) {
       const jsonData = JSON.parse(message);
+      const localTimeString = new Date().toLocaleString();
 
       // Replace old temperatureData with new data
       this.temperatureData = [{
-        time: new Date().toISOString(),
+        time: localTimeString,
         machineId: jsonData.MachineId,
         temp1: jsonData.temp1,
         temp2: jsonData.temp2,
