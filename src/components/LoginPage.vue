@@ -1,17 +1,11 @@
 <template>
-  <!-- <nav v-if="!isLoginPage">
-    <router-link to="/home">Home</router-link>
-    <router-link to="/about">About</router-link>
-  </nav> -->
   <div class="login-container">
     <div class="center-box">
       <form class="login-form">
         <div class="input-group">
           <label for="username">Username:</label>
           <input v-model="username" type="text" id="username" :disabled="connecting" />
-        </div>
-
-        <div class="input-group">
+          <br><br>
           <label for="password">Password:</label>
           <input v-model="password" type="password" id="password" :disabled="connecting" />
         </div>
@@ -19,58 +13,61 @@
         <button @click.prevent="connect" :disabled="connecting">
           Login
         </button>
-        <p v-if="connecting" class="loading-message">Connecting to MQTT. This might take a few seconds. Please wait...</p>
-        <p v-else-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+        <p v-if="connecting" class="connecting-message">{{ connectingMessage }}</p>
+        <p v-else-if="errorMessage" class="error-message" v-html="errorMessage"></p>
       </form>
     </div>
   </div>
 </template>
 
 <script>
-// import Paho from 'paho-mqtt';
+import Paho from 'paho-mqtt';
 
 export default {
-  // computed: {
-  //   isLoginPage() {
-  //     return this.$route.name === 'Login';
-  //   },
-  // },
   data() {
     return {
-      // client: null,
-      // brokerUrl: 'ws://222.222.119.72:8083/mqtt', // Use ws for non-secure connection
+      client: null,
+      brokerUrl: 'ws://222.222.119.72:8083/mqtt',
       username: '',
       password: '',
-      errorMessage: '', // New data property for error message
-      connecting: false, // New data property for connection status
+      connectingMessage: '验证中...',
+      errorMessage: '',
+      connecting: false,
     };
   },
   methods: {
     connect() {
-      this.$emit('login-success', { username: this.username, password: this.password });
-      //this.connecting = true; // Set connecting to true while connecting
+      if (this.username === '' || this.password === '') {
+        this.errorMessage = '请填写用户名和密码';
+        return;
+      }
+      else{
+        this.connecting = true;
+        this.errorMessage = ''; // Clear any previous error message
+        const options = {
+          useSSL: false,
+          userName: this.username,
+          password: this.password,
+          onSuccess: () => {
+            this.connecting = false;
+            this.errorMessage = '';
+            this.disconnect(); // Call the disconnect method after successful connection
+            this.$emit('login-success', { username: this.username, password: this.password });
+          },
 
-      // const options = {
-      //   useSSL: false, // Do not use SSL for non-secure connection
-      //   userName: this.username,
-      //   password: this.password,
-      //   onSuccess: () => {
-      //     console.log('Connected to MQTT broker');
-      //     this.errorMessage = ''; // Clear any previous error message
-      //     this.connecting = false; // Set connecting to false after successful connection
-      //     //this.$router.push({ name: 'Main', props: { username: this.username } }); // Use props to pass data
-          
-      //   },
+          onFailure: (error) => {
+            console.error('MQTT connection error:', error.errorMessage);
+            this.errorMessage = '登入失败.<br>请检查用户名与密码是否正确.';
+            this.connecting = false;
+          },
+        };
 
-      //   onFailure: (error) => {
-      //     console.error('MQTT connection error:', error.errorMessage);
-      //     this.errorMessage = 'Failed to connect. Please check your credentials and try again.'; // Set error message
-      //     this.connecting = false; // Set connecting to false after connection attempt
-      //   },
-      // };
-
-      // this.client = new Paho.Client(this.brokerUrl, 'clientId');
-      // this.client.connect(options);
+        this.client = new Paho.Client(this.brokerUrl, 'clientId');
+        this.client.connect(options);
+      }
+    },
+    disconnect() {
+      this.client.disconnect();
     },
   },
 };

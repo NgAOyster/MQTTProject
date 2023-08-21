@@ -58,7 +58,6 @@
     cursor: not-allowed;
   }
   
-  .loading-message, .error-message {
-    margin-top: 10px;
+  .connecting-message, .success-message, .error-message {
     color: red;
   }

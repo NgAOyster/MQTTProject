@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="connecting-message" v-if="!connected">
+    <div class="connecting" v-if="!connected">
+      <p>登入成功 ! </p>
       <p>正在连接MQTT服务器...</p>
       <p>这可能需要几秒钟时间。请稍等...</p>
     </div>
