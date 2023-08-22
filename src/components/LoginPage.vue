@@ -3,15 +3,15 @@
     <div class="center-box">
       <form class="login-form">
         <div class="input-group">
-          <label for="username">Username:</label>
+          <label for="username">用户名:</label>
           <input v-model="username" type="text" id="username" :disabled="connecting" />
           <br><br>
-          <label for="password">Password:</label>
+          <label for="password">密码:</label>
           <input v-model="password" type="password" id="password" :disabled="connecting" />
         </div>
 
         <button @click.prevent="connect" :disabled="connecting">
-          Login
+          登入
         </button>
         <p v-if="connecting" class="connecting-message">{{ connectingMessage }}</p>
         <p v-else-if="errorMessage" class="error-message" v-html="errorMessage"></p>
@@ -67,7 +67,9 @@ export default {
       }
     },
     disconnect() {
-      this.client.disconnect();
+      if (this.client && this.client.isConnected()) {
+        this.client.disconnect();
+      } 
     },
   },
 };

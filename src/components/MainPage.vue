@@ -1,23 +1,24 @@
 <template>
   <div class="container">
-    <div class="connecting-message" v-if="!connected">
+    <div class="connecting" v-if="!connected">
+      <p>登入成功 !</p>
       <p>正在连接MQTT服务器...</p>
       <p>这可能需要几秒钟时间。请稍等...</p>
     </div>
     <div v-else>
       <h1 class="main-title">Main Page</h1>
       <p class="welcome-message">Welcome, {{ username }}!</p>
-      <p class="password">Password: {{ password }}</p>
       <p v-if="connectionTime" class="connection-time">
         Connected for: {{ connectionTime }} seconds
       </p>
-      <br />
+      <br>
       <table class="styled-table">
         <thead>
           <tr>
             <th>Time</th>
             <th>Machine ID</th>
             <th v-for="i in 4" :key="i">Temperature {{ i }}</th>
+            <th>Message</th>
           </tr>
         </thead>
         <tbody>
@@ -25,6 +26,7 @@
             <td>{{ data.time }}</td>
             <td>{{ data.machineId }}</td>
             <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
+            <td :class="getMessageClass(message)">{{ message }}</td>
           </tr>
         </tbody>
       </table>
@@ -47,6 +49,7 @@ export default {
       temperatureData: [],
       connected: false,
       connectionTime: 0,
+      message: ''
     };
   },
 
@@ -67,7 +70,8 @@ export default {
 
       client.onMessageArrived = (message) => {
         console.log("Message Received: " + message.payloadString);
-        this.handleReceivedMessage(message.payloadString);
+        const topic = message.destinationName;
+        this.handleReceivedMessage(message.payloadString, topic);
       };
 
       const options = {
@@ -78,7 +82,10 @@ export default {
           console.log('Connected to MQTT broker');
           this.connected = true;
           this.startConnectionTimer();
-          //client.subscribe("DataTopic", { qos: 0 });
+          client.subscribe("dgmg01/peripheral/station1/device54/othertemperature", { qos: 0 });
+          client.subscribe("dgmg02/peripheral/station1/device54/othertemperature", { qos: 0 });
+          client.subscribe("dgmg03/peripheral/station1/device54/othertemperature", { qos: 0 });
+          client.subscribe("dgmg04/peripheral/station1/device54/othertemperature", { qos: 0 });
         },
         onFailure: (error) => {
           console.log('MQTT connection error:', error.errorMessage);
@@ -86,9 +93,20 @@ export default {
       };
       client.connect(options);
     },
-    handleReceivedMessage(message) {
+    handleReceivedMessage(message, topic) {
       const jsonData = JSON.parse(message);
       const localTimeString = new Date().toLocaleString();
+
+      const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
+      if (topicPrefix === "dgmg01") {
+        this.message = "普通消息";
+      } else if (topicPrefix === "dgmg02") {
+        this.message = "控制消息";
+      } else if (topicPrefix === "dgmg03") {
+        this.message = "告警消息";
+      } else if (topicPrefix === "dgmg04") {
+        this.message = "严重警告";
+      }
 
       // Replace old temperatureData with new data
       this.temperatureData = [{
@@ -109,10 +127,20 @@ export default {
       }, 1000); // Update every second
     },
     beforeDestroy() {
-    if (this.connectionTimer) {
-      clearInterval(this.connectionTimer); // Clear the timer when the component is destroyed
-    }
-  },
+      if (this.connectionTimer) {
+        clearInterval(this.connectionTimer); // Clear the timer when the component is destroyed
+      }
+    },
+    getMessageClass(message) {
+      let messageClass = '';
+      switch (message) {
+        case '普通消息': messageClass = 'normal-message'; break;
+        case '控制消息': messageClass = 'control-message'; break;
+        case '告警消息': messageClass = 'warning-message'; break;
+        case '严重警告': messageClass = 'critical-message'; break;
+      }
+      return messageClass;
+    },
   },
 };
 </script>

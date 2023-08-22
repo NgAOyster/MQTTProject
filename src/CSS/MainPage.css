@@ -6,7 +6,7 @@
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
-.connecting-message {
+.connecting {
   text-align: center;
   margin: 40px auto;
   color: #c0392b; /* Red text color */
@@ -53,6 +53,18 @@
   color: #333; /* Dark gray text color */
 }
 
-.styled-table td {
-  color: #555; /* Light gray text color */
+.normal-message {
+  color: green;
+}
+
+.control-message {
+  color: yellow;
+}
+
+.warning-message {
+  color: orange;
+}
+
+.critical-message {
+  color: red;
 }
