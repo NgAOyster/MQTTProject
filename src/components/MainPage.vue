@@ -19,6 +19,7 @@
             <th>Machine ID</th>
             <th v-for="i in 4" :key="i">Temperature {{ i }}</th>
             <th>Message</th>
+            <th>Equipment Type</th>
           </tr>
         </thead>
         <tbody>
@@ -26,7 +27,8 @@
             <td>{{ data.time }}</td>
             <td>{{ data.machineId }}</td>
             <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
-            <td :class="getMessageClass(data.message)">{{ data.message }}</td>
+            <td :class="getMessageClass(data.dgmgMessage)">{{ data.dgmgMessage}}</td>
+            <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
           </tr>
         </tbody>
       </table>
@@ -73,25 +75,41 @@ export default {
         this.handleReceivedMessage(message.payloadString, topic);
       };
 
-      const options = {
-        useSSL: false,
-        userName: this.username, // Use the passed username
-        password: this.password, // Use the passed password
-        onSuccess: () => {
-          console.log('Connected to MQTT broker');
-          this.connected = true;
-          this.startConnectionTimer();
-          client.subscribe("dgmg01/peripheral/station1/device54/othertemperature", { qos: 0 });
-          client.subscribe("dgmg02/peripheral/station1/device54/othertemperature", { qos: 0 });
-          client.subscribe("dgmg03/peripheral/station1/device54/othertemperature", { qos: 0 });
-          client.subscribe("dgmg04/peripheral/station1/device54/othertemperature", { qos: 0 });
-        },
-        onFailure: (error) => {
-          console.log('MQTT connection error:', error.errorMessage);
-        },
-      };
-      client.connect(options);
+      const dgmgValues = ["dgmg01", "dgmg02", "dgmg03", "dgmg04"];
+      const secondValues = ["asphaltmix", "asphaltcrush", "warmingmix", "stonecrush", "peripheral"];
+      const deviceValues = Array.from({ length: 100 }, (_, index) => `device${index + 1}`);
+
+    const topics = [];
+
+    dgmgValues.forEach(dgmg => {
+      secondValues.forEach(second => {
+        deviceValues.forEach(device => {
+        const topic = `${dgmg}/${second}/station1/${device}/othertemperature`;
+        topics.push(topic);
+      });
+    });
+  });
+
+  const options = {
+    useSSL: false,
+    userName: this.username,
+    password: this.password,
+    onSuccess: () => {
+      console.log('Connected to MQTT broker');
+      this.connected = true;
+      this.startConnectionTimer();
+
+      topics.forEach(topic => {
+        client.subscribe(topic, { qos: 0 });
+      });
     },
+    onFailure: (error) => {
+      console.log('MQTT connection error:', error.errorMessage);
+    },
+  };
+
+  client.connect(options);
+},
     handleReceivedMessage(message, topic) {
       const jsonData = JSON.parse(message);
       const localTimeString = new Date().toLocaleString();
@@ -106,6 +124,19 @@ export default {
         dgmgMessage = "严重警告";
       }
 
+      let equipment = "Asphalt Mix";
+      const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
+
+      if (charactersAfterSeventh === "asphaltcrush") {
+      equipment = "Asphalt Crush";
+      } else if (charactersAfterSeventh === "warmingmix") {
+       equipment = "Warming Mix";
+      } else if (charactersAfterSeventh === "stonecrush") {
+        equipment = "StoneCrush";
+      } else if (charactersAfterSeventh === "peripheral") {
+        equipment = "Peripheral";
+      }
+
       // Find the index of existing data with the same MachineId
       const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId);
       if (existingIndex !== -1) {
@@ -117,7 +148,8 @@ export default {
           temp2: jsonData.temp2,
           temp3: jsonData.temp3,
           temp4: jsonData.temp4,
-          message: dgmgMessage
+          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
+          equipment: equipment
         };
       } else {
         // If no existing data with the same MachineId is found, push new data
@@ -128,7 +160,8 @@ export default {
           temp2: jsonData.temp2,
           temp3: jsonData.temp3,
           temp4: jsonData.temp4,
-          message: dgmgMessage
+          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
+          equipment: equipment 
         });
       }
     },
