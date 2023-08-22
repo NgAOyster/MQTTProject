@@ -33,6 +33,7 @@ export default {
       connectingMessage: '验证中...',
       errorMessage: '',
       connecting: false,
+      connectionTimeout: 2000,
     };
   },
   methods: {
@@ -49,6 +50,7 @@ export default {
           userName: this.username,
           password: this.password,
           onSuccess: () => {
+            clearTimeout(connectionTimeoutId);
             this.connecting = false;
             this.errorMessage = '';
             this.disconnect(); // Call the disconnect method after successful connection
@@ -56,6 +58,7 @@ export default {
           },
 
           onFailure: (error) => {
+            clearTimeout(connectionTimeoutId);
             console.error('MQTT connection error:', error.errorMessage);
             this.errorMessage = '登入失败.<br>请检查用户名与密码是否正确.';
             this.connecting = false;
@@ -63,6 +66,16 @@ export default {
         };
 
         this.client = new Paho.Client(this.brokerUrl, 'clientId');
+
+        // Set up a timeout to handle connection failure
+        let connectionTimeoutId = null;
+        const handleConnectionTimeout = () => {
+          this.client.disconnect();
+          this.errorMessage = '登入失败.<br>请检查用户名与密码是否正确.';
+          this.connecting = false;
+        };
+        connectionTimeoutId = setTimeout(handleConnectionTimeout, this.connectionTimeout);
+
         this.client.connect(options);
       }
     },
