@@ -1,16 +1,17 @@
 <template>
-  <div>
-    <div class="connecting" v-if="!connected">
-      <p>登入成功 ! </p>
+  <div class="container">
+    <div class="connecting-message" v-if="!connected">
       <p>正在连接MQTT服务器...</p>
       <p>这可能需要几秒钟时间。请稍等...</p>
     </div>
     <div v-else>
-      <h1>Main Page</h1>
-      <p>Welcome, {{ username }}!</p>
-      <p>Password: {{ password }}</p>
-      <p v-if="connectionTime">Connected for: {{ connectionTime }} seconds</p>
-      <br/>
+      <h1 class="main-title">Main Page</h1>
+      <p class="welcome-message">Welcome, {{ username }}!</p>
+      <p class="password">Password: {{ password }}</p>
+      <p v-if="connectionTime" class="connection-time">
+        Connected for: {{ connectionTime }} seconds
+      </p>
+      <br />
       <table class="styled-table">
         <thead>
           <tr>
