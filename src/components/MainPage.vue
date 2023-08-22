@@ -26,7 +26,7 @@
             <td>{{ data.time }}</td>
             <td>{{ data.machineId }}</td>
             <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
-            <td :class="getMessageClass(message)">{{ message }}</td>
+            <td :class="getMessageClass(data.message)">{{ data.message }}</td>
           </tr>
         </tbody>
       </table>
@@ -49,7 +49,6 @@ export default {
       temperatureData: [],
       connected: false,
       connectionTime: 0,
-      message: ''
     };
   },
 
@@ -97,26 +96,41 @@ export default {
       const jsonData = JSON.parse(message);
       const localTimeString = new Date().toLocaleString();
 
+      let dgmgMessage = "普通消息";
       const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-      if (topicPrefix === "dgmg01") {
-        this.message = "普通消息";
-      } else if (topicPrefix === "dgmg02") {
-        this.message = "控制消息";
+      if (topicPrefix === "dgmg02") {
+        dgmgMessage = "控制消息";
       } else if (topicPrefix === "dgmg03") {
-        this.message = "告警消息";
+        dgmgMessage = "告警消息";
       } else if (topicPrefix === "dgmg04") {
-        this.message = "严重警告";
+        dgmgMessage = "严重警告";
       }
 
-      // Replace old temperatureData with new data
-      this.temperatureData = [{
-        time: localTimeString,
-        machineId: jsonData.MachineId,
-        temp1: jsonData.temp1,
-        temp2: jsonData.temp2,
-        temp3: jsonData.temp3,
-        temp4: jsonData.temp4,
-      }];
+      // Find the index of existing data with the same MachineId
+      const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId);
+      if (existingIndex !== -1) {
+        // If existing data with the same MachineId is found, replace it
+        this.temperatureData[existingIndex] = {
+          time: localTimeString,
+          machineId: jsonData.MachineId,
+          temp1: jsonData.temp1,
+          temp2: jsonData.temp2,
+          temp3: jsonData.temp3,
+          temp4: jsonData.temp4,
+          message: dgmgMessage
+        };
+      } else {
+        // If no existing data with the same MachineId is found, push new data
+        this.temperatureData.push({
+          time: localTimeString,
+          machineId: jsonData.MachineId,
+          temp1: jsonData.temp1,
+          temp2: jsonData.temp2,
+          temp3: jsonData.temp3,
+          temp4: jsonData.temp4,
+          message: dgmgMessage
+        });
+      }
     },
     startConnectionTimer() {
       const startTime = new Date().getTime();
