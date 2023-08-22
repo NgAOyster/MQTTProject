@@ -6,20 +6,20 @@
       <p>这可能需要几秒钟时间。请稍等...</p>
     </div>
     <div v-else>
-      <h1 class="main-title">Main Page</h1>
-      <p class="welcome-message">Welcome, {{ username }}!</p>
+      <h1 class="main-title">主页</h1>
+      <p class="welcome-message">欢迎, {{ username }} !</p>
       <p v-if="connectionTime" class="connection-time">
-        Connected for: {{ connectionTime }} seconds
+        已连接: {{ connectionTime }} 秒
       </p>
       <br>
       <table class="styled-table">
         <thead>
           <tr>
-            <th>Time</th>
-            <th>Machine ID</th>
-            <th v-for="i in 4" :key="i">Temperature {{ i }}</th>
-            <th>Message</th>
-            <th>Equipment Type</th>
+            <th>时间</th>
+            <th>设备编号</th>
+            <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
+            <th>消息等级</th>
+            <th>设备类型</th>
           </tr>
         </thead>
         <tbody>
@@ -124,17 +124,17 @@ export default {
         dgmgMessage = "严重警告";
       }
 
-      let equipment = "Asphalt Mix";
+      let equipment = "沥青搅拌站";
       const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
 
       if (charactersAfterSeventh === "asphaltcrush") {
-      equipment = "Asphalt Crush";
+      equipment = "沥青料破碎";
       } else if (charactersAfterSeventh === "warmingmix") {
-       equipment = "Warming Mix";
+       equipment = "温拌发泡设备";
       } else if (charactersAfterSeventh === "stonecrush") {
-        equipment = "StoneCrush";
+        equipment = "骨料整形破碎";
       } else if (charactersAfterSeventh === "peripheral") {
-        equipment = "Peripheral";
+        equipment = "周边设备";
       }
 
       // Find the index of existing data with the same MachineId

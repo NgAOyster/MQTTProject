@@ -33,7 +33,7 @@ export default {
       connectingMessage: '验证中...',
       errorMessage: '',
       connecting: false,
-      connectionTimeout: 2000,
+      connectionTimeout: 3000,
     };
   },
   methods: {
