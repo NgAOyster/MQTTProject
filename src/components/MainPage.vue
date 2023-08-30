@@ -134,26 +134,16 @@ export default {
 
       let dgmgMessage = "普通消息";
       const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-      if (topicPrefix === "dgmg02") {
-        dgmgMessage = "控制消息";
-      } else if (topicPrefix === "dgmg03") {
-        dgmgMessage = "告警消息";
-      } else if (topicPrefix === "dgmg04") {
-        dgmgMessage = "严重警告";
-      }
-
+      if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; } 
+      else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; } 
+      else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
+      
       let equipment = "沥青搅拌站";
       const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-
-      if (charactersAfterSeventh === "asphaltcrush") {
-      equipment = "沥青料破碎";
-      } else if (charactersAfterSeventh === "warmingmix") {
-       equipment = "温拌发泡设备";
-      } else if (charactersAfterSeventh === "stonecrush") {
-        equipment = "骨料整形破碎";
-      } else if (charactersAfterSeventh === "peripheral") {
-        equipment = "周边设备";
-      }
+      if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; } 
+      else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; } 
+      else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; } 
+      else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
 
       // Find the index of existing data with the same MachineId
       const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId);
@@ -188,12 +178,10 @@ export default {
       this.connectionTimer = setInterval(() => {
         const currentTime = new Date().getTime();
         const elapsedTime = Math.floor((currentTime - startTime) / 1000); // in seconds
-
         // Convert seconds to HH:mm:ss format
         const hours = Math.floor(elapsedTime / 3600);
         const minutes = Math.floor((elapsedTime % 3600) / 60);
         const seconds = elapsedTime % 60;
-
         this.connectionTime = `${this.padZero(hours)}:${this.padZero(minutes)}:${this.padZero(seconds)}`;
       }, 1000); // Update every second
     },
@@ -216,13 +204,9 @@ export default {
       return messageClass;
     },
     getStatusColorClass() {
-      if (this.connected) {
-        return 'connected';
-      } else if (this.reconnectStatus) {
-        return 'reconnecting';
-      } else {
-        return 'disconnected';
-      }
+      if (this.connected) { return 'connected'; } 
+      else if (this.reconnectStatus) { return 'reconnecting'; } 
+      else { return 'disconnected'; }
     },
   },
 };
