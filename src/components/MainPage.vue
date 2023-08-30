@@ -67,6 +67,8 @@ export default {
   
   methods: {
     initMQTT() {
+      this.reconnectStatus = false;
+
       const client = new Paho.Client(
         "ws://222.222.119.72:8083/mqtt",
         "clientId"
@@ -74,6 +76,7 @@ export default {
 
       client.onConnectionLost = (responseObject) => {
         console.log("Connection lost: " + responseObject.errorMessage);
+        this.connectionTime = 0;
         alert("连接已断开，请检查网络连接并尝试重新连接。");
       };
 
@@ -114,6 +117,7 @@ export default {
         },
         onFailure: (error) => {
           console.log('MQTT connection error:', error.errorMessage);
+          alert("无法连接到MQTT服务器, 请检查服务器配置并尝试重新连接。");
           this.reconnect();
         },
       };
