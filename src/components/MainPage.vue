@@ -8,36 +8,41 @@
     <div v-else>
       <h1 class="main-title">主页</h1>
       <p class="welcome-message">欢迎, {{ username }} !</p>
-      <p class="current-status">
-        目前状态:
-        <span :class="getStatusColorClass()">
-          {{ connected ? '已连接' : (reconnectStatus ? '重新连接中...' : '未连接') }}
-        </span>
-      </p>
+      <p class="current-status"> 目前状态：<span :class="getStatusColorClass()"> {{ getStatusText() }} </span> </p>
       <p v-if="connectionTime" class="connection-time">
         已连接: {{ connectionTime }}
       </p>
       <br>
-      <table class="styled-table">
-        <thead>
+      <div class="data-container" v-for="(data, index) in temperatureData" :key="index">
+        <table class="data-table">
           <tr>
-            <th>时间</th>
-            <th>设备编号</th>
-            <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
-            <th>消息等级</th>
-            <th>设备类型</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(data, index) in temperatureData" :key="index">
+            <th>时间：</th>
             <td>{{ data.time }}</td>
-            <td>{{ data.machineId }}</td>
-            <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
-            <td :class="getMessageClass(data.dgmgMessage)">{{ data.dgmgMessage}}</td>
-            <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
           </tr>
-        </tbody>
-      </table>
+          <tr>
+            <th>设备编号：</th>
+            <td>{{ data.machineId }}</td>
+          </tr>
+          <tr>
+            <th>设备类型：</th>
+            <td :class="getMessageClass(data.equipment)" >{{ data.equipment }}</td>
+          </tr>
+          <tr>
+            <th>消息等级：</th>
+            <td :class="getMessageClass(data.dgmgMessage)">{{ data.dgmgMessage }}</td>
+          </tr>
+        </table>
+        <br>
+        <table class="styled-table">
+          <thead>
+            <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
+          </thead>
+          <tbody>
+            <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
+          </tbody>
+        </table>
+        <br><br>
+      </div>
     </div>
   </div>
     
@@ -56,8 +61,10 @@ export default {
     return {
       temperatureData: [],
       connected: false,
+      connectStatus: false,
       connectionTime: 0,
       reconnectStatus: false,
+      disconnect: false,
     };
   },
 
@@ -67,7 +74,7 @@ export default {
   
   methods: {
     initMQTT() {
-      this.reconnectStatus = false;
+      this.disconnect = false;
 
       const client = new Paho.Client(
         "ws://222.222.119.72:8083/mqtt",
@@ -76,8 +83,14 @@ export default {
 
       client.onConnectionLost = (responseObject) => {
         console.log("Connection lost: " + responseObject.errorMessage);
-        this.connectionTime = 0;
+        this.connectStatus = false;
+        this.reconnectStatus = false;
+        this.disconnect = true;
         alert("连接已断开，请检查网络连接并尝试重新连接。");
+        setTimeout(() => {
+          this.clearConnectionTimer();
+          this.reconnect();
+        }, 3000);
       };
 
       client.onMessageArrived = (message) => {
@@ -108,6 +121,7 @@ export default {
         onSuccess: () => {
           console.log('Connected to MQTT broker');
           this.connected = true;
+          this.connectStatus = true;
           this.reconnectStatus = false;
           this.startConnectionTimer();
 
@@ -117,6 +131,8 @@ export default {
         },
         onFailure: (error) => {
           console.log('MQTT connection error:', error.errorMessage);
+          this.connectStatus = false;
+          this.reconnectStatus = true;
           alert("无法连接到MQTT服务器, 请检查服务器配置并尝试重新连接。");
           this.reconnect();
         },
@@ -128,7 +144,6 @@ export default {
       if (!this.reconnectStatus) {
         this.reconnectStatus = true;
         console.log('Attempting to reconnect...');
-        this.connectionTime = 0;
         this.initMQTT();
       }
     },
@@ -150,7 +165,7 @@ export default {
       else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
 
       // Find the index of existing data with the same MachineId
-      const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId);
+      const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId && data.equipment === equipment);
       if (existingIndex !== -1) {
         // If existing data with the same MachineId is found, replace it
         this.temperatureData[existingIndex] = {
@@ -177,7 +192,14 @@ export default {
         });
       }
     },
+    clearConnectionTimer() {
+      if (this.connectionTimer) {
+        clearInterval(this.connectionTimer);
+        this.connectionTimer = null; // Reset the timer variable
+      }
+    },
     startConnectionTimer() {
+      this.clearConnectionTimer();
       const startTime = new Date().getTime();
       this.connectionTimer = setInterval(() => {
         const currentTime = new Date().getTime();
@@ -208,10 +230,15 @@ export default {
       return messageClass;
     },
     getStatusColorClass() {
-      if (this.connected) { return 'connected'; } 
+      if (this.connectStatus) { return 'connected'; } 
       else if (this.reconnectStatus) { return 'reconnecting'; } 
-      else { return 'disconnected'; }
+      else if (this.disconnect) { return 'disconnected'; }
     },
+    getStatusText() {
+    if (this.connectStatus) { return '已连接'; } 
+    else if (this.reconnectStatus) { return '重新连接中...'; } 
+    else if (this.disconnect) { return '连接断开';}
+  }
   },
 };
 </script>
