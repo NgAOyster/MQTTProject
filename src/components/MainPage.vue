@@ -79,10 +79,10 @@ export default {
   methods: {
     initMQTT() {
       this.disconnect = false;
-
+      const randomPart = Math.random().toString(36).substr(2, 8); // Generate a random string
+      const uniqueClientId = `mqttx_${randomPart}`;
       const client = new Paho.Client(
-        "ws://222.222.119.72:8083/mqtt",
-        "clientId"
+        "ws://222.222.119.72:8083/mqtt", uniqueClientId
       );
 
       client.onConnectionLost = (responseObject) => {
