@@ -79,7 +79,7 @@
   color: orange;
 }
 
-.critical-message, .disconnected {
+.critical-message, .disconnected, .internetDisconnect {
   color: red;
 }
 

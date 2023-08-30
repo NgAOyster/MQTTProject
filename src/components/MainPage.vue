@@ -65,11 +65,14 @@ export default {
       connectionTime: 0,
       reconnectStatus: false,
       disconnect: false,
+      onlineStatus: true,
     };
   },
 
   created() {
     this.initMQTT();
+    window.addEventListener('online', this.handleOnline);
+    window.addEventListener('offline', this.handleOffline);
   },
   
   methods: {
@@ -217,7 +220,19 @@ export default {
     beforeDestroy() {
       if (this.connectionTimer) {
         clearInterval(this.connectionTimer); // Clear the timer when the component is destroyed
+        window.removeEventListener('online', this.handleOnline);
+        window.removeEventListener('offline', this.handleOffline);
       }
+    },
+    handleOnline() {
+      this.onlineStatus = true;
+      this.connectStatus = true;
+      this.startConnectionTimer();
+    },
+    handleOffline() {
+      this.onlineStatus = false;
+      this.connectStatus = false;
+      this.clearConnectionTimer();
     },
     getMessageClass(message) {
       let messageClass = '';
@@ -231,13 +246,15 @@ export default {
     },
     getStatusColorClass() {
       if (this.connectStatus) { return 'connected'; } 
-      else if (this.reconnectStatus) { return 'reconnecting'; } 
-      else if (this.disconnect) { return 'disconnected'; }
+      if (!this.onlineStatus) { return 'internetDisconnect'; }
+      if (this.reconnectStatus) { return 'reconnecting'; } 
+      if (this.disconnect) { return 'disconnected'; }
     },
     getStatusText() {
+    if (!this.onlineStatus) { return '网络断开'; }
     if (this.connectStatus) { return '已连接'; } 
-    else if (this.reconnectStatus) { return '重新连接中...'; } 
-    else if (this.disconnect) { return '连接断开';}
+    if (this.reconnectStatus) { return '重新连接中...'; } 
+    if (this.disconnect) { return '连接断开'; }
   }
   },
 };
