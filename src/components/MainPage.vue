@@ -8,8 +8,14 @@
     <div v-else>
       <h1 class="main-title">主页</h1>
       <p class="welcome-message">欢迎, {{ username }} !</p>
+      <p class="current-status">
+        目前状态:
+        <span :class="getStatusColorClass()">
+          {{ connected ? '已连接' : (reconnectStatus ? '重新连接中...' : '未连接') }}
+        </span>
+      </p>
       <p v-if="connectionTime" class="connection-time">
-        已连接: {{ connectionTime }} 秒
+        已连接: {{ connectionTime }}
       </p>
       <br>
       <table class="styled-table">
@@ -51,6 +57,7 @@ export default {
       temperatureData: [],
       connected: false,
       connectionTime: 0,
+      reconnectStatus: false,
     };
   },
 
@@ -67,6 +74,7 @@ export default {
 
       client.onConnectionLost = (responseObject) => {
         console.log("Connection lost: " + responseObject.errorMessage);
+        alert("连接已断开，请检查网络连接并尝试重新连接。");
       };
 
       client.onMessageArrived = (message) => {
@@ -79,37 +87,47 @@ export default {
       const secondValues = ["asphaltmix", "asphaltcrush", "warmingmix", "stonecrush", "peripheral"];
       const deviceValues = Array.from({ length: 100 }, (_, index) => `device${index + 1}`);
 
-    const topics = [];
+      const topics = [];
 
-    dgmgValues.forEach(dgmg => {
-      secondValues.forEach(second => {
-        deviceValues.forEach(device => {
-        const topic = `${dgmg}/${second}/station1/${device}/othertemperature`;
-        topics.push(topic);
+      dgmgValues.forEach(dgmg => {
+        secondValues.forEach(second => {
+          deviceValues.forEach(device => {
+            const topic = `${dgmg}/${second}/station1/${device}/othertemperature`;
+            topics.push(topic);
+          });
+        });
       });
-    });
-  });
 
-  const options = {
-    useSSL: false,
-    userName: this.username,
-    password: this.password,
-    onSuccess: () => {
-      console.log('Connected to MQTT broker');
-      this.connected = true;
-      this.startConnectionTimer();
+      const options = {
+        useSSL: false,
+        userName: this.username,
+        password: this.password,
+        onSuccess: () => {
+          console.log('Connected to MQTT broker');
+          this.connected = true;
+          this.reconnectStatus = false;
+          this.startConnectionTimer();
 
-      topics.forEach(topic => {
-        client.subscribe(topic, { qos: 0 });
-      });
+          topics.forEach(topic => {
+            client.subscribe(topic, { qos: 0 });
+          });
+        },
+        onFailure: (error) => {
+          console.log('MQTT connection error:', error.errorMessage);
+          this.reconnect();
+        },
+      };
+
+      client.connect(options);
     },
-    onFailure: (error) => {
-      console.log('MQTT connection error:', error.errorMessage);
+    reconnect() {
+      if (!this.reconnectStatus) {
+        this.reconnectStatus = true;
+        console.log('Attempting to reconnect...');
+        this.connectionTime = 0;
+        this.initMQTT();
+      }
     },
-  };
-
-  client.connect(options);
-},
     handleReceivedMessage(message, topic) {
       const jsonData = JSON.parse(message);
       const localTimeString = new Date().toLocaleString();
@@ -170,8 +188,17 @@ export default {
       this.connectionTimer = setInterval(() => {
         const currentTime = new Date().getTime();
         const elapsedTime = Math.floor((currentTime - startTime) / 1000); // in seconds
-        this.connectionTime = elapsedTime;
+
+        // Convert seconds to HH:mm:ss format
+        const hours = Math.floor(elapsedTime / 3600);
+        const minutes = Math.floor((elapsedTime % 3600) / 60);
+        const seconds = elapsedTime % 60;
+
+        this.connectionTime = `${this.padZero(hours)}:${this.padZero(minutes)}:${this.padZero(seconds)}`;
       }, 1000); // Update every second
+    },
+    padZero(num) {
+      return num.toString().padStart(2, '0');
     },
     beforeDestroy() {
       if (this.connectionTimer) {
@@ -187,6 +214,15 @@ export default {
         case '严重警告': messageClass = 'critical-message'; break;
       }
       return messageClass;
+    },
+    getStatusColorClass() {
+      if (this.connected) {
+        return 'connected';
+      } else if (this.reconnectStatus) {
+        return 'reconnecting';
+      } else {
+        return 'disconnected';
+      }
     },
   },
 };

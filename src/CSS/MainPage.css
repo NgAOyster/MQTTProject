@@ -35,6 +35,11 @@
   margin-top: 10px;
 }
 
+.current-status {
+  font-size: 15px;
+  margin-top: 10px;
+}
+
 .styled-table {
   width: 100%;
   border-collapse: collapse;
@@ -53,7 +58,7 @@
   color: #333; /* Dark gray text color */
 }
 
-.normal-message {
+.normal-message, .connected {
   color: green;
 }
 
@@ -61,10 +66,10 @@
   color: yellow;
 }
 
-.warning-message {
+.warning-message, .reconnecting {
   color: orange;
 }
 
-.critical-message {
+.critical-message, .disconnected {
   color: red;
 }
