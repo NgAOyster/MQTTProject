@@ -9,7 +9,7 @@
       <h1 class="main-title">主页</h1>
       <p class="welcome-message">欢迎, {{ username }} !</p>
       <p class="current-status"> 目前状态：<span :class="getStatusColorClass()"> {{ getStatusText() }} </span> </p>
-      <p v-if="connectionTime" class="connection-time">
+      <p v-if="Timer" class="connection-time">
         已连接: {{ connectionTime }}
       </p>
       <br>
@@ -62,7 +62,8 @@ export default {
       temperatureData: [],
       connected: false,
       connectStatus: false,
-      connectionTime: 0,
+      Timer: false,
+      connectionTime: null,
       reconnectStatus: false,
       disconnect: false,
       onlineStatus: true,
@@ -89,7 +90,7 @@ export default {
         this.connectStatus = false;
         this.reconnectStatus = false;
         this.disconnect = true;
-        alert("连接已断开，请检查网络连接并尝试重新连接。");
+        alert("与MQTT服务器的连接已断开...");
         setTimeout(() => {
           this.clearConnectionTimer();
           this.reconnect();
@@ -199,10 +200,13 @@ export default {
       if (this.connectionTimer) {
         clearInterval(this.connectionTimer);
         this.connectionTimer = null; // Reset the timer variable
+        this.connectionTime = null;
+        this.Timer = false;
       }
     },
     startConnectionTimer() {
       this.clearConnectionTimer();
+      this.Timer = true;
       const startTime = new Date().getTime();
       this.connectionTimer = setInterval(() => {
         const currentTime = new Date().getTime();
@@ -233,6 +237,7 @@ export default {
       this.onlineStatus = false;
       this.connectStatus = false;
       this.clearConnectionTimer();
+      alert("网络连接已断开，您现在处于离线状态。");
     },
     getMessageClass(message) {
       let messageClass = '';
@@ -251,11 +256,11 @@ export default {
       if (this.disconnect) { return 'disconnected'; }
     },
     getStatusText() {
-    if (!this.onlineStatus) { return '网络断开'; }
-    if (this.connectStatus) { return '已连接'; } 
-    if (this.reconnectStatus) { return '重新连接中...'; } 
-    if (this.disconnect) { return '连接断开'; }
-  }
+      if (!this.onlineStatus) { return '网络断开'; }
+      if (this.connectStatus) { return '已连接'; } 
+      if (this.reconnectStatus) { return '重新连接中...'; } 
+      if (this.disconnect) { return '连接断开'; }
+    }
   },
 };
 </script>
