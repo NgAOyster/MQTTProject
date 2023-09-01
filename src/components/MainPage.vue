@@ -43,11 +43,42 @@
         </table>
         <br><br>
       </div>
+      
+      <!-- Add a section for current data -->
+      <div class="data-container" v-for="(data, index) in currentData" :key="index">
+        <table class="data-table">
+          <tr>
+            <th>时间：</th>
+            <td>{{ data.time }}</td>
+          </tr>
+          <tr>
+            <th>设备编号：</th>
+            <td>{{ data.machineId }}</td>
+          </tr>
+          <tr>
+            <th>设备类型：</th>
+            <td :class="getMessageClass(data.equipment)" >{{ data.equipment }}</td>
+          </tr>
+          <tr>
+            <th>消息等级：</th>
+            <td :class="getMessageClass(data.dgmgMessage)">{{ data.dgmgMessage }}</td>
+          </tr>
+        </table>
+        <br>
+        <table class="styled-table">
+          <thead>
+            <th v-for="i in 4" :key="i">电流监测 {{ i }}</th>
+          </thead>
+          <tbody>
+            <td v-for="i in 4" :key="i">{{ data['current' + i] }} 安培</td>
+          </tbody>
+        </table>
+        <br><br>
+      </div>
     </div>
   </div>
-    
 </template>
-  
+
 <script>
 import Paho from "paho-mqtt";
 
@@ -59,7 +90,8 @@ export default {
   
   data() {
     return {
-      temperatureData: [],
+      temperatureData: [], // Array for temperature data
+      currentData: [],     // Array for current data
       connected: false,
       connectStatus: false,
       Timer: false,
@@ -100,7 +132,14 @@ export default {
       client.onMessageArrived = (message) => {
         console.log("Message Received: " + message.payloadString);
         const topic = message.destinationName;
-        this.handleReceivedMessage(message.payloadString, topic);
+
+        if (topic.endsWith("/othertemperature")) {
+          this.handleTemperatureMessage(message.payloadString, topic);
+        } else if (topic.endsWith("/othercurrent")) {
+          this.handleCurrentMessage(message.payloadString, topic);
+        } else {
+          // Handle other topics or do nothing
+        }
       };
 
       const dgmgValues = ["dgmg01", "dgmg02", "dgmg03", "dgmg04"];
@@ -112,8 +151,9 @@ export default {
       dgmgValues.forEach(dgmg => {
         secondValues.forEach(second => {
           deviceValues.forEach(device => {
-            const topic = `${dgmg}/${second}/station1/${device}/othertemperature`;
-            topics.push(topic);
+            const tempTopic = `${dgmg}/${second}/station1/${device}/othertemperature`;
+            const currentTopic = `${dgmg}/${second}/station1/${device}/othercurrent`;
+            topics.push(tempTopic, currentTopic);
           });
         });
       });
@@ -151,49 +191,103 @@ export default {
         this.initMQTT();
       }
     },
-    handleReceivedMessage(message, topic) {
-      const jsonData = JSON.parse(message);
-      const localTimeString = new Date().toLocaleString();
+    handleTemperatureMessage(message, topic) {
+      // Check if the topic ends with /othertemperature
+      if (topic.endsWith("/othertemperature")) {
+        // Process the message for /othertemperature
+        const jsonData = JSON.parse(message);
+        const localTimeString = new Date().toLocaleString();
 
-      let dgmgMessage = "普通消息";
-      const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-      if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; } 
-      else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; } 
-      else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
-      
-      let equipment = "沥青搅拌站";
-      const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-      if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; } 
-      else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; } 
-      else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; } 
-      else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
+        let dgmgMessage = "普通消息";
+        const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
+        if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; } 
+        else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; } 
+        else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
 
-      // Find the index of existing data with the same MachineId
-      const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId && data.equipment === equipment);
-      if (existingIndex !== -1) {
-        // If existing data with the same MachineId is found, replace it
-        this.temperatureData[existingIndex] = {
-          time: localTimeString,
-          machineId: jsonData.MachineId,
-          temp1: jsonData.temp1,
-          temp2: jsonData.temp2,
-          temp3: jsonData.temp3,
-          temp4: jsonData.temp4,
-          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
-          equipment: equipment
-        };
-      } else {
-        // If no existing data with the same MachineId is found, push new data
-        this.temperatureData.push({
-          time: localTimeString,
-          machineId: jsonData.MachineId,
-          temp1: jsonData.temp1,
-          temp2: jsonData.temp2,
-          temp3: jsonData.temp3,
-          temp4: jsonData.temp4,
-          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
-          equipment: equipment 
-        });
+        let equipment = "沥青搅拌站";
+        const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
+        if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; } 
+        else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; } 
+        else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; } 
+        else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
+
+        // Find the index of existing data with the same MachineId
+        const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId && data.equipment === equipment);
+        if (existingIndex !== -1) {
+          // If existing data with the same MachineId is found, replace it
+          this.temperatureData[existingIndex] = {
+            time: localTimeString,
+            machineId: jsonData.MachineId,
+            temp1: jsonData.temp1,
+            temp2: jsonData.temp2,
+            temp3: jsonData.temp3,
+            temp4: jsonData.temp4,
+            dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
+            equipment: equipment
+          };
+        } else {
+          // If no existing data with the same MachineId is found, push new data
+          this.temperatureData.push({
+            time: localTimeString,
+            machineId: jsonData.MachineId,
+            temp1: jsonData.temp1,
+            temp2: jsonData.temp2,
+            temp3: jsonData.temp3,
+            temp4: jsonData.temp4,
+            dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
+            equipment: equipment 
+          });
+        }
+      }
+    },
+
+    handleCurrentMessage(message, topic) {
+      // Check if the topic ends with /othercurrent
+      if (topic.endsWith("/othercurrent")) {
+        // Process the message for /othercurrent
+        const jsonData = JSON.parse(message);
+        const localTimeString = new Date().toLocaleString();
+
+        let dgmgMessage = "普通消息";
+        const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
+        if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; } 
+        else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; } 
+        else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
+
+        let equipment = "沥青搅拌站";
+        const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
+        if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; } 
+        else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; } 
+        else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; } 
+        else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
+
+        // Find the index of existing data with the same MachineId
+        const existingIndex = this.currentData.findIndex(data => data.machineId === jsonData.MachineId && data.equipment === equipment);
+        if (existingIndex !== -1) {
+          // If existing data with the same MachineId is found, replace it
+          this.currentData[existingIndex] = {
+            time: localTimeString,
+            machineId: jsonData.MachineId,
+            current1: jsonData.current1,
+            current2: jsonData.current2,
+            current3: jsonData.current3,
+            current4: jsonData.current4,
+            dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
+            equipment: equipment
+          };
+        } else {
+          // If no existing data with the same MachineId is found, push new data
+          this.currentData.push({
+            time: localTimeString,
+            machineId: jsonData.MachineId,
+            current1: jsonData.current1,
+            current2: jsonData.current2,
+            current3: jsonData.current3,
+            current4: jsonData.current4,
+            dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
+            equipment: equipment 
+          });
+        }
       }
     },
     clearConnectionTimer() {
