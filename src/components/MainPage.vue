@@ -8,12 +8,11 @@
     <div v-else>
       <h1 class="main-title">主页</h1>
       <p class="welcome-message">欢迎, {{ username }} !</p>
-      <p class="current-status"> 目前状态：<span :class="getStatusColorClass()"> {{ getStatusText() }} </span> </p>
-      <p v-if="Timer" class="connection-time">
-        已连接: {{ connectionTime }}
-      </p>
-      <br>
-      <div class="data-container" v-for="(data, index) in temperatureData" :key="index">
+      <p class="current-status">目前状态：<span :class="getStatusColorClass()">{{ getStatusText() }}</span></p>
+      <p v-if="Timer" class="connection-time">已连接: {{ connectionTime }}</p>
+      <br />
+      <!-- Sort the data based on machineId in ascending order -->
+      <div class="data-container" v-for="(data, index) in combinedData" :key="index">
         <table class="data-table">
           <tr>
             <th>时间：</th>
@@ -25,54 +24,71 @@
           </tr>
           <tr>
             <th>设备类型：</th>
-            <td :class="getMessageClass(data.equipment)" >{{ data.equipment }}</td>
-          </tr>
-          <tr>
-            <th>消息等级：</th>
-            <td :class="getMessageClass(data.dgmgMessage)">{{ data.dgmgMessage }}</td>
+            <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
           </tr>
         </table>
-        <br>
-        <table class="styled-table">
-          <thead>
-            <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
-          </thead>
-          <tbody>
-            <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
-          </tbody>
-        </table>
-        <br><br>
-      </div>
-      
-      <!-- Add a section for current data -->
-      <div class="data-container" v-for="(data, index) in currentData" :key="index">
-        <table class="data-table">
-          <tr>
-            <th>时间：</th>
-            <td>{{ data.time }}</td>
-          </tr>
-          <tr>
-            <th>设备编号：</th>
-            <td>{{ data.machineId }}</td>
-          </tr>
-          <tr>
-            <th>设备类型：</th>
-            <td :class="getMessageClass(data.equipment)" >{{ data.equipment }}</td>
-          </tr>
-          <tr>
-            <th>消息等级：</th>
-            <td :class="getMessageClass(data.dgmgMessage)">{{ data.dgmgMessage }}</td>
-          </tr>
-        </table>
-        <br>
-        <table class="styled-table">
-          <thead>
-            <th v-for="i in 4" :key="i">电流监测 {{ i }}</th>
-          </thead>
-          <tbody>
-            <td v-for="i in 4" :key="i">{{ data['current' + i] }} 安培</td>
-          </tbody>
-        </table>
+        <div v-if="isTemperatureAndCurrentEmpty(data)">
+          <table class="data-table">
+            <tr>
+              <th>温度消息等级：</th>
+              <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
+            </tr>
+          </table>
+          <table class="styled-table">
+            <thead>
+              <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
+            </thead>
+            <tbody>
+              <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
+            </tbody>
+          </table>
+          <table class="data-table">
+            <tr>
+              <th>电流消息等级：</th>
+              <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
+            </tr>
+          </table>
+          <table class="styled-table">
+            <thead>
+              <th v-for="i in 4" :key="i">电流监测 {{ i }}</th>
+            </thead>
+            <tbody>
+              <td v-for="i in 4" :key="i">{{ data['current' + i] }} 安培</td>
+            </tbody>
+          </table>
+        </div>
+        <div v-else-if="hasTemperatureData(data.machineId, data.equipment)">
+          <table class="data-table">
+            <tr>
+              <th>温度消息等级：</th>
+              <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
+            </tr>
+          </table>
+          <table class="styled-table">
+            <thead>
+              <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
+            </thead>
+            <tbody>
+              <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
+            </tbody>
+          </table>
+        </div>
+        <div v-else-if="hasCurrentData(data.machineId, data.equipment)">
+          <table class="data-table">
+            <tr>
+              <th>电流消息等级：</th>
+              <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
+            </tr>
+          </table>
+          <table class="styled-table">
+            <thead>
+              <th v-for="i in 4" :key="i">电流监测 {{ i }}</th>
+            </thead>
+            <tbody>
+              <td v-for="i in 4" :key="i">{{ data['current' + i] }} 安培</td>
+            </tbody>
+          </table>
+        </div>
         <br><br>
       </div>
     </div>
@@ -108,6 +124,62 @@ export default {
     window.addEventListener('offline', this.handleOffline);
   },
   
+  computed: {
+    combinedData() {
+      // Create an empty array to store the combined data
+      const combinedData = [];
+
+      // Iterate over temperatureData and add data to combinedData
+      for (const tempData of this.temperatureData) {
+        // Check if there is matching data in currentData
+        const matchingData = this.currentData.find(
+          (currentData) =>
+            currentData.machineId === tempData.machineId &&
+            currentData.equipment === tempData.equipment
+        );
+
+        if (matchingData) {
+          const latestTime = tempData.time > matchingData.time ? tempData.time : matchingData.time;
+          // Combine data from both arrays
+          const combinedItem = {
+            time: latestTime,
+            machineId: tempData.machineId,
+            equipment: tempData.equipment,
+            TempdgmgMessage: tempData.TempdgmgMessage,
+            CurrentdgmgMessage: matchingData.CurrentdgmgMessage,
+            temp1: tempData.temp1,
+            temp2: tempData.temp2,
+            temp3: tempData.temp3,
+            temp4: tempData.temp4,
+            current1: matchingData.current1,
+            current2: matchingData.current2,
+            current3: matchingData.current3,
+            current4: matchingData.current4
+          };
+
+          combinedData.push(combinedItem);
+        } 
+        else{
+          combinedData.push(tempData);
+        }
+      }
+      for (const currentDataItem of this.currentData) {
+        const hasMatchingItem = combinedData.some(
+          (combinedItem) =>
+            combinedItem.machineId === currentDataItem.machineId &&
+            combinedItem.equipment === currentDataItem.equipment
+        );
+
+        if (!hasMatchingItem) {
+          combinedData.push(currentDataItem);
+        }
+      }
+      console.log(combinedData);
+      // Sort the combined data by machineId in ascending order
+      return combinedData.sort((a, b) => a.machineId - b.machineId);
+    },
+  },
+
   methods: {
     initMQTT() {
       this.disconnect = false;
@@ -134,9 +206,9 @@ export default {
         const topic = message.destinationName;
 
         if (topic.endsWith("/othertemperature")) {
-          this.handleTemperatureMessage(message.payloadString, topic);
+          this.handleMessage(message.payloadString, topic, this.temperatureData);
         } else if (topic.endsWith("/othercurrent")) {
-          this.handleCurrentMessage(message.payloadString, topic);
+          this.handleMessage(message.payloadString, topic, this.currentData);
         } else {
           // Handle other topics or do nothing
         }
@@ -191,113 +263,65 @@ export default {
         this.initMQTT();
       }
     },
-    handleTemperatureMessage(message, topic) {
-  // Check if the topic ends with /othertemperature
-  if (topic.endsWith("/othertemperature")) {
-    // Process the message for /othertemperature
-    const jsonData = JSON.parse(message);
-    const localTimeString = new Date().toLocaleString();
+    handleMessage(message, topic, dataCollection) {
+    const isTemperature = topic.endsWith("/othertemperature");
+    const isCurrent = topic.endsWith("/othercurrent");
 
-    let dgmgMessage = "普通消息";
-    const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-    if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; } 
-    else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; } 
-    else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
+    if (isTemperature || isCurrent) {
+      const jsonData = JSON.parse(message);
+      const localTimeString = new Date().toLocaleString();
 
-    let equipment = "沥青搅拌站";
-    const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-    if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; } 
-    else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; } 
-    else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; } 
-    else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
+      let dgmgMessage = "普通消息";
+      const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
+      if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; } 
+      else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; } 
+      else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
 
-    // Check if the message has temperature data
-    if (jsonData.temp1 || jsonData.temp2 || jsonData.temp3 || jsonData.temp4) {
-      // Find the index of existing data with the same MachineId
-      const existingIndex = this.temperatureData.findIndex(data => data.machineId === jsonData.MachineId && data.equipment === equipment);
+      let equipment = "沥青搅拌站";
+      const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
+      if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; } 
+      else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; } 
+      else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; } 
+      else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
+
+      // Extract machineId from the topic
+      const topicParts = topic.split('/');
+      const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
+      const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
+
+      const data = {
+        time: localTimeString,
+        machineId,
+        equipment,
+      };
+
+      if (isTemperature) {
+        data.TempdgmgMessage = dgmgMessage;
+        data.temp1 = jsonData.temp1;
+        data.temp2 = jsonData.temp2;
+        data.temp3 = jsonData.temp3;
+        data.temp4 = jsonData.temp4;
+      } else if (isCurrent) {
+        data.CurrentdgmgMessage = dgmgMessage;
+        data.current1 = jsonData.current1;
+        data.current2 = jsonData.current2;
+        data.current3 = jsonData.current3;
+        data.current4 = jsonData.current4;
+      }
+
+      const existingIndex = dataCollection.findIndex(
+        (dataItem) =>
+          dataItem.machineId === machineId &&
+          dataItem.equipment === equipment
+      );
+
       if (existingIndex !== -1) {
-        // If existing data with the same MachineId is found, replace it
-        this.temperatureData[existingIndex] = {
-          time: localTimeString,
-          machineId: jsonData.MachineId,
-          temp1: jsonData.temp1,
-          temp2: jsonData.temp2,
-          temp3: jsonData.temp3,
-          temp4: jsonData.temp4,
-          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
-          equipment: equipment
-        };
+        dataCollection[existingIndex] = data;
       } else {
-        // If no existing data with the same MachineId is found, push new data
-        this.temperatureData.push({
-          time: localTimeString,
-          machineId: jsonData.MachineId,
-          temp1: jsonData.temp1,
-          temp2: jsonData.temp2,
-          temp3: jsonData.temp3,
-          temp4: jsonData.temp4,
-          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
-          equipment: equipment 
-        });
+        dataCollection.push(data);
       }
     }
-  }
   },
-
-
-  handleCurrentMessage(message, topic) {
-  // Check if the topic ends with /othercurrent
-  if (topic.endsWith("/othercurrent")) {
-    // Process the message for /othercurrent
-    const jsonData = JSON.parse(message);
-    const localTimeString = new Date().toLocaleString();
-
-    let dgmgMessage = "普通消息";
-    const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-    if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; } 
-    else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; } 
-    else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
-
-    let equipment = "沥青搅拌站";
-    const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-    if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; } 
-    else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; } 
-    else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; } 
-    else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
-
-    // Check if the message has current data
-    if (jsonData.current1 || jsonData.current2 || jsonData.current3 || jsonData.current4) {
-      // Find the index of existing data with the same MachineId
-      const existingIndex = this.currentData.findIndex(data => data.machineId === jsonData.MachineId && data.equipment === equipment);
-      if (existingIndex !== -1) {
-        // If existing data with the same MachineId is found, replace it
-        this.currentData[existingIndex] = {
-          time: localTimeString,
-          machineId: jsonData.MachineId,
-          current1: jsonData.current1,
-          current2: jsonData.current2,
-          current3: jsonData.current3,
-          current4: jsonData.current4,
-          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
-          equipment: equipment
-        };
-      } else {
-        // If no existing data with the same MachineId is found, push new data
-        this.currentData.push({
-          time: localTimeString,
-          machineId: jsonData.MachineId,
-          current1: jsonData.current1,
-          current2: jsonData.current2,
-          current3: jsonData.current3,
-          current4: jsonData.current4,
-          dgmgMessage: dgmgMessage, // Use different property name for dgmgMessage
-          equipment: equipment 
-        });
-      }
-    }
-  }
-  },
-
     clearConnectionTimer() {
       if (this.connectionTimer) {
         clearInterval(this.connectionTimer);
@@ -340,6 +364,24 @@ export default {
       this.connectStatus = false;
       this.clearConnectionTimer();
       alert("网络连接已断开，您现在处于离线状态。");
+    },
+    hasCurrentData(machineId, equipment) {
+      return this.currentData.some(
+        (item) => item.machineId === machineId && item.equipment === equipment
+      );
+    },
+    hasTemperatureData(machineId, equipment) {
+      return this.temperatureData.some(
+        (item) => item.machineId === machineId && item.equipment === equipment
+      );
+    },
+    isTemperatureAndCurrentEmpty(data) {
+      for (let i = 1; i <= 4; i++) {
+        if (data['temp' + i] == null || data['current' + i] == null) {
+          return false; // If any temperature or current value is empty, return false
+        }
+      }
+      return true; // If all temperature and current values are not empty, return true
     },
     getMessageClass(message) {
       let messageClass = '';
