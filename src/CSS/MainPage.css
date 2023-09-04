@@ -79,7 +79,7 @@
 }
 
 .control-message {
-  color: yellow;
+  color: rgb(187, 187, 1);
 }
 
 .warning-message, .reconnecting {
