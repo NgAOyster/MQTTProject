@@ -27,35 +27,53 @@
             <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
           </tr>
         </table>
+        <br>
         <div v-if="isTemperatureAndCurrentEmpty(data)">
+          <!-- Temperature Monitoring -->
           <table class="data-table">
             <tr>
               <th>温度消息等级：</th>
               <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
             </tr>
           </table>
-          <table class="styled-table">
-            <thead>
-              <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
-            </thead>
-            <tbody>
-              <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
-            </tbody>
-          </table>
+          <div class="styled-table-container">
+            <table class="styled-table">
+              <thead>
+                <th colspan="4">温度监测</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">监测{{ i }}</td>
+                </tr>
+                <tr>
+                  <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} 摄氏度</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <br>
+          <!-- Current Monitoring -->
           <table class="data-table">
             <tr>
               <th>电流消息等级：</th>
               <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
             </tr>
           </table>
-          <table class="styled-table">
-            <thead>
-              <th v-for="i in 4" :key="i">电流监测 {{ i }}</th>
-            </thead>
-            <tbody>
-              <td v-for="i in 4" :key="i">{{ data['current' + i] }} 安培</td>
-            </tbody>
-          </table>
+          <div class="styled-table-container">
+            <table class="styled-table">
+              <thead>
+                <th colspan="4">电流监测</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">监测{{ i }}</td>
+                </tr>
+                <tr>
+                  <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} 安培</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div v-else-if="hasTemperatureData(data.machineId, data.equipment)">
           <table class="data-table">
@@ -64,14 +82,21 @@
               <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
             </tr>
           </table>
-          <table class="styled-table">
-            <thead>
-              <th v-for="i in 4" :key="i">温度监测 {{ i }}</th>
-            </thead>
-            <tbody>
-              <td v-for="i in 4" :key="i">{{ data['temp' + i] }} 摄氏度</td>
-            </tbody>
-          </table>
+          <div class="styled-table-container">
+            <table class="styled-table">
+              <thead>
+                <th colspan="4">温度监测</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">监测{{ i }}</td>
+                </tr>
+                <tr>
+                  <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} 摄氏度</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div v-else-if="hasCurrentData(data.machineId, data.equipment)">
           <table class="data-table">
@@ -80,14 +105,21 @@
               <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
             </tr>
           </table>
-          <table class="styled-table">
-            <thead>
-              <th v-for="i in 4" :key="i">电流监测 {{ i }}</th>
-            </thead>
-            <tbody>
-              <td v-for="i in 4" :key="i">{{ data['current' + i] }} 安培</td>
-            </tbody>
-          </table>
+          <div class="styled-table-container">
+            <table class="styled-table">
+              <thead>
+                <th colspan="4">电流监测</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">监测{{ i }}</td>
+                </tr>
+                <tr>
+                  <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} 安培</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <br><br>
       </div>

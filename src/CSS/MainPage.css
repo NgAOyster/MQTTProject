@@ -24,11 +24,6 @@
   margin-bottom: 5px;
 }
 
-.password {
-  font-size: 16px;
-  color: #555; /* Light gray text color */
-}
-
 .connection-time {
   font-size: 15px;
   color: #777; /* Medium gray text color */
@@ -55,16 +50,26 @@
   border-collapse: collapse;
 }
 
-.styled-table th,
+.styled-table th {
+  padding: 8px;
+  text-align: center;
+  border: 1px solid #ccc;
+}
+
+
 .styled-table td {
   padding: 8px;
   text-align: center;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid #ccc;
 }
 
-.styled-table th {
-  background-color: #f2f2f2;
-  color: #333; /* Dark gray text color */
+.monitorWidth {
+  font-weight: bold;
+  width: 25%;
+}
+
+.dataWidth {
+  width: 25%;
 }
 
 .normal-message, .connected {
