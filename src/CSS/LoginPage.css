@@ -1,15 +1,9 @@
-/* Apply a 25% scale increase to the entire page content */
-.login-container {
-  transform: scale(1.25);
-  transform-origin: center;
-}
-
 /* Styles for the login container */
 .login-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  height: 80vh;
 }
 
 /* Styles for the center box */
