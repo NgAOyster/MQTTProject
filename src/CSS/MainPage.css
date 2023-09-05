@@ -1,93 +1,101 @@
 .container {
-  font-family: Arial, sans-serif;
+  max-width: 800px; /* Adjust the maximum width according to your layout */
+  margin: 0 auto; /* Center the container horizontally */
   padding: 20px;
-  background-color: #ffffff; /* White background */
-  border-radius: 8px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  background-color: #f7f7f7; /* Choose a background color */
+  border: 1px solid #ddd; /* Add a border for separation */
+  border-radius: 5px; /* Round the corners */
 }
 
+/* Styles for the connecting message */
 .connecting {
   text-align: center;
-  margin: 40px auto;
-  color: #c0392b; /* Red text color */
+  padding: 20px;
+  background-color: #fff; /* Background color for this section */
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
 }
 
+/* Styles for the main title */
 .main-title {
   font-size: 24px;
-  color: #e74c3c; /* Dark red title color */
-  margin-bottom: 10px;
+  margin-top: 20px;
+  color: #333; /* Text color */
 }
 
+/* Styles for the welcome message */
 .welcome-message {
   font-size: 18px;
-  color: #333; /* Dark gray text color */
-  margin-bottom: 5px;
+  margin: 10px 0;
+  color: #555;
 }
 
-.connection-time {
-  font-size: 15px;
-  color: #777; /* Medium gray text color */
-  margin-top: 10px;
-}
-
+/* Styles for the current status */
 .current-status {
-  font-size: 15px;
+  font-size: 16px;
+  margin: 10px 0;
+  color: #333;
+}
+
+.connected {
+  color: #28a745; /* Green color for connected status */
+}
+
+.internetDisconnect {
+  color: #dc3545; /* Red color for internet disconnect status */
+}
+
+.reconnecting {
+  color: #ffc107; /* Yellow color for reconnecting status */
+}
+
+.disconnected {
+  color: #6c757d; /* Gray color for disconnected status */
+}
+
+/* Styles for the data container */
+.data-container {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles for the data table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
   margin-top: 10px;
 }
 
 .data-table th {
-  text-align: right;
-  color: #333;
-  max-width: max-content;
-}
-
-.data-table td {
   text-align: left;
+  background-color: #f5f5f5; /* Light gray background for table header */
 }
 
-.styled-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.styled-table th {
+.data-table th, .data-table td {
   padding: 8px;
-  text-align: center;
-  border: 1px solid #ccc;
-  color: white;
-  background-color: rgb(237, 28, 36);
+  border-bottom: 1px solid #ddd;
 }
 
-
-.styled-table td {
-  padding: 8px;
-  text-align: center;
-  border: 1px solid #ccc;
-}
-
-.monitorWidth {
-  font-weight: bold;
-  width: 25%;
-}
-
-.dataWidth {
-  width: 25%;
-}
-
-.normal-message, .connected {
-  color: green;
+/* Styles for message classes */
+.normal-message {
+  color: #28a745;
 }
 
 .control-message {
-  color: rgb(187, 187, 1);
+  color: #007bff; /* Blue color for control messages */
 }
 
-.warning-message, .reconnecting {
-  color: orange;
+.warning-message {
+  color: #ffc107; /* Yellow color for warning messages */
 }
 
-.critical-message, .disconnected, .internetDisconnect {
-  color: red;
+.critical-message {
+  color: #dc3545; /* Red color for critical messages */
 }
 
 @media (max-width: 768px) {
