@@ -1,63 +1,85 @@
+/* Apply a 25% scale increase to the entire page content */
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  
-  .center-box {
-    width: 300px;
-    height: 300px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: white;
-  }
-  
-  .login-form {
-    width: 100%;
-    max-width: 80%;
-    padding: 20px;
-  }
-  
-  .input-group {
-    margin-bottom: 15px;
-  }
-  
-  label {
-    font-weight: bold;
-  }
-  
-  input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-sizing: border-box; /* Add this line */
-  }
-  
-  button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #0056b3; /* Darker blue color on hover */
-  }
+  transform: scale(1.25);
+  transform-origin: center;
+}
 
-  button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-  
-  .connecting-message, .success-message, .error-message {
-    color: red;
-  }
+/* Styles for the login container */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Styles for the center box */
+.center-box {
+  background-color: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 300px; /* Adjust the width as needed */
+}
+
+/* Styles for the login form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Styles for the input group */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+/* Styles for labels */
+label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Styles for input fields */
+input[type="text"],
+input[type="password"] {
+  padding: 12px; /* Increased padding */
+  font-size: 16px; /* Increased font size */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  width: 100%; /* Make the text boxes full width */
+  box-sizing: border-box; /* Include padding and border in the width */
+  margin: 0; /* Remove any margin */
+}
+
+/* Styles for the login button */
+button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Styles for connecting message */
+.connecting-message {
+  text-align: center;
+  margin-top: 10px;
+  color: #007bff;
+}
+
+/* Styles for error message */
+.error-message {
+  text-align: center;
+  margin-top: 10px;
+  color: #dc3545;
+}
