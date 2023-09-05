@@ -36,8 +36,7 @@
               <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
             </tr>
           </table>
-          <div class="styled-table-container">
-            <table class="styled-table">
+          <table class="data-table">
               <thead>
                 <th colspan="4">温度监测</th>
               </thead>
@@ -50,7 +49,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
           <br>
           <!-- Current Monitoring -->
           <table class="data-table">
@@ -59,8 +57,7 @@
               <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
             </tr>
           </table>
-          <div class="styled-table-container">
-            <table class="styled-table">
+          <table class="data-table">
               <thead>
                 <th colspan="4">电流监测</th>
               </thead>
@@ -73,7 +70,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
         </div>
         <div v-else-if="hasTemperatureData(data.machineId, data.equipment)">
           <table class="data-table">
@@ -82,8 +78,7 @@
               <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
             </tr>
           </table>
-          <div class="styled-table-container">
-            <table class="styled-table">
+          <table class="data-table">
               <thead>
                 <th colspan="4">温度监测</th>
               </thead>
@@ -96,7 +91,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
         </div>
         <div v-else-if="hasCurrentData(data.machineId, data.equipment)">
           <table class="data-table">
@@ -105,8 +99,7 @@
               <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
             </tr>
           </table>
-          <div class="styled-table-container">
-            <table class="styled-table">
+          <table class="data-table">
               <thead>
                 <th colspan="4">电流监测</th>
               </thead>
@@ -119,7 +112,6 @@
                 </tr>
               </tbody>
             </table>
-          </div>
         </div>
         <br><br>
       </div>
