@@ -17,7 +17,16 @@
             <div class="mx-4" v-if="Timer">已连接: {{ connectionTime }}</div>
             <div class="mx-4" v-else>未连接服务器</div>
           </div>
-          <div class="navbar-nav ms-auto p-4 p-lg-0">欢迎您, {{ username }}</div>
+          <div class="navbar-nav ms-auto p-4 p-lg-0">
+            <div class="dropdown">
+              <button class="btn dropdown-toggle" type="button" id="logoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                <i class="fas fa-user"></i> 欢迎您, {{ username }}
+              </button>
+              <div class="dropdown-menu" aria-labelledby="logoutDropdown">
+                <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">登出</a>
+              </div>
+            </div>
+          </div>
         </div>
       </nav>
       <!-- Navbar End -->
@@ -262,17 +271,24 @@ export default {
       this.selectedDataType = dataType;
     },
     getStatusColorClass() {
-        if (this.connectStatus) { return 'connected'; } 
-        if (!this.onlineStatus) { return 'internetDisconnect'; }
-        if (this.reconnectStatus) { return 'reconnecting'; } 
-        if (this.disconnect) { return 'disconnected'; }
-      },
-      getStatusText() {
-        if (!this.onlineStatus) { return '网络断开'; }
-        if (this.connectStatus) { return '已连接'; } 
-        if (this.reconnectStatus) { return '重新连接中...'; } 
-        if (this.disconnect) { return '连接断开'; }
-      },
+      if (this.connectStatus) { return 'connected'; } 
+      if (!this.onlineStatus) { return 'internetDisconnect'; }
+      if (this.reconnectStatus) { return 'reconnecting'; } 
+      if (this.disconnect) { return 'disconnected'; }
+    },
+    getStatusText() {
+      if (!this.onlineStatus) { return '网络断开'; }
+      if (this.connectStatus) { return '已连接'; } 
+      if (this.reconnectStatus) { return '重新连接中...'; } 
+      if (this.disconnect) { return '连接断开'; }
+    },
+    confirmLogout() {
+      const confirmLogout = window.confirm('确定要登出吗？');
+      if (confirmLogout) {
+        alert("您已成功登出");
+        this.$emit('logout');
+      }
+    },
   },
 };
 </script>
