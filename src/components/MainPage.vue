@@ -436,3 +436,4 @@ export default {
 <style>
 @import '../CSS/MainPage.css';
 </style>
+

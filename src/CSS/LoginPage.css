@@ -1,9 +1,55 @@
-/* Styles for the login container */
-.login-container {
-  display: flex;
+body {
+  background-image: url('../images/background-image.jpg');
+  background-size: fill;
+  background-position: center center;
+  height: 96vh;
   justify-content: center;
   align-items: center;
-  height: 80vh;
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh; /* Adjust the container's height as needed */
+  padding: 20px; /* Add some padding to the container */
+}
+
+.title {
+  color: #fff; /* Light text color for the container */
+  text-align: center; /* Center-align the text */
+  margin-top: 20px; /* Add some spacing from the top of the container */
+}
+
+.title h1 {
+  font-size: 32px; /* Adjust the title font size */
+}
+
+.title h2{
+  font-size: 18px; /* Adjust the subtitle font size */
+  font-weight: normal;
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #fff; /* Customize the subtitle text color */
+}
+
+.title h2{
+  color:lightblue
+}
+
+.bottom {
+  color: #fff; /* Light text color for the container */
+  text-align: center; /* Center-align the text */
+  margin-top: 20px; /* Add some spacing from the top of the container */
+}
+
+p3{
+  padding-top: 50px; /* Adjust the value to control the space between paragraphs */
+}
+
+a:visited {
+  color: lightskyblue; /* Set the color to blue for visited links */
+  text-decoration: underline; /* Optionally, you can underline visited links */
 }
 
 /* Styles for the center box */
@@ -28,6 +74,45 @@
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
+}
+
+.password-input {
+  position: relative;
+}
+
+.password-input input {
+  padding-right: 30px; /* Add space for the icon on the right */
+}
+
+.lock-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Adjust the distance from the right edge */
+  color: #666; /* Icon color */
+  font-size: 18px; /* Icon size */
+}
+
+.user-input {
+  position: relative;
+}
+
+.user-input input {
+  padding-right: 30px; /* Add space for the icon on the right */
+}
+
+.user-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Adjust the distance from the right edge */
+  transform: translateY(-50%);
+  color: #666; /* Icon color */
+  font-size: 18px; /* Icon size */
+}
+
+.key-icon {
+  margin-right: 5px; /* Add spacing between icon and text */
+  color: lightblue; /* Icon color */
+  font-size: 18px; /* Icon size */
 }
 
 /* Styles for labels */

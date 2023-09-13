@@ -1,29 +1,52 @@
 <template>
   <div class="login-container">
+    <div class="title">
+      <h1>飞达服务大数据平台</h1>
+      <h2>&copy;德基机械</h2>
+    </div>
     <div class="center-box">
       <form class="login-form">
         <div class="input-group">
-          <label for="username">用户名:</label>
-          <input v-model="username" type="text" id="username" :disabled="connecting" />
+        <label for="username">用户名:</label>
+        <div class="user-input">
+        <input v-model="username" type="text" id="username" :disabled="connecting" />
+        <font-awesome-icon icon="user" class="user-icon" />
+        </div>
           <br><br>
+          <div class="password-input">
           <label for="password">密码:</label>
           <input v-model="password" type="password" id="password" :disabled="connecting" />
+          <font-awesome-icon icon="lock" class="lock-icon" />
         </div>
+      </div>
 
-        <button @click.prevent="connect" :disabled="connecting">
-          登入
-        </button>
+      <button @click.prevent="connect" :disabled="connecting">
+      <font-awesome-icon icon="key" class="key-icon" />
+      登入
+      </button>
         <p v-if="connecting" class="connecting-message">{{ connectingMessage }}</p>
         <p v-else-if="errorMessage" class="error-message" v-html="errorMessage"></p>
       </form>
+    </div>
+    <div class="bottom">
+    <p>&copy; 2023 <a href="http://www.dgmachinery.com/">廊坊德基机械科技有限公司</a></p>
+    <p>版权所有 <a href="https://beian.miit.gov.cn/">冀ICP备09032629号-3</a></p>
     </div>
   </div>
 </template>
 
 <script>
 import Paho from 'paho-mqtt';
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { faLock, faUser, faKey } from "@fortawesome/free-solid-svg-icons";
 
+// Add the Font Awesome icons to the library
+library.add(faLock, faUser, faKey);
 export default {
+  components: {
+    FontAwesomeIcon,
+  },
   data() {
     return {
       client: null,
