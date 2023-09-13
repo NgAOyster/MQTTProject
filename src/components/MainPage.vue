@@ -1,15 +1,45 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <div class="connecting" v-if="!connected">
       <p>登入成功 !</p>
       <p>正在连接MQTT服务器...</p>
       <p>这可能需要几秒钟时间。请稍等...</p>
     </div>
+    
     <div v-else>
-      <h1 class="main-title">主页</h1>
-      <p class="welcome-message">欢迎, {{ username }} !</p>
-      <p class="current-status">目前状态：<span :class="getStatusColorClass()">{{ getStatusText() }}</span></p>
-      <p v-if="Timer" class="connection-time">已连接: {{ connectionTime }}</p>
+      <!-- Navbar Start -->
+      <nav class="navbar navbar-expand-lg navbar-light border-top sticky-top mainNav" style="padding: 10px;">
+        <a class="navbar-brand" href="#" style="color: white;">主页</a>
+        <div class="collapse navbar-collapse">
+          <div class="navbar-nav ms-auto p-4 p-lg-0">欢迎您, {{ username }}</div>
+        </div>
+      </nav>
+      <!-- Navbar End -->
+      <div class="statusContainer">
+        <div class="row">
+          <div class="col-md-2"></div>
+          <div class="col-md-4">
+            目前状态: <span :class="getStatusColorClass()">{{ getStatusText() }}</span>
+          </div>
+          <div class="col-md-4">
+            <div v-if="Timer">已连接: {{ connectionTime }}</div>
+            <div v-else>未连接服务器</div>
+          </div>
+          <div class="col-md-2"></div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-2 sideComp text-start">
+            <!-- Sidebar Component -->
+            <Sidebar @data-type-selected="updateDataType" :selectedDataType="selectedDataType" />
+          </div>
+          <div class="col-md-10 text-start">
+            <!-- Content Component -->
+            <Content :dataType="selectedDataType" />
+          </div>
+        </div>
+      </div>
       <br />
       <!-- Sort the data based on machineId in ascending order -->
       <div class="data-container" v-for="(data, index) in combinedData" :key="index">
@@ -121,13 +151,18 @@
 
 <script>
 import Paho from "paho-mqtt";
+import Sidebar from "../components/Sidebar.vue";
+import Content from "../components/Content.vue";
 
 export default {
   props: {
     username: String,
     password: String,
   },
-  
+  components: {
+    Sidebar,
+    Content,
+  },
   data() {
     return {
       temperatureData: [], // Array for temperature data
@@ -139,6 +174,7 @@ export default {
       reconnectStatus: false,
       disconnect: false,
       onlineStatus: true,
+      selectedDataType: "temperature", // Default data type
     };
   },
 
@@ -209,8 +245,11 @@ export default {
       this.disconnect = false;
       const randomPart = Math.random().toString(36).substr(2, 8); // Generate a random string
       const uniqueClientId = `mqttx_${randomPart}`;
+      // const client = new Paho.Client(
+      //   "ws://222.222.119.72:8083/mqtt", uniqueClientId
+      // );
       const client = new Paho.Client(
-        "ws://222.222.119.72:8083/mqtt", uniqueClientId
+        "wss://wf93f2bf.ala.us-east-1.emqxsl.com:8084/mqtt", uniqueClientId
       );
 
       client.onConnectionLost = (responseObject) => {
@@ -428,7 +467,10 @@ export default {
       if (this.connectStatus) { return '已连接'; } 
       if (this.reconnectStatus) { return '重新连接中...'; } 
       if (this.disconnect) { return '连接断开'; }
-    }
+    },
+    updateDataType(dataType) {
+      this.selectedDataType = dataType;
+    },
   },
 };
 </script>

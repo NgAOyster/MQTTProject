@@ -50,7 +50,8 @@ export default {
   data() {
     return {
       client: null,
-      brokerUrl: 'ws://222.222.119.72:8083/mqtt',
+      // brokerUrl: 'ws://222.222.119.72:8083/mqtt',
+      brokerUrl: 'wss://wf93f2bf.ala.us-east-1.emqxsl.com:8084/mqtt',
       username: '',
       password: '',
       connectingMessage: '验证中...',
