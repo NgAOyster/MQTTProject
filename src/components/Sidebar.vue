@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h4>监测数据</h4>
+      <h4><i class="fas fa-chart-bar"></i> 监测数据</h4>
       <ul class="list-group">
         <li
           v-for="dataType in dataTypes"

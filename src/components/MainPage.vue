@@ -8,27 +8,20 @@
     
     <div v-else>
       <!-- Navbar Start -->
-      <nav class="navbar navbar-expand-lg navbar-light border-top sticky-top mainNav" style="padding: 10px;">
+      <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav" style="padding: 10px;">
         <a class="navbar-brand" href="#" style="color: white;">主页</a>
         <div class="collapse navbar-collapse">
+          <div class="navbar-nav ms-auto p-8 align-items-center">
+            <div class="mx-4">目前状态: <span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
+            
+            <div class="mx-4" v-if="Timer">已连接: {{ connectionTime }}</div>
+            <div class="mx-4" v-else>未连接服务器</div>
+          </div>
           <div class="navbar-nav ms-auto p-4 p-lg-0">欢迎您, {{ username }}</div>
         </div>
       </nav>
       <!-- Navbar End -->
-      <div class="statusContainer">
-        <div class="row">
-          <div class="col-md-2"></div>
-          <div class="col-md-4">
-            目前状态: <span :class="getStatusColorClass()">{{ getStatusText() }}</span>
-          </div>
-          <div class="col-md-4">
-            <div v-if="Timer">已连接: {{ connectionTime }}</div>
-            <div v-else>未连接服务器</div>
-          </div>
-          <div class="col-md-2"></div>
-        </div>
-      </div>
-      <div class="container-fluid">
+      <div class="container-fluid" style="height: 100vh;">
         <div class="row">
           <div class="col-md-2 sideComp text-start">
             <!-- Sidebar Component -->
@@ -36,115 +29,11 @@
           </div>
           <div class="col-md-10 text-start">
             <!-- Content Component -->
-            <Content :dataType="selectedDataType" />
+            <Content :dataType="selectedDataType" :temperatureData="temperatureData" :currentData="currentData" />
           </div>
         </div>
       </div>
       <br />
-      <!-- Sort the data based on machineId in ascending order -->
-      <div class="data-container" v-for="(data, index) in combinedData" :key="index">
-        <table class="data-table">
-          <tr>
-            <th>时间：</th>
-            <td>{{ data.time }}</td>
-          </tr>
-          <tr>
-            <th>设备编号：</th>
-            <td>{{ data.machineId }}</td>
-          </tr>
-          <tr>
-            <th>设备类型：</th>
-            <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
-          </tr>
-        </table>
-        <br>
-        <div v-if="isTemperatureAndCurrentEmpty(data)">
-          <!-- Temperature Monitoring -->
-          <table class="data-table">
-            <tr>
-              <th>温度消息等级：</th>
-              <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
-            </tr>
-          </table>
-          <table class="data-table">
-              <thead>
-                <th colspan="4">温度监测</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">监测{{ i }}</td>
-                </tr>
-                <tr>
-                  <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} 摄氏度</td>
-                </tr>
-              </tbody>
-            </table>
-          <br>
-          <!-- Current Monitoring -->
-          <table class="data-table">
-            <tr>
-              <th>电流消息等级：</th>
-              <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
-            </tr>
-          </table>
-          <table class="data-table">
-              <thead>
-                <th colspan="4">电流监测</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">监测{{ i }}</td>
-                </tr>
-                <tr>
-                  <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} 安培</td>
-                </tr>
-              </tbody>
-            </table>
-        </div>
-        <div v-else-if="hasTemperatureData(data.machineId, data.equipment)">
-          <table class="data-table">
-            <tr>
-              <th>温度消息等级：</th>
-              <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
-            </tr>
-          </table>
-          <table class="data-table">
-              <thead>
-                <th colspan="4">温度监测</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">监测{{ i }}</td>
-                </tr>
-                <tr>
-                  <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} 摄氏度</td>
-                </tr>
-              </tbody>
-            </table>
-        </div>
-        <div v-else-if="hasCurrentData(data.machineId, data.equipment)">
-          <table class="data-table">
-            <tr>
-              <th>电流消息等级：</th>
-              <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
-            </tr>
-          </table>
-          <table class="data-table">
-              <thead>
-                <th colspan="4">电流监测</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">监测{{ i }}</td>
-                </tr>
-                <tr>
-                  <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} 安培</td>
-                </tr>
-              </tbody>
-            </table>
-        </div>
-        <br><br>
-      </div>
     </div>
   </div>
 </template>
@@ -183,73 +72,14 @@ export default {
     window.addEventListener('online', this.handleOnline);
     window.addEventListener('offline', this.handleOffline);
   },
-  
-  computed: {
-    combinedData() {
-      // Create an empty array to store the combined data
-      const combinedData = [];
-
-      // Iterate over temperatureData and add data to combinedData
-      for (const tempData of this.temperatureData) {
-        // Check if there is matching data in currentData
-        const matchingData = this.currentData.find(
-          (currentData) =>
-            currentData.machineId === tempData.machineId &&
-            currentData.equipment === tempData.equipment
-        );
-
-        if (matchingData) {
-          const latestTime = tempData.time > matchingData.time ? tempData.time : matchingData.time;
-          // Combine data from both arrays
-          const combinedItem = {
-            time: latestTime,
-            machineId: tempData.machineId,
-            equipment: tempData.equipment,
-            TempdgmgMessage: tempData.TempdgmgMessage,
-            CurrentdgmgMessage: matchingData.CurrentdgmgMessage,
-            temp1: tempData.temp1,
-            temp2: tempData.temp2,
-            temp3: tempData.temp3,
-            temp4: tempData.temp4,
-            current1: matchingData.current1,
-            current2: matchingData.current2,
-            current3: matchingData.current3,
-            current4: matchingData.current4
-          };
-
-          combinedData.push(combinedItem);
-        } 
-        else{
-          combinedData.push(tempData);
-        }
-      }
-      for (const currentDataItem of this.currentData) {
-        const hasMatchingItem = combinedData.some(
-          (combinedItem) =>
-            combinedItem.machineId === currentDataItem.machineId &&
-            combinedItem.equipment === currentDataItem.equipment
-        );
-
-        if (!hasMatchingItem) {
-          combinedData.push(currentDataItem);
-        }
-      }
-      console.log(combinedData);
-      // Sort the combined data by machineId in ascending order
-      return combinedData.sort((a, b) => a.machineId - b.machineId);
-    },
-  },
 
   methods: {
     initMQTT() {
       this.disconnect = false;
       const randomPart = Math.random().toString(36).substr(2, 8); // Generate a random string
       const uniqueClientId = `mqttx_${randomPart}`;
-      // const client = new Paho.Client(
-      //   "ws://222.222.119.72:8083/mqtt", uniqueClientId
-      // );
       const client = new Paho.Client(
-        "wss://wf93f2bf.ala.us-east-1.emqxsl.com:8084/mqtt", uniqueClientId
+        "ws://222.222.119.72:8083/mqtt", uniqueClientId
       );
 
       client.onConnectionLost = (responseObject) => {
@@ -428,49 +258,21 @@ export default {
       this.clearConnectionTimer();
       alert("网络连接已断开，您现在处于离线状态。");
     },
-    hasCurrentData(machineId, equipment) {
-      return this.currentData.some(
-        (item) => item.machineId === machineId && item.equipment === equipment
-      );
-    },
-    hasTemperatureData(machineId, equipment) {
-      return this.temperatureData.some(
-        (item) => item.machineId === machineId && item.equipment === equipment
-      );
-    },
-    isTemperatureAndCurrentEmpty(data) {
-      for (let i = 1; i <= 4; i++) {
-        if (data['temp' + i] == null || data['current' + i] == null) {
-          return false; // If any temperature or current value is empty, return false
-        }
-      }
-      return true; // If all temperature and current values are not empty, return true
-    },
-    getMessageClass(message) {
-      let messageClass = '';
-      switch (message) {
-        case '普通消息': messageClass = 'normal-message'; break;
-        case '控制消息': messageClass = 'control-message'; break;
-        case '告警消息': messageClass = 'warning-message'; break;
-        case '严重警告': messageClass = 'critical-message'; break;
-      }
-      return messageClass;
-    },
-    getStatusColorClass() {
-      if (this.connectStatus) { return 'connected'; } 
-      if (!this.onlineStatus) { return 'internetDisconnect'; }
-      if (this.reconnectStatus) { return 'reconnecting'; } 
-      if (this.disconnect) { return 'disconnected'; }
-    },
-    getStatusText() {
-      if (!this.onlineStatus) { return '网络断开'; }
-      if (this.connectStatus) { return '已连接'; } 
-      if (this.reconnectStatus) { return '重新连接中...'; } 
-      if (this.disconnect) { return '连接断开'; }
-    },
     updateDataType(dataType) {
       this.selectedDataType = dataType;
     },
+    getStatusColorClass() {
+        if (this.connectStatus) { return 'connected'; } 
+        if (!this.onlineStatus) { return 'internetDisconnect'; }
+        if (this.reconnectStatus) { return 'reconnecting'; } 
+        if (this.disconnect) { return 'disconnected'; }
+      },
+      getStatusText() {
+        if (!this.onlineStatus) { return '网络断开'; }
+        if (this.connectStatus) { return '已连接'; } 
+        if (this.reconnectStatus) { return '重新连接中...'; } 
+        if (this.disconnect) { return '连接断开'; }
+      },
   },
 };
 </script>

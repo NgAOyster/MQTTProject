@@ -1,19 +1,13 @@
-body {
-  background-image: url('../images/background-image.jpg');
-  background-size: fill;
-  background-position: center center;
-  height: 96vh;
-  justify-content: center;
-  align-items: center;
-}
-
 .login-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 80vh; /* Adjust the container's height as needed */
+  height: 100vh; /* Adjust the container's height as needed */
   padding: 20px; /* Add some padding to the container */
+  background-image: url('../images/background-image.jpg');
+  background-size: fill;
+  background-position: center center;
 }
 
 .title {

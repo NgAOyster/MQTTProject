@@ -1,19 +1,13 @@
 .mainNav {
-  height: 40px; /* Set your desired height here */
-  background-color: rgb(0, 120, 156);
-  color: white;
-}
-
-.statusContainer {
-  height: 40px;
+  height: 60px; /* Set your desired height here */
   background-color: rgb(0, 120, 156);
   color: white;
   margin-bottom: 10px;
 }
 
 .sideComp {
+  min-height: 100vh;
   border-right: 1px solid #ccc; /* Add a 1px solid border on the right */
-  padding-right: 15px; /* Optional: Add some padding to create space between content and the border */
 }
 
 /* Styles for the connecting message */
