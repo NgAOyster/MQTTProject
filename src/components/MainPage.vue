@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container-fluid">
     <div class="connecting" v-if="!connected">
       <p>登入成功 !</p>
       <p>正在连接MQTT服务器...</p>
@@ -9,37 +9,28 @@
     <div v-else>
       <!-- Navbar Start -->
       <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav" style="padding: 10px;">
-  <a class="navbar-brand" href="#" style="color: white;">主页</a>
-
-  <!-- Hamburger Menu Icon -->
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="mobileNav">
-    <ul class="navbar-nav ms-auto p-8 align-items-center">
-      <li class="nav-item">
-        <div class="mx-4">目前状态: <span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
-      </li>
-      <li class="nav-item">
-        <div class="mx-4" v-if="Timer">已连接: {{ connectionTime }}</div>
-        <div class="mx-4" v-else>未连接服务器</div>
-      </li>
-      <li class="nav-item">
-        <div class="dropdown">
-          <button class="btn dropdown-toggle" type="button" id="logoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-            <i class="fas fa-user"></i> 欢迎您, {{ username }}
-          </button>
-          <div class="dropdown-menu" aria-labelledby="logoutDropdown">
-            <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">登出</a>
+        <a class="navbar-brand" href="#" style="color: white;">主页</a>
+        <div class="collapse navbar-collapse">
+          <div class="navbar-nav ms-auto p-2 align-items-center">
+            <div class="mx-2">目前状态: <span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
+            
+            <div class="mx-2" v-if="Timer">已连接: {{ connectionTime }}</div>
+            <div class="mx-2" v-else>未连接服务器</div>
+          </div>
+          <div class="navbar-nav ms-auto p-2 p-lg-0">
+            <div class="dropdown">
+              <button class="btn dropdown-toggle" type="button" id="logoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                <i class="fas fa-user"></i> 欢迎您, {{ username }}
+              </button>
+              <div class="dropdown-menu" aria-labelledby="logoutDropdown">
+                <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">登出</a>
+              </div>
+            </div>
           </div>
         </div>
-      </li>
-    </ul>
-  </div>
-</nav>
+      </nav>
       <!-- Navbar End -->
-      <div class="container-fluid" style="height: 100vh;">
+      <div class="container-fluid" style="min-height: 100vh;">
         <div class="row">
           <div class="col-md-2 sideComp text-start">
             <!-- Sidebar Component -->
