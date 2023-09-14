@@ -1,5 +1,6 @@
+/* Existing styles for the web version */
 .mainNav {
-  height: 60px; /* Set your desired height here */
+  height: 60px;
   background-color: rgb(0, 120, 156);
   color: white;
   margin-bottom: 10px;
@@ -7,43 +8,40 @@
 
 .sideComp {
   min-height: 100vh;
-  border-right: 1px solid #ccc; /* Add a 1px solid border on the right */
+  border-right: 1px solid #ccc;
 }
 
-/* Styles for the connecting message */
 .connecting {
   text-align: center;
   padding: 20px;
-  background-color: #fff; /* Background color for this section */
+  background-color: #fff;
   border: 1px solid #ddd;
   border-radius: 5px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Styles for the main title */
 .main-title {
   font-size: 24px;
   margin-top: 20px;
-  color: #333; /* Text color */
+  color: #333;
 }
 
 .connected {
-  color: #62f384; /* Green color for connected status */
+  color: #62f384;
 }
 
 .internetDisconnect {
-  color: #f54254; /* Red color for internet disconnect status */
+  color: #f54254;
 }
 
 .reconnecting {
-  color: #f3c847; /* Yellow color for reconnecting status */
+  color: #f3c847;
 }
 
 .disconnected {
-  color: white; /* Gray color for disconnected status */
+  color: white;
 }
 
-/* Styles for the data container */
 .data-container {
   margin-top: 20px;
   padding: 10px;
@@ -53,7 +51,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Styles for the data table */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -62,7 +59,7 @@
 
 .data-table th {
   text-align: left;
-  background-color: #f5f5f5; /* Light gray background for table header */
+  background-color: #f5f5f5;
 }
 
 .data-table th, .data-table td {
@@ -70,26 +67,100 @@
   border-bottom: 1px solid #ddd;
 }
 
-/* Styles for message classes */
 .normal-message {
   color: #28a745;
 }
 
 .control-message {
-  color: #007bff; /* Blue color for control messages */
+  color: #007bff;
 }
 
 .warning-message {
-  color: #ffc107; /* Yellow color for warning messages */
+  color: #ffc107;
 }
 
 .critical-message {
-  color: #dc3545; /* Red color for critical messages */
+  color: #dc3545;
 }
 
-@media (max-width: 768px) {
-  .data-table th, .data-table td,
-  .styled-table th, .styled-table td {
-    font-size: 10px;
+/* New mobile styles */
+@media screen and (max-width: 1000px) {
+  .navbar-nav.ms-auto.p-8.align-items-center {
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
   }
+
+  .sideComp {
+    margin-bottom: 10px;
+    min-height: 100px;
+  }
+
+  /* Mobile app bar background and text color */
+  .navbar.toggled {
+    display: block;
+    height: 60px;
+    background-color: rgb(0, 120, 156);
+    color: white; /* Text color for mobile navbar */
+    margin-bottom: 10px;
+  }
+
+  /* Mobile menu button style */
+  .navbar-toggler {
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+  }
+
+  /* Center the dropdown menu items for the mobile version */
+  .navbar.toggled .navbar-collapse {
+    text-align: center;
+  }
+
+  .navbar-collapse{
+    background-color: rgb(0, 120, 156);
+
+  }
+
+  /* Adjust font size for the username on mobile */
+  .navbar.toggled .navbar-toggler .fas.fa-user {
+    font-size: 1.5rem;
+  }
+
+  /* Adjust the spacing between elements on mobile */
+  .navbar.toggled .navbar-toggler + .collapse .navbar-nav .nav-item {
+    margin: 1rem 0;
+  }
+
+  /* Background color for mobile menu items */
+  .navbar.toggled .navbar-nav.ms-auto.p-8.align-items-center {
+    background-color: rgb(0, 120, 156); /* Background color for the entire navbar-nav */
+  }
+
+  /* Style the dropdown menu items */
+  .navbar.toggled .navbar-nav.ms-auto.p-8.align-items-center .dropdown-menu a.dropdown-item {
+    background-color: rgb(0, 120, 156); /* Background color for dropdown items */
+    color: blue; /* Text color for dropdown items */
+  }
+  
+  /* Background color for the mobile navigation menu */
+  .navbar-mobile {
+    background-color: rgb(0, 120, 156);
+  }
+
+  /* Text color for mobile navigation menu items */
+  .navbar-mobile a {
+    color: white;
+  }
+  .container-fluid{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+}
+
+/* Background color for the collapsed mobile menu button */
+.navbar-toggler-icon {
+  background-color: rgb(0, 120, 156);
+  color: white; /* Text color for the button icon */
 }
