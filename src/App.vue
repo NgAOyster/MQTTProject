@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <LoginPage v-if="!loggedInUsername" @login-success="setUserCredentials" />
-    <MainPage v-else :username="loggedInUsername" :password="loggedInPassword" @logout="resetCredentials"/>
+    <MainPage v-else :actualUser = "loggedInActual" :username="loggedInUsername" :password="loggedInPassword" @logout="resetCredentials"/>
   </div>
 </template>
 
@@ -17,16 +17,19 @@ export default {
     return {
       loggedInUsername: '',
       loggedInPassword: '',
+      loggedInActual: ''
     };
   },
   methods: {
     setUserCredentials(credentials) {
       this.loggedInUsername = credentials.username;
       this.loggedInPassword = credentials.password;
+      this.loggedInActual = credentials.actualUser;
     },
     resetCredentials(){
       this.loggedInUsername = '';
       this.loggedInPassword = '';
+      this.loggedInActual = '';
     }
   },
 };

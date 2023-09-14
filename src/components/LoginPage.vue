@@ -7,25 +7,31 @@
     <div class="center-box">
       <form class="login-form">
         <div class="input-group">
-        <label for="username">用户名:</label>
-        <div class="user-input">
-        <input v-model="username" type="text" id="username" :disabled="connecting" />
-        <font-awesome-icon icon="user" class="user-icon" />
-        </div>
-          <br><br>
+          <label for="office">公司编号:</label>
+          <div class="office-input">
+            <input v-model="officeID" type="text" id="officeID" :disabled="connecting" />
+            <font-awesome-icon icon="building" class="building-icon" />
+          </div>
+          <br>
+          <label for="username">用户名:</label>
+          <div class="user-input">
+            <input v-model="username" type="text" id="username" :disabled="connecting" />
+            <font-awesome-icon icon="user" class="user-icon" />
+          </div>
+          <br>
           <div class="password-input">
-          <label for="password">密码:</label>
-          <input v-model="password" type="password" id="password" :disabled="connecting" />
+            <label for="password">密码:</label>
+            <input v-model="password" type="password" id="password" :disabled="connecting" />
           <font-awesome-icon icon="lock" class="lock-icon" />
         </div>
       </div>
 
       <button @click.prevent="connect" :disabled="connecting">
-      <font-awesome-icon icon="key" class="key-icon" />
-      登入
+        <font-awesome-icon icon="key" class="key-icon" />
+        登入
       </button>
-        <p v-if="connecting" class="connecting-message">{{ connectingMessage }}</p>
-        <p v-else-if="errorMessage" class="error-message" v-html="errorMessage"></p>
+      <p v-if="connecting" class="connecting-message">{{ connectingMessage }}</p>
+      <p v-else-if="errorMessage" class="error-message" v-html="errorMessage"></p>
       </form>
     </div>
     <div class="bottom">
@@ -39,10 +45,10 @@
 import Paho from 'paho-mqtt';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { faLock, faUser, faKey } from "@fortawesome/free-solid-svg-icons";
+import { faLock, faUser, faKey, faBuilding } from "@fortawesome/free-solid-svg-icons";
 
 // Add the Font Awesome icons to the library
-library.add(faLock, faUser, faKey);
+library.add(faLock, faUser, faKey, faBuilding);
 export default {
   components: {
     FontAwesomeIcon,
@@ -53,6 +59,7 @@ export default {
       brokerUrl: 'ws://222.222.119.72:8083/mqtt',
       username: '',
       password: '',
+      officeID: '',
       connectingMessage: '验证中...',
       errorMessage: '',
       connecting: false,
@@ -61,23 +68,24 @@ export default {
   },
   methods: {
     connect() {
-      if (this.username === '' || this.password === '') {
-        this.errorMessage = '请填写用户名和密码';
+      if (this.username === '' || this.password === '' || this.officeID === '') {
+        this.errorMessage = '请填写公司编号, 用户名和密码';
         return;
       }
       else{
         this.connecting = true;
         this.errorMessage = ''; // Clear any previous error message
+        const actualUser = this.officeID + '_' + this.username;
         const options = {
           useSSL: false,
-          userName: this.username,
+          userName: this.username, // may change in future
           password: this.password,
           onSuccess: () => {
             clearTimeout(connectionTimeoutId);
             this.connecting = false;
             this.errorMessage = '';
             this.disconnect(); // Call the disconnect method after successful connection
-            this.$emit('login-success', { username: this.username, password: this.password });
+            this.$emit('login-success', { actualUser: actualUser, username: this.username, password: this.password });
           },
 
           onFailure: (error) => {
