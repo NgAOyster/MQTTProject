@@ -1,23 +1,29 @@
 <template>
   <div id="app">
-    <LoginPage v-if="!loggedInUsername" @login-success="setUserCredentials" />
-    <MainPage v-else :actualUser = "loggedInActual" :username="loggedInUsername" :password="loggedInPassword" @logout="resetCredentials"/>
+    <LoginPage v-if="!token" @login-success="setUserCredentials" />
+    <SelectionPage v-else-if="token && !selection" :username="loggedInUsername" @select-item="setSelection" @logout="resetCredentials"/>
+    <MainPage v-else-if="token && selection" :actualUser = "loggedInActual" :username="loggedInUsername" :password="loggedInPassword" :equipment="equipment" @logout="resetCredentials" @returnBack="cleanSelection"/>
   </div>
 </template>
 
 <script>
 import LoginPage from './components/LoginPage.vue';
 import MainPage from './components/MainPage.vue';
+import SelectionPage from './components/SelectionPage.vue';
 export default {
   components: {
     LoginPage,
     MainPage,
+    SelectionPage,
   },
   data() {
     return {
       loggedInUsername: '',
       loggedInPassword: '',
-      loggedInActual: ''
+      loggedInActual: '',
+      token: '',
+      selection: '',
+      equipment: '',
     };
   },
   methods: {
@@ -25,11 +31,22 @@ export default {
       this.loggedInUsername = credentials.username;
       this.loggedInPassword = credentials.password;
       this.loggedInActual = credentials.actualUser;
+      this.token = credentials.token;
     },
     resetCredentials(){
       this.loggedInUsername = '';
       this.loggedInPassword = '';
       this.loggedInActual = '';
+      this.token = '';
+      this.selection = '';
+    },
+    setSelection(selection){
+      this.selection = true;
+      this.equipment = selection.equipment;
+    },
+    cleanSelection(){
+      this.equipment = 
+      this.selection = '';
     }
   },
 };

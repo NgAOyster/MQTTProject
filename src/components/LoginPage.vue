@@ -64,6 +64,7 @@ export default {
       errorMessage: '',
       connecting: false,
       connectionTimeout: 5000,
+      randomToken: '',
     };
   },
   methods: {
@@ -85,7 +86,8 @@ export default {
             this.connecting = false;
             this.errorMessage = '';
             this.disconnect(); // Call the disconnect method after successful connection
-            this.$emit('login-success', { actualUser: actualUser, username: this.username, password: this.password });
+            this.generateRandomToken();
+            this.$emit('login-success', { actualUser: actualUser, username: this.username, password: this.password, token: this.randomToken });
           },
 
           onFailure: (error) => {
@@ -114,6 +116,17 @@ export default {
       if (this.client && this.client.isConnected()) {
         this.client.disconnect();
       } 
+    },
+    generateRandomToken() {
+      // Generate a random token (you can customize this part)
+      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const tokenLength = 3;
+      let token = '';
+      for (let i = 0; i < tokenLength; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        token += characters.charAt(randomIndex);
+      }
+      this.randomToken = token;
     },
   },
 };

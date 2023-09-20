@@ -1,14 +1,16 @@
 <template>
   <div>
     <div class="connecting" v-if="!connected">
-      <p>登入成功 !</p>
       <p>正在连接MQTT服务器...</p>
       <p>这可能需要几秒钟时间。请稍等...</p>
     </div>
     <div v-else>
       <!-- Navbar Start -->
       <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav" style="padding: 10px;">
-  <a class="navbar-brand" href="#" style="color: white;">主页</a>
+        <button class="navbar-brand btn" @click="returnFunc()">
+          <i class="fas fa-arrow-left" style="color: white;"></i>
+        </button>
+  <a class="navbar-brand" href="#" style="color: white;">{{equipment}}</a>
   <!-- Hamburger Menu Icon -->
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
     <span class="navbar-toggler-icon"></span>
@@ -44,7 +46,15 @@
           </div>
           <div class="col-md-10 text-start">
             <!-- Content Component -->
-            <Content :dataType="selectedDataType" :temperatureData="temperatureData" :currentData="currentData" />
+            <Content
+              :dataType="selectedDataType"
+              :temperatureData="temperatureData"
+              :currentData="currentData"
+              :ChartTempX="ChartTempX"
+              :ChartTempY="ChartTempY"
+              :ChartCurrentX="ChartCurrentX"
+              :ChartCurrentY="ChartCurrentY"
+            />
           </div>
         </div>
       </div>
@@ -60,6 +70,7 @@ export default {
   props: {
     username: String,
     password: String,
+    equipment: String
   },
   components: {
     Sidebar,
@@ -68,7 +79,11 @@ export default {
   data() {
     return {
       temperatureData: [], // Array for temperature data
+      ChartTempX:[],
+      ChartTempY:[],
       currentData: [],     // Array for current data
+      ChartCurrentX:[],
+      ChartCurrentY:[],
       connected: false,
       connectStatus: false,
       Timer: false,
@@ -76,7 +91,7 @@ export default {
       reconnectStatus: false,
       disconnect: false,
       onlineStatus: true,
-      selectedDataType: "temperature", // Default data type
+      selectedDataType: "温度", // Default data type
     };
   },
   created() {
@@ -159,56 +174,61 @@ export default {
       }
     },
     handleMessage(message, topic, dataCollection) {
-    const isTemperature = topic.endsWith("/othertemperature");
-    const isCurrent = topic.endsWith("/othercurrent");
-    if (isTemperature || isCurrent) {
-      const jsonData = JSON.parse(message);
-      const localTimeString = new Date().toLocaleString();
-      let dgmgMessage = "普通消息";
-      const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-      if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; }
-      else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; }
-      else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
-      let equipment = "沥青搅拌站";
-      const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-      if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; }
-      else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; }
-      else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; }
-      else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
-      // Extract machineId from the topic
-      const topicParts = topic.split('/');
-      const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
-      const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
-      const data = {
-        time: localTimeString,
-        machineId,
-        equipment,
-      };
-      if (isTemperature) {
-        data.TempdgmgMessage = dgmgMessage;
-        data.temp1 = jsonData.temp1;
-        data.temp2 = jsonData.temp2;
-        data.temp3 = jsonData.temp3;
-        data.temp4 = jsonData.temp4;
-      } else if (isCurrent) {
-        data.CurrentdgmgMessage = dgmgMessage;
-        data.current1 = jsonData.current1;
-        data.current2 = jsonData.current2;
-        data.current3 = jsonData.current3;
-        data.current4 = jsonData.current4;
+      const isTemperature = topic.endsWith("/othertemperature");
+      const isCurrent = topic.endsWith("/othercurrent");
+      if (isTemperature || isCurrent) {
+        const jsonData = JSON.parse(message);
+        const localTimeString = new Date().toLocaleString();
+        const currentTime = new Date().toLocaleTimeString();
+        let dgmgMessage = "普通消息";
+        const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
+        if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; }
+        else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; }
+        else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
+        let equipment = "沥青搅拌站";
+        const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
+        if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; }
+        else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; }
+        else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; }
+        else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
+        // Extract machineId from the topic
+        const topicParts = topic.split('/');
+        const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
+        const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
+        const data = {
+          time: localTimeString,
+          machineId,
+          equipment,
+        };
+        if (isTemperature) {
+          data.TempdgmgMessage = dgmgMessage;
+          data.temp1 = jsonData.temp1;
+          data.temp2 = jsonData.temp2;
+          data.temp3 = jsonData.temp3;
+          data.temp4 = jsonData.temp4;
+          this.ChartTempX.push(currentTime);
+          this.ChartTempY.push([jsonData.temp1, jsonData.temp2, jsonData.temp3, jsonData.temp4]);
+        } else if (isCurrent) {
+          data.CurrentdgmgMessage = dgmgMessage;
+          data.current1 = jsonData.current1;
+          data.current2 = jsonData.current2;
+          data.current3 = jsonData.current3;
+          data.current4 = jsonData.current4;
+          this.ChartCurrentX.push(currentTime);
+          this.ChartCurrentY.push([jsonData.current1, jsonData.current2, jsonData.current3, jsonData.current4]);
+        }
+        const existingIndex = dataCollection.findIndex(
+          (dataItem) =>
+            dataItem.machineId === machineId &&
+            dataItem.equipment === equipment
+        );
+        if (existingIndex !== -1) {
+          dataCollection[existingIndex] = data;
+        } else {
+          dataCollection.push(data);
+        }
       }
-      const existingIndex = dataCollection.findIndex(
-        (dataItem) =>
-          dataItem.machineId === machineId &&
-          dataItem.equipment === equipment
-      );
-      if (existingIndex !== -1) {
-        dataCollection[existingIndex] = data;
-      } else {
-        dataCollection.push(data);
-      }
-    }
-  },
+    },
     clearConnectionTimer() {
       if (this.connectionTimer) {
         clearInterval(this.connectionTimer);
@@ -274,6 +294,9 @@ export default {
         this.$emit('logout');
       }
     },
+    returnFunc(){
+      this.$emit('returnBack');
+    }
   },
 };
 </script>

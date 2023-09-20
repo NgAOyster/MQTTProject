@@ -39,6 +39,7 @@
             </table>
             <br><br>
           </div>
+          <br>
       </div>
       <div v-else-if="dataType === '电流'">
         <h3><i class="fas fa-bolt"></i> 电流监测数据</h3>
@@ -80,19 +81,50 @@
           </table>
           <br><br>
         </div>
+        <br>
+        
       </div>      
       <div v-else>
         <i class="fas fa-question-circle"></i> 请选择需要监测的数据
       </div>
+      <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div ref="tempChart" style="width: 100%; height: 400px;"></div>
+            </div>
+            <div class="col-md-6">
+                <div ref="currentChart" style="width: 100%; height: 400px;"></div>
+            </div>
+        </div>
+    </div>
 </template>
   
   <script>
+  import * as echarts from 'echarts';
   export default {
     name:"Main_Content",
     props: {
       dataType: String,
       temperatureData: Array,
       currentData: Array,
+      ChartTempX: Array,
+      ChartTempY: Array,
+      ChartCurrentX: Array,
+      ChartCurrentY: Array,
+    },
+    watch: {
+      ChartTempX: {
+        handler() {
+          this.renderTempChart();
+        },
+        deep: true, 
+      },
+      ChartCurrentX:{
+        handler() {
+          this.renderCurrentChart();
+        },
+        deep: true,
+      },
     },
     methods: {
       sortedTemperatureData() {
@@ -110,6 +142,86 @@
           case '严重警告': messageClass = 'critical-message'; break;
         }
         return messageClass;
+      },
+      renderTempChart() {
+        const Existchart = echarts.getInstanceByDom(this.$refs.tempChart);
+        if (Existchart) {
+          Existchart.dispose();
+        }
+        
+        const TempY1 = [], TempY2 = [], TempY3 = [], TempY4 = [];
+        for (let i = 0; i < this.ChartTempY.length; i++) {
+          TempY1.push(this.ChartTempY[i][0]);
+          TempY2.push(this.ChartTempY[i][1]);
+          TempY3.push(this.ChartTempY[i][2]);
+          TempY4.push(this.ChartTempY[i][3]);
+        }
+        const chart = echarts.init(this.$refs.tempChart);
+        const option = {
+          title: {
+            text: "Temperature Line Chart",
+          },
+          tooltip: {
+            trigger: "axis",
+          },
+          xAxis: {
+            type: "category",
+            data: this.ChartTempX,
+          },
+          yAxis: {
+            type: "value",
+            axisLabel: {
+              formatter: "{value} °C",
+            },
+          },
+          series: [
+            { name: '温度1', type: 'line', data: TempY1 },
+            { name: '温度2', type: 'line', data: TempY2 },
+            { name: '温度3', type: 'line', data: TempY3 },
+            { name: '温度4', type: 'line', data: TempY4 },
+          ],
+        };
+        chart.setOption(option);
+      },
+      renderCurrentChart() {
+        const Existchart = echarts.getInstanceByDom(this.$refs.currentChart);
+        if (Existchart) {
+          Existchart.dispose();
+        }
+        
+        const CurrentY1 = [], CurrentY2 = [], CurrentY3 = [], CurrentY4 = [];
+        for (let i = 0; i < this.ChartCurrentY.length; i++) {
+          CurrentY1.push(this.ChartCurrentY[i][0]);
+          CurrentY2.push(this.ChartCurrentY[i][1]);
+          CurrentY3.push(this.ChartCurrentY[i][2]);
+          CurrentY4.push(this.ChartCurrentY[i][3]);
+        }
+        const chart = echarts.init(this.$refs.currentChart);
+        const option = {
+          title: {
+            text: "Current Line Chart",
+          },
+          tooltip: {
+            trigger: "axis",
+          },
+          xAxis: {
+            type: "category",
+            data: this.ChartCurrentX,
+          },
+          yAxis: {
+            type: "value",
+            axisLabel: {
+              formatter: "{value} A",
+            },
+          },
+          series: [
+            { name: '电流1', type: 'line', data: CurrentY1 },
+            { name: '电流2', type: 'line', data: CurrentY2 },
+            { name: '电流3', type: 'line', data: CurrentY3 },
+            { name: '电流4', type: 'line', data: CurrentY4 },
+          ],
+        };
+        chart.setOption(option);
       },
     }
   };
