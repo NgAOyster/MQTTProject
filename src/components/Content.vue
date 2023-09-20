@@ -82,7 +82,6 @@
           <br><br>
         </div>
         <br>
-        
       </div>      
       <div v-else>
         <i class="fas fa-question-circle"></i> 请选择需要监测的数据
@@ -90,13 +89,14 @@
       <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <div ref="tempChart" style="width: 100%; height: 400px;"></div>
+                <div ref="tempChart" style="width: 100%; height: 300px;"></div>
             </div>
             <div class="col-md-6">
-                <div ref="currentChart" style="width: 100%; height: 400px;"></div>
+                <div ref="currentChart" style="width: 100%; height: 300px;"></div>
             </div>
         </div>
     </div>
+    <br><br>
 </template>
   
   <script>
@@ -149,8 +149,11 @@
           Existchart.dispose();
         }
         
-        const TempY1 = [], TempY2 = [], TempY3 = [], TempY4 = [];
-        for (let i = 0; i < this.ChartTempY.length; i++) {
+        const TempX = [], TempY1 = [], TempY2 = [], TempY3 = [], TempY4 = [];
+        const limit = 15; // Set the limit to 20 data points
+
+        for (let i = Math.max(0, this.ChartTempX.length - limit); i < this.ChartTempX.length; i++) {
+          TempX.push(this.ChartTempX[i]);
           TempY1.push(this.ChartTempY[i][0]);
           TempY2.push(this.ChartTempY[i][1]);
           TempY3.push(this.ChartTempY[i][2]);
@@ -166,7 +169,7 @@
           },
           xAxis: {
             type: "category",
-            data: this.ChartTempX,
+            data: TempX,
           },
           yAxis: {
             type: "value",
@@ -189,8 +192,11 @@
           Existchart.dispose();
         }
         
-        const CurrentY1 = [], CurrentY2 = [], CurrentY3 = [], CurrentY4 = [];
-        for (let i = 0; i < this.ChartCurrentY.length; i++) {
+        const CurrentX = [], CurrentY1 = [], CurrentY2 = [], CurrentY3 = [], CurrentY4 = [];
+        const limit = 15; // Set the limit to 20 data points
+
+        for (let i = Math.max(0, this.ChartCurrentX.length - limit); i < this.ChartCurrentX.length; i++) {
+          CurrentX.push(this.ChartCurrentX[i]);
           CurrentY1.push(this.ChartCurrentY[i][0]);
           CurrentY2.push(this.ChartCurrentY[i][1]);
           CurrentY3.push(this.ChartCurrentY[i][2]);
@@ -206,7 +212,7 @@
           },
           xAxis: {
             type: "category",
-            data: this.ChartCurrentX,
+            data: CurrentX,
           },
           yAxis: {
             type: "value",

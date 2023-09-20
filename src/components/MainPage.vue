@@ -92,22 +92,26 @@ export default {
       disconnect: false,
       onlineStatus: true,
       selectedDataType: "温度", // Default data type
+      mqttClient: null,
     };
   },
   created() {
     this.initMQTT();
     window.addEventListener('online', this.handleOnline);
     window.addEventListener('offline', this.handleOffline);
+    setInterval(() => {
+      this.publishDataToTopic();
+    }, 10000);
   },
   methods: {
     initMQTT() {
       this.disconnect = false;
       const randomPart = Math.random().toString(36).substr(2, 8); // Generate a random string
       const uniqueClientId = `mqttx_${randomPart}`;
-      const client = new Paho.Client(
+      this.mqttClient = new Paho.Client(
         "ws://222.222.119.72:8083/mqtt", uniqueClientId
       );
-      client.onConnectionLost = (responseObject) => {
+      this.mqttClient.onConnectionLost = (responseObject) => {
         console.log("Connection lost: " + responseObject.errorMessage);
         this.connectStatus = false;
         this.reconnectStatus = false;
@@ -118,7 +122,7 @@ export default {
           this.reconnect();
         }, 3000);
       };
-      client.onMessageArrived = (message) => {
+      this.mqttClient.onMessageArrived = (message) => {
         console.log("Message Received: " + message.payloadString);
         const topic = message.destinationName;
         if (topic.endsWith("/othertemperature")) {
@@ -153,7 +157,7 @@ export default {
           this.reconnectStatus = false;
           this.startConnectionTimer();
           topics.forEach(topic => {
-            client.subscribe(topic, { qos: 0 });
+            this.mqttClient.subscribe(topic, { qos: 0 });
           });
         },
         onFailure: (error) => {
@@ -164,7 +168,7 @@ export default {
           this.reconnect();
         },
       };
-      client.connect(options);
+      this.mqttClient.connect(options);
     },
     reconnect() {
       if (!this.reconnectStatus) {
@@ -172,6 +176,42 @@ export default {
         console.log('Attempting to reconnect...');
         this.initMQTT();
       }
+    },
+    publishDataToTopic() {
+      // Check if the MQTT client is connected before publishing
+      if (this.mqttClient.isConnected()) {
+        const tempTopic = "dgmg01/peripheral/station1/device54/othertemperature";
+        const tempData = {
+          temp1: this.getRandomNumber(50, 120),
+          temp2: this.getRandomNumber(50, 120),
+          temp3: this.getRandomNumber(50, 120),
+          temp4: this.getRandomNumber(50, 120),
+        };
+        const currentTopic = "dgmg01/peripheral/station1/device54/othercurrent";
+        const currentData = {
+          current1: this.getRandomDecimal(5.00, 20.00, 2),
+          current2: this.getRandomDecimal(5.00, 20.00, 2),
+          current3: this.getRandomDecimal(5.00, 20.00, 2),
+          current4: this.getRandomDecimal(5.00, 20.00, 2),
+        };
+        const tempMessage = new Paho.Message(JSON.stringify(tempData));
+        tempMessage.destinationName = tempTopic;
+        this.mqttClient.send(tempMessage); 
+        console.log("Published JSON data:", tempData);
+        const currentMessage = new Paho.Message(JSON.stringify(currentData));
+        currentMessage.destinationName = currentTopic;
+        this.mqttClient.send(currentMessage); 
+        console.log("Published JSON data:", currentData);
+      } else {
+        console.error("MQTT client is not connected.");
+      }
+    },
+    getRandomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    getRandomDecimal(min, max, decimalPlaces) {
+      const factor = 10 ** decimalPlaces;
+      return Math.round((Math.random() * (max - min) + min) * factor) / factor;
     },
     handleMessage(message, topic, dataCollection) {
       const isTemperature = topic.endsWith("/othertemperature");
