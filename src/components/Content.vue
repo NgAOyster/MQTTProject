@@ -162,8 +162,8 @@
         const chart = echarts.init(this.$refs.tempChart);
         const option = {
           legend:{
-                  right: 10,
-                },
+            right: 10,
+          },
           title: {
             text: "Temperature Line Chart",
           },
@@ -208,8 +208,8 @@
         const chart = echarts.init(this.$refs.currentChart);
         const option = {
           legend:{
-                  right: 10,
-                },
+            right: 10,
+          },
           title: {
             text: "Current Line Chart",
           },
