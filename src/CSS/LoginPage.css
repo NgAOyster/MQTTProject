@@ -148,3 +148,19 @@ button:disabled {
   margin-top: 10px;
   color: #dc3545;
 }
+
+.language-selector span {
+  margin: 0 5px;
+  cursor: pointer;
+  transition: color 0.2s ease; /* Only transition the text color */
+}
+
+/* Add a hover effect for both language buttons */
+.language-selector span:hover {
+  color: #007bff; /* Change to your desired hover color */
+}
+
+/* Add specific styles for the active language button */
+.language-selector span.active {
+  color: #007bff; /* Change to your desired active color */
+}
