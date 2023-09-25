@@ -2,7 +2,7 @@
   <div id="app">
     <LoginPage v-if="!token" @login-success="setUserCredentials" />
     <SelectionPage v-else-if="token && !selection" :username="loggedInUsername" @select-item="setSelection" @logout="resetCredentials"/>
-    <MainPage v-else-if="token && selection" :actualUser = "loggedInActual" :username="loggedInUsername" :password="loggedInPassword" :equipment="equipment" @logout="resetCredentials" @returnBack="cleanSelection"/>
+    <MainPage v-else-if="token && selection" :actualUser = "loggedInActual" :username="loggedInUsername" :password="loggedInPassword" :deviceGroup="deviceGroup" @logout="resetCredentials" @returnBack="cleanSelection"/>
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
       loggedInActual: '',
       token: '',
       selection: '',
-      equipment: '',
+      deviceGroup: '',
     };
   },
   methods: {
@@ -42,10 +42,10 @@ export default {
     },
     setSelection(selection){
       this.selection = true;
-      this.equipment = selection.equipment;
+      this.deviceGroup = selection.deviceGroup;
     },
     cleanSelection(){
-      this.equipment = 
+      this.deviceGroup = '';
       this.selection = '';
     }
   },

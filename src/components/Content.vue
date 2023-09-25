@@ -115,12 +115,14 @@
     watch: {
       ChartTempX: {
         handler() {
+          this.DisposeChart(true, false);
           this.renderTempChart();
         },
         deep: true, 
       },
       ChartCurrentX:{
         handler() {
+          this.DisposeChart(false, true);
           this.renderCurrentChart();
         },
         deep: true,
@@ -144,13 +146,8 @@
         return messageClass;
       },
       renderTempChart() {
-        const Existchart = echarts.getInstanceByDom(this.$refs.tempChart);
-        if (Existchart) {
-          Existchart.dispose();
-        }
-        
         const TempX = [], TempY1 = [], TempY2 = [], TempY3 = [], TempY4 = [];
-        const limit = 15; // Set the limit to 20 data points
+        const limit = 20; // Set the limit to 20 data points
 
         for (let i = Math.max(0, this.ChartTempX.length - limit); i < this.ChartTempX.length; i++) {
           TempX.push(this.ChartTempX[i]);
@@ -165,7 +162,7 @@
             right: 10,
           },
           title: {
-            text: "Temperature Line Chart",
+            text: "温度数据",
           },
           tooltip: {
             trigger: "axis",
@@ -190,13 +187,8 @@
         chart.setOption(option);
       },
       renderCurrentChart() {
-        const Existchart = echarts.getInstanceByDom(this.$refs.currentChart);
-        if (Existchart) {
-          Existchart.dispose();
-        }
-        
         const CurrentX = [], CurrentY1 = [], CurrentY2 = [], CurrentY3 = [], CurrentY4 = [];
-        const limit = 15; // Set the limit to 20 data points
+        const limit = 20; // Set the limit to 20 data points
 
         for (let i = Math.max(0, this.ChartCurrentX.length - limit); i < this.ChartCurrentX.length; i++) {
           CurrentX.push(this.ChartCurrentX[i]);
@@ -211,7 +203,7 @@
             right: 10,
           },
           title: {
-            text: "Current Line Chart",
+            text: "电流数据",
           },
           tooltip: {
             trigger: "axis",
@@ -235,6 +227,12 @@
         };
         chart.setOption(option);
       },
+      DisposeChart(DisposeTempChart, DisposeCurrentChart){
+        const Existchart1 = DisposeTempChart ? echarts.getInstanceByDom(this.$refs.tempChart) : null;
+        const Existchart2 = DisposeCurrentChart ? echarts.getInstanceByDom(this.$refs.currentChart) : null;
+        if (Existchart1) { Existchart1.dispose(); }
+        if (Existchart2) { Existchart2.dispose(); }
+      }
     }
   };
   </script>

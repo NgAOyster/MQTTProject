@@ -24,11 +24,31 @@
         </nav>
         <!-- Navbar End -->
         <br>
-        <h3>請选择设备</h3>
-        <div class="text-center mt-4">
-          <button class="btn" @click="ButtonClick('设备 A')"> <i class="fas fa-cogs"></i> 设备 A</button>
-          <button class="btn" @click="ButtonClick('设备 B')"> <i class="fas fa-cogs"></i> 设备 B</button>
-          <button class="btn" @click="ButtonClick('设备 C')"> <i class="fas fa-cogs"></i> 设备 C</button>
+        <h3>請选择设备</h3><br>
+        <div class="container">
+          <div class="row">
+            <div v-for="(deviceGroup, index) in deviceGroups" :key="index" class="col-md-6 device-group-space">
+              <div class="text-center mt-4">
+                <ul class="list-unstyled tree">
+                  <li>
+                    <!-- Apply circular container to the button element -->
+                    <button class="circular-btn" @click="ButtonClick(deviceGroup.name)">
+                      <i class="fas fa-folder icon-with-space"></i> {{ deviceGroup.name }}
+                    </button>
+                    <br><br>
+                    <div class="row">
+                      <div class="col-md-6" v-for="(device, deviceIndex) in deviceGroup.devices" :key="deviceIndex">
+                        <!-- Apply circular container to the div element -->
+                        <div class="circular-div mb-4">
+                          <i class="fas fa-cogs icon-with-space"></i> {{ device }}
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
     </div>
 </template>
@@ -39,7 +59,13 @@ export default {
   },
   data() {
     return {
-      equipment: ''
+      deviceGroup: '',
+      deviceGroups: [
+        { name: '设备组A', devices: ['主设备A', '子设备A'] },
+        { name: '设备组B', devices: ['主设备B', '子设备B'] },
+        { name: '设备组C', devices: ['主设备C', '子设备C'] },
+        { name: '设备组D', devices: ['主设备D', '子设备D'] }
+      ]
     };
   },
   methods: {
@@ -50,10 +76,59 @@ export default {
         this.$emit('logout');
       }
     },
-    ButtonClick(selectedEquipment){
-      this.equipment = selectedEquipment;
-      this.$emit('select-item', {equipment: this.equipment});
+    ButtonClick(groupName){
+      this.deviceGroup = groupName;
+      this.$emit('select-item', {deviceGroup: this.deviceGroup});
     }
   },
 };
 </script>
+
+<style>
+  .icon-with-space {
+    margin-right: 5px;
+  }
+
+  .device-group-space {
+    border: 1px solid #ccc;
+    padding: 20px; 
+  }
+
+  .tree-node {
+    list-style-type: none;
+    padding-left: 20px;
+  }
+
+  .tree-node:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -15px;
+    border-left: 1px solid #ccc;
+    height: 100%;
+  }
+
+  .tree-node:first-child:before {
+    border: none;
+  }
+
+  .circular-btn,
+  .circular-div {
+    width: 150px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .circular-btn:hover {
+    background-color: #0056b3;
+  }
+</style>

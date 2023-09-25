@@ -10,7 +10,7 @@
         <button class="navbar-brand btn" @click="returnFunc()">
           <i class="fas fa-arrow-left" style="color: white;"></i>
         </button>
-  <a class="navbar-brand" href="#" style="color: white;">{{equipment}}</a>
+  <a class="navbar-brand" href="#" style="color: white;">{{deviceGroup}}</a>
   <!-- Hamburger Menu Icon -->
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
     <span class="navbar-toggler-icon"></span>
@@ -70,7 +70,7 @@ export default {
   props: {
     username: String,
     password: String,
-    equipment: String
+    deviceGroup: String
   },
   components: {
     Sidebar,
