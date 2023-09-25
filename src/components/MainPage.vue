@@ -54,6 +54,8 @@
               :ChartTempY="ChartTempY"
               :ChartCurrentX="ChartCurrentX"
               :ChartCurrentY="ChartCurrentY"
+              :machineID="machineID"
+              :equipment="equipment"
             />
           </div>
         </div>
@@ -93,15 +95,59 @@ export default {
       onlineStatus: true,
       selectedDataType: "温度", // Default data type
       mqttClient: null,
+      machineID: null,
+      equipment:null,
     };
   },
   created() {
     this.initMQTT();
     window.addEventListener('online', this.handleOnline);
     window.addEventListener('offline', this.handleOffline);
+    const tempData = localStorage.getItem('周边设备_54_temp');
+    const tempData2 = localStorage.getItem('周边设备_54_tempData');
+    const currentData = localStorage.getItem('周边设备_54_current');
+    const currentData2 = localStorage.getItem('周边设备_54_currentData');
+    if (tempData && tempData2) {
+      const parsedTempData = JSON.parse(tempData);
+      const parsedTempData2 = JSON.parse(tempData2);
+      this.ChartTempX = parsedTempData.TempX;
+      const maxLength = Math.max(parsedTempData.TempY1.length);
+      for (let i = 0; i < maxLength; i++) {
+        const tempArray = [];
+        tempArray.push(parsedTempData.TempY1[i]);
+        tempArray.push(parsedTempData.TempY2[i]);
+        tempArray.push(parsedTempData.TempY3[i]);
+        tempArray.push(parsedTempData.TempY4[i]);
+        this.ChartTempY.push(tempArray);
+      }
+      this.temperatureData.push(parsedTempData2);
+    }else{
+      localStorage.setItem('周边设备_54_temp', JSON.stringify([]));
+      localStorage.setItem('周边设备_54_tempData', JSON.stringify([]));
+    }
+
+    if (currentData && currentData2) {
+      const parsedCurrentData = JSON.parse(currentData);
+      const parsedCurrentData2 = JSON.parse(currentData2);
+      this.ChartCurrentX = parsedCurrentData.CurrentX;
+      const maxLength = Math.max(parsedCurrentData.CurrentY1.length);
+      for (let i = 0; i < maxLength; i++) {
+        const currentArray = [];
+        currentArray.push(parsedCurrentData.CurrentY1[i]);
+        currentArray.push(parsedCurrentData.CurrentY2[i]);
+        currentArray.push(parsedCurrentData.CurrentY3[i]);
+        currentArray.push(parsedCurrentData.CurrentY4[i]);
+        this.ChartCurrentY.push(currentArray);
+      }
+      this.currentData.push(parsedCurrentData2);
+    } else {
+      localStorage.setItem('周边设备_54_current', JSON.stringify([]));
+      localStorage.setItem('周边设备_54_currentData', JSON.stringify([]));
+    }
+    
     setInterval(() => {
       this.publishDataToTopic();
-    }, 10000);
+    }, 30000);
   },
   methods: {
     initMQTT() {
@@ -129,8 +175,6 @@ export default {
           this.handleMessage(message.payloadString, topic, this.temperatureData);
         } else if (topic.endsWith("/othercurrent")) {
           this.handleMessage(message.payloadString, topic, this.currentData);
-        } else {
-          // Handle other topics or do nothing
         }
       };
       const dgmgValues = ["dgmg01", "dgmg02", "dgmg03", "dgmg04"];
@@ -196,11 +240,11 @@ export default {
         };
         const tempMessage = new Paho.Message(JSON.stringify(tempData));
         tempMessage.destinationName = tempTopic;
-        this.mqttClient.send(tempMessage); 
-        console.log("Published JSON data:", tempData);
         const currentMessage = new Paho.Message(JSON.stringify(currentData));
         currentMessage.destinationName = currentTopic;
+        this.mqttClient.send(tempMessage); 
         this.mqttClient.send(currentMessage); 
+        console.log("Published JSON data:", tempData);
         console.log("Published JSON data:", currentData);
       } else {
         console.error("MQTT client is not connected.");
@@ -235,6 +279,9 @@ export default {
         const topicParts = topic.split('/');
         const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
         const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
+        const typeEquipment = equipment;
+        this.machineID = machineId.toString();
+        this.equipment = typeEquipment;
         const data = {
           time: localTimeString,
           machineId,

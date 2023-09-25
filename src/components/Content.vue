@@ -2,7 +2,7 @@
   <div v-if="dataType === '温度'">
     <h3><i class="fas fa-thermometer-half"></i> 温度监测数据</h3>
           <br>
-          <div class="data-container" v-for="(data, index) in sortedTemperatureData()" :key="index">
+          <div class="data-container" v-for="(data, index) in temperatureData" :key="index">
             <table class="data-table">
               <tr>
                 <th>时间：</th>
@@ -44,7 +44,7 @@
       <div v-else-if="dataType === '电流'">
         <h3><i class="fas fa-bolt"></i> 电流监测数据</h3>
         <br>
-        <div class="data-container" v-for="(data, index) in sortedCurrentData()" :key="index">
+        <div class="data-container" v-for="(data, index) in currentData" :key="index">
           <table class="data-table">
             <tr>
               <th>时间：</th>
@@ -99,7 +99,7 @@
     <br><br>
 </template>
   
-  <script>
+<script>
   import * as echarts from 'echarts';
   export default {
     name:"Main_Content",
@@ -111,30 +111,36 @@
       ChartTempY: Array,
       ChartCurrentX: Array,
       ChartCurrentY: Array,
+      machineID: String,
+      equipment: String
+    },
+    data() {
+      return {
+        initial: true,
+      }
+    },
+    mounted() {
+      if (this.ChartTempX.length > 0 && this.ChartCurrentX.length > 0) {
+        this.renderChart();
+      }
+      this.initial = false;
     },
     watch: {
-      ChartTempX: {
+      temperatureData:{
         handler() {
-          this.DisposeChart(true, false);
-          this.renderTempChart();
+          this.LocalStore();
         },
         deep: true, 
       },
-      ChartCurrentX:{
+      ChartTempX:{
         handler() {
-          this.DisposeChart(false, true);
-          this.renderCurrentChart();
+          this.DisposeChart();
+          this.renderChart();
         },
         deep: true,
       },
     },
     methods: {
-      sortedTemperatureData() {
-        return this.temperatureData.slice().sort((a, b) => a.machineId - b.machineId);
-      },
-      sortedCurrentData() {
-        return this.currentData.slice().sort((a, b) => a.machineId - b.machineId);
-      },
       getMessageClass(message) {
         let messageClass = '';
         switch (message) {
@@ -145,10 +151,10 @@
         }
         return messageClass;
       },
-      renderTempChart() {
+      renderChart() {
+        const limit = 20;
+        
         const TempX = [], TempY1 = [], TempY2 = [], TempY3 = [], TempY4 = [];
-        const limit = 20; // Set the limit to 20 data points
-
         for (let i = Math.max(0, this.ChartTempX.length - limit); i < this.ChartTempX.length; i++) {
           TempX.push(this.ChartTempX[i]);
           TempY1.push(this.ChartTempY[i][0]);
@@ -156,8 +162,21 @@
           TempY3.push(this.ChartTempY[i][2]);
           TempY4.push(this.ChartTempY[i][3]);
         }
-        const chart = echarts.init(this.$refs.tempChart);
-        const option = {
+
+        const TempLatestData = {
+          TempX: TempX.slice(-5), // Get the last 3 values of TempX.
+          TempY1: TempY1.slice(-5), // Get the last 3 values of TempY1.
+          TempY2: TempY2.slice(-5), // Get the last 3 values of TempY2.
+          TempY3: TempY3.slice(-5), // Get the last 3 values of TempY3.
+          TempY4: TempY4.slice(-5), // Get the last 3 values of TempY4.
+        };
+
+        if(this.initial === false) {
+          localStorage.setItem(this.equipment + '_' + this.machineID + '_temp', JSON.stringify(TempLatestData));
+        }
+
+        const TempChart = echarts.init(this.$refs.tempChart);
+        const TempOption = {
           legend:{
             right: 10,
           },
@@ -184,11 +203,9 @@
             { name: '温度4', type: 'line', data: TempY4 },
           ],
         };
-        chart.setOption(option);
-      },
-      renderCurrentChart() {
+        TempChart.setOption(TempOption);
+
         const CurrentX = [], CurrentY1 = [], CurrentY2 = [], CurrentY3 = [], CurrentY4 = [];
-        const limit = 20; // Set the limit to 20 data points
 
         for (let i = Math.max(0, this.ChartCurrentX.length - limit); i < this.ChartCurrentX.length; i++) {
           CurrentX.push(this.ChartCurrentX[i]);
@@ -197,8 +214,21 @@
           CurrentY3.push(this.ChartCurrentY[i][2]);
           CurrentY4.push(this.ChartCurrentY[i][3]);
         }
-        const chart = echarts.init(this.$refs.currentChart);
-        const option = {
+
+        const CurrentLatestData = {
+          CurrentX: CurrentX.slice(-5), // Get the last 3 values of CurrentX.
+          CurrentY1: CurrentY1.slice(-5), // Get the last 3 values of CurrentY1.
+          CurrentY2: CurrentY2.slice(-5), // Get the last 3 values of CurrentY2.
+          CurrentY3: CurrentY3.slice(-5), // Get the last 3 values of CurrentY3.
+          CurrentY4: CurrentY4.slice(-5), // Get the last 3 values of CurrentY4.
+        };
+
+        if(this.initial === false){
+          localStorage.setItem(this.equipment + '_' + this.machineID + '_current', JSON.stringify(CurrentLatestData));
+        }
+
+        const CurrentChart = echarts.init(this.$refs.currentChart);
+        const CurrentOption = {
           legend:{
             right: 10,
           },
@@ -225,15 +255,25 @@
             { name: '电流4', type: 'line', data: CurrentY4 },
           ],
         };
-        chart.setOption(option);
+        CurrentChart.setOption(CurrentOption);
       },
-      DisposeChart(DisposeTempChart, DisposeCurrentChart){
-        const Existchart1 = DisposeTempChart ? echarts.getInstanceByDom(this.$refs.tempChart) : null;
-        const Existchart2 = DisposeCurrentChart ? echarts.getInstanceByDom(this.$refs.currentChart) : null;
-        if (Existchart1) { Existchart1.dispose(); }
-        if (Existchart2) { Existchart2.dispose(); }
-      }
+      DisposeChart(){
+        const TempChart = echarts.getInstanceByDom(this.$refs.tempChart);
+        const CurrentChart = echarts.getInstanceByDom(this.$refs.currentChart);
+        if(TempChart){ TempChart.dispose(); } 
+        if(CurrentChart){ CurrentChart.dispose(); } 
+      },
+      LocalStore() {
+        if (this.temperatureData.length > 0) {
+          const lastTemperature = this.temperatureData[this.temperatureData.length - 1];
+          localStorage.setItem(this.equipment + '_' + this.machineID + '_tempData', JSON.stringify(lastTemperature));
+        }
+        if (this.currentData.length > 0) {
+          const lastCurrent = this.currentData[this.currentData.length - 1];
+          localStorage.setItem(this.equipment + '_' + this.machineID + '_currentData', JSON.stringify(lastCurrent));
+        }
+      },
     }
   };
-  </script>
+</script>
   
