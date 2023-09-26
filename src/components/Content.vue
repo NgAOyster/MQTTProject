@@ -132,6 +132,12 @@
         },
         deep: true, 
       },
+      currentData:{
+        handler() {
+          this.LocalStore();
+        },
+        deep: true, 
+      },
       ChartTempX:{
         handler() {
           this.DisposeChart();
@@ -139,6 +145,13 @@
         },
         deep: true,
       },
+      ChartCurrentX:{
+        handler() {
+          this.DisposeChart();
+          this.renderChart();
+        },
+        deep: true,
+      }
     },
     methods: {
       getMessageClass(message) {

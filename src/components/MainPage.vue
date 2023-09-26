@@ -121,9 +121,6 @@ export default {
         this.ChartTempY.push(tempArray);
       }
       this.temperatureData.push(parsedTempData2);
-    }else{
-      localStorage.setItem('周边设备_54_temp', JSON.stringify([]));
-      localStorage.setItem('周边设备_54_tempData', JSON.stringify([]));
     }
 
     if (currentData && currentData2) {
@@ -140,9 +137,6 @@ export default {
         this.ChartCurrentY.push(currentArray);
       }
       this.currentData.push(parsedCurrentData2);
-    } else {
-      localStorage.setItem('周边设备_54_current', JSON.stringify([]));
-      localStorage.setItem('周边设备_54_currentData', JSON.stringify([]));
     }
     
     setInterval(() => {
