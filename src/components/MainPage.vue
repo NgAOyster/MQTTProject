@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="connecting" v-if="!connected">
-      <p>正在连接MQTT服务器...</p>
-      <p>这可能需要几秒钟时间。请稍等...</p>
+  <p>{{ translations[selectedLanguage].connectingToMQTT }}</p>
+  <p>{{ translations[selectedLanguage].pleaseWait }}</p>
     </div>
     <div v-else>
       <!-- Navbar Start -->
@@ -10,7 +10,7 @@
         <button class="navbar-brand btn" @click="returnFunc()">
           <i class="fas fa-arrow-left" style="color: white;"></i>
         </button>
-  <a class="navbar-brand" href="#" style="color: white;">{{deviceGroup}}</a>
+        <a class="navbar-brand" href="#" style="color: white;">{{ translations[selectedLanguage].deviceGroup }}</a>
   <!-- Hamburger Menu Icon -->
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
     <span class="navbar-toggler-icon"></span>
@@ -18,19 +18,23 @@
   <div class="collapse navbar-collapse" id="mobileNav">
     <ul class="navbar-nav ms-auto p-8 align-items-center">
       <li class="nav-item">
-        <div class="mx-4">目前状态: <span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
+        <div class="mx-4">{{ translations[selectedLanguage].currentStatus }}<span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
       </li>
       <li class="nav-item">
-        <div class="mx-4" v-if="Timer">已连接: {{ connectionTime }}</div>
-        <div class="mx-4" v-else>未连接服务器</div>
+        <div class="mx-4" v-if="Timer">
+        {{ translations[selectedLanguage].connected }}: {{ connectionTime }}
+        </div>
+        <div class="mx-4" v-else>
+        {{ translations[selectedLanguage].disconnected }}
+        </div>
       </li>
       <li class="nav-item">
         <div class="dropdown">
           <button class="btn dropdown-toggle" type="button" id="logoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-            <i class="fas fa-user"></i> 欢迎您, {{ username }}
+            <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
           </button>
           <div class="dropdown-menu" aria-labelledby="logoutDropdown">
-            <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">登出</a>
+            <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ translations[selectedLanguage].logout }}</a>
           </div>
         </div>
       </li>
@@ -68,6 +72,8 @@
 import Paho from "paho-mqtt";
 import Sidebar from "../components/Sidebar.vue";
 import Content from "../components/Content.vue";
+import Cookies from 'js-cookie'; // Import the js-cookie library
+
 export default {
   props: {
     username: String,
@@ -93,14 +99,69 @@ export default {
       reconnectStatus: false,
       disconnect: false,
       onlineStatus: true,
-      selectedDataType: "温度", // Default data type
+      selectedDataType: "温度"|| "temperature", // Default data type
       mqttClient: null,
       machineID: null,
       equipment:null,
+      translations: {
+        chinese: {
+          temperature: '温度',
+          connectingToMQTT: '正在连接MQTT服务器...',
+          pleaseWait: '这可能需要几秒钟时间。请稍等...',
+          welcomeMessage: '欢迎您,',
+          currentStatus: '目前状态:',
+          connected: '已连接',
+          disconnected: '连接断开',
+          reconnecting: '重新连接中...',
+          networkDisconnect: '网络断开',
+          logoutConfirmation: '确定要登出吗？',
+          logoutSuccessMessage: '您已成功登出',
+          connectionLostAlert: '与MQTT服务器的连接已断开...',
+          mqttConnectionErrorAlert: '无法连接到MQTT服务器, 请检查服务器配置并尝试重新连接。',
+          ordinaryMessage: '普通消息',
+          controlMessage: '控制消息',
+          alarmMessage: '告警消息',
+          seriousWarning: '严重警告',
+          asphaltMixingPlant: '沥青搅拌站',
+          asphaltCrushing: '沥青料破碎',
+          warmingMixingFoaming: '温拌发泡设备',
+          aggregateShapingCrushing: '骨料整形破碎',
+          peripheralEquipment: '周边设备',
+          networkDisconnectMessage: '网络连接已断开，您现在处于离线状态。',
+          logout: '登出',
+        },
+        english: {
+          temperature: 'temperature',
+          connectingToMQTT: 'Currently connecting to MQTT Services...',
+          pleaseWait: 'This will take a few seconds, please wait for a while...',
+          welcomeMessage: 'Welcome,',
+          currentStatus: 'Current Status:',
+          connected: 'Connected',
+          disconnected: 'Disconnected',
+          reconnecting: 'Reconnecting...',
+          networkDisconnect: 'Network Disconnect',
+          logoutConfirmation: 'Are you sure you want to logout?',
+          logoutSuccessMessage: 'You have successfully logged out',
+          connectionLostAlert: 'The connection to the MQTT server has been lost...',
+          mqttConnectionErrorAlert: 'Unable to connect to the MQTT server, please check the server configuration and try to reconnect.',
+          ordinaryMessage: 'Ordinary Message',
+          controlMessage: 'Control Message',
+          alarmMessage: 'Alarm Message',
+          seriousWarning: 'Serious Warning',
+          asphaltMixingPlant: 'Asphalt Mixing Plant',
+          asphaltCrushing: 'Asphalt Crushing',
+          warmingMixingFoaming: 'Warming Mixing Foaming',
+          aggregateShapingCrushing: 'Aggregate Shaping Crushing',
+          peripheralEquipment: 'Peripheral Equipment',
+          networkDisconnectMessage: 'Network connection is disconnected, you are now in offline mode.',
+          logout: 'Logout',
+        },
+      },
     };
   },
   created() {
     this.initMQTT();
+    
     window.addEventListener('online', this.handleOnline);
     window.addEventListener('offline', this.handleOffline);
     const tempData = localStorage.getItem('周边设备_54_temp');
@@ -142,6 +203,13 @@ export default {
     setInterval(() => {
       this.publishDataToTopic();
     }, 30000);
+
+    const selectedLanguageCookie = Cookies.get('selectedLanguage');
+    
+    // Check if the cookie is set and update the selectedLanguage data property
+    if (selectedLanguageCookie) {
+      this.selectedLanguage = selectedLanguageCookie;
+    }
   },
   methods: {
     initMQTT() {
@@ -156,7 +224,7 @@ export default {
         this.connectStatus = false;
         this.reconnectStatus = false;
         this.disconnect = true;
-        alert("与MQTT服务器的连接已断开...");
+        alert(this.translations[this.selectedLanguage].connectionLostAlert);
         setTimeout(() => {
           this.clearConnectionTimer();
           this.reconnect();
@@ -202,7 +270,7 @@ export default {
           console.log('MQTT connection error:', error.errorMessage);
           this.connectStatus = false;
           this.reconnectStatus = true;
-          alert("无法连接到MQTT服务器, 请检查服务器配置并尝试重新连接。");
+          alert(this.translations[this.selectedLanguage].mqttConnectionErrorAlert);
           this.reconnect();
         },
       };
@@ -252,64 +320,65 @@ export default {
       return Math.round((Math.random() * (max - min) + min) * factor) / factor;
     },
     handleMessage(message, topic, dataCollection) {
-      const isTemperature = topic.endsWith("/othertemperature");
-      const isCurrent = topic.endsWith("/othercurrent");
-      if (isTemperature || isCurrent) {
-        const jsonData = JSON.parse(message);
-        const localTimeString = new Date().toLocaleString();
-        const currentTime = new Date().toLocaleTimeString();
-        let dgmgMessage = "普通消息";
-        const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-        if (topicPrefix === "dgmg02") { dgmgMessage = "控制消息"; }
-        else if (topicPrefix === "dgmg03") { dgmgMessage = "告警消息"; }
-        else if (topicPrefix === "dgmg04") { dgmgMessage = "严重警告"; }
-        let equipment = "沥青搅拌站";
-        const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-        if (charactersAfterSeventh === "asphaltcrush") { equipment = "沥青料破碎"; }
-        else if (charactersAfterSeventh === "warmingmix") { equipment = "温拌发泡设备"; }
-        else if (charactersAfterSeventh === "stonecrush") { equipment = "骨料整形破碎"; }
-        else if (charactersAfterSeventh === "peripheral") { equipment = "周边设备"; }
-        // Extract machineId from the topic
-        const topicParts = topic.split('/');
-        const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
-        const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
-        const typeEquipment = equipment;
-        this.machineID = machineId.toString();
-        this.equipment = typeEquipment;
-        const data = {
-          time: localTimeString,
-          machineId,
-          equipment,
-        };
-        if (isTemperature) {
-          data.TempdgmgMessage = dgmgMessage;
-          data.temp1 = jsonData.temp1;
-          data.temp2 = jsonData.temp2;
-          data.temp3 = jsonData.temp3;
-          data.temp4 = jsonData.temp4;
-          this.ChartTempX.push(currentTime);
-          this.ChartTempY.push([jsonData.temp1, jsonData.temp2, jsonData.temp3, jsonData.temp4]);
-        } else if (isCurrent) {
-          data.CurrentdgmgMessage = dgmgMessage;
-          data.current1 = jsonData.current1;
-          data.current2 = jsonData.current2;
-          data.current3 = jsonData.current3;
-          data.current4 = jsonData.current4;
-          this.ChartCurrentX.push(currentTime);
-          this.ChartCurrentY.push([jsonData.current1, jsonData.current2, jsonData.current3, jsonData.current4]);
-        }
-        const existingIndex = dataCollection.findIndex(
-          (dataItem) =>
-            dataItem.machineId === machineId &&
-            dataItem.equipment === equipment
-        );
-        if (existingIndex !== -1) {
-          dataCollection[existingIndex] = data;
-        } else {
-          dataCollection.push(data);
-        }
-      }
-    },
+  const isTemperature = topic.endsWith("/othertemperature");
+  const isCurrent = topic.endsWith("/othercurrent");
+  if (isTemperature || isCurrent) {
+    const jsonData = JSON.parse(message);
+    const localTimeString = new Date().toLocaleString();
+    const currentTime = new Date().toLocaleTimeString();
+    let dgmgMessage = this.translations[this.selectedLanguage].ordinaryMessage;
+    const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
+    if (topicPrefix === "dgmg02") { dgmgMessage = this.translations[this.selectedLanguage].controlMessage; }
+    else if (topicPrefix === "dgmg03") { dgmgMessage = this.translations[this.selectedLanguage].alarmMessage; }
+    else if (topicPrefix === "dgmg04") { dgmgMessage = this.translations[this.selectedLanguage].seriousWarning; }
+    let equipment = this.translations[this.selectedLanguage].asphaltMixingPlant;
+    const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
+    if (charactersAfterSeventh === "asphaltcrush") { equipment = this.translations[this.selectedLanguage].asphaltCrushing; }
+    else if (charactersAfterSeventh === "warmingmix") { equipment = this.translations[this.selectedLanguage].warmingMixingFoaming; }
+    else if (charactersAfterSeventh === "stonecrush") { equipment = this.translations[this.selectedLanguage].aggregateShapingCrushing; }
+    else if (charactersAfterSeventh === "peripheral") { equipment = this.translations[this.selectedLanguage].peripheralEquipment; }
+    // Extract machineId from the topic
+    const topicParts = topic.split('/');
+    const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
+    const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
+    const typeEquipment = equipment;
+    this.machineID = machineId.toString();
+    this.equipment = typeEquipment;
+    const data = {
+      time: localTimeString,
+      machineId,
+      equipment,
+    };
+    if (isTemperature) {
+      data.TempdgmgMessage = dgmgMessage;
+      data.temp1 = jsonData.temp1;
+      data.temp2 = jsonData.temp2;
+      data.temp3 = jsonData.temp3;
+      data.temp4 = jsonData.temp4;
+      this.ChartTempX.push(currentTime);
+      this.ChartTempY.push([jsonData.temp1, jsonData.temp2, jsonData.temp3, jsonData.temp4]);
+    } else if (isCurrent) {
+      data.CurrentdgmgMessage = dgmgMessage;
+      data.current1 = jsonData.current1;
+      data.current2 = jsonData.current2;
+      data.current3 = jsonData.current3;
+      data.current4 = jsonData.current4;
+      this.ChartCurrentX.push(currentTime);
+      this.ChartCurrentY.push([jsonData.current1, jsonData.current2, jsonData.current3, jsonData.current4]);
+    }
+    const existingIndex = dataCollection.findIndex(
+      (dataItem) =>
+        dataItem.machineId === machineId &&
+        dataItem.equipment === equipment
+    );
+    if (existingIndex !== -1) {
+      dataCollection[existingIndex] = data;
+    } else {
+      dataCollection.push(data);
+    }
+  }
+},
+
     clearConnectionTimer() {
       if (this.connectionTimer) {
         clearInterval(this.connectionTimer);
@@ -351,7 +420,7 @@ export default {
       this.onlineStatus = false;
       this.connectStatus = false;
       this.clearConnectionTimer();
-      alert("网络连接已断开，您现在处于离线状态。");
+      alert(this.translations[this.selectedLanguage].networkDisconnectMessage);
     },
     updateDataType(dataType) {
       this.selectedDataType = dataType;
@@ -363,18 +432,19 @@ export default {
       if (this.disconnect) { return 'disconnected'; }
     },
     getStatusText() {
-      if (!this.onlineStatus) { return '网络断开'; }
-      if (this.connectStatus) { return '已连接'; }
-      if (this.reconnectStatus) { return '重新连接中...'; }
-      if (this.disconnect) { return '连接断开'; }
-    },
+  if (!this.onlineStatus) { return this.translations[this.selectedLanguage].networkDisconnect; }
+  if (this.connectStatus) { return this.translations[this.selectedLanguage].connected; }
+  if (this.reconnectStatus) { return this.translations[this.selectedLanguage].reconnecting; }
+  if (this.disconnect) { return this.translations[this.selectedLanguage].disconnected; }
+},
+
     confirmLogout() {
-      const confirmLogout = window.confirm('确定要登出吗？');
-      if (confirmLogout) {
-        alert("您已成功登出");
-        this.$emit('logout');
-      }
-    },
+  const confirmLogout = window.confirm(this.translations[this.selectedLanguage].logoutConfirmation);
+  if (confirmLogout) {
+    alert(this.translations[this.selectedLanguage].logoutSuccessMessage);
+    this.$emit('logout');
+  }
+},
     returnFunc(){
       this.$emit('returnBack');
     }

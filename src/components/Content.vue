@@ -1,106 +1,107 @@
 <template>
-  <div v-if="dataType === '温度'">
-    <h3><i class="fas fa-thermometer-half"></i> 温度监测数据</h3>
-          <br>
-          <div class="data-container" v-for="(data, index) in temperatureData" :key="index">
-            <table class="data-table">
-              <tr>
-                <th>时间：</th>
-                <td>{{ data.time }}</td>
-              </tr>
-              <tr>
-                <th>设备编号：</th>
-                <td>{{ data.machineId }}</td>
-              </tr>
-              <tr>
-                <th>设备类型：</th>
-                <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
-              </tr>
-            </table>
-            <br>
-            <table class="data-table">
-              <tr>
-                <th>温度消息等级：</th>
-                <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
-              </tr>
-            </table>
-            <table class="data-table">
-              <thead>
-                <th colspan="4">温度监测</th>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">监测{{ i }}</td>
-                </tr>
-                <tr>
-                  <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} 摄氏度</td>
-                </tr>
-              </tbody>
-            </table>
-            <br><br>
-          </div>
-          <br>
-      </div>
-      <div v-else-if="dataType === '电流'">
-        <h3><i class="fas fa-bolt"></i> 电流监测数据</h3>
-        <br>
-        <div class="data-container" v-for="(data, index) in currentData" :key="index">
-          <table class="data-table">
-            <tr>
-              <th>时间：</th>
-              <td>{{ data.time }}</td>
-            </tr>
-            <tr>
-              <th>设备编号：</th>
-              <td>{{ data.machineId }}</td>
-            </tr>
-            <tr>
-              <th>设备类型：</th>
-              <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
-            </tr>
-          </table>
-          <br>
-          <table class="data-table">
-            <tr>
-              <th>电流消息等级：</th>
-              <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
-            </tr>
-          </table>
-          <table class="data-table">
-            <thead>
-              <th colspan="4">电流监测</th>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">监测{{ i }}</td>
-              </tr>
-              <tr>
-                <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} 安培</td>
-              </tr>
-            </tbody>
-          </table>
-          <br><br>
-        </div>
-        <br>
-      </div>      
-      <div v-else>
-        <i class="fas fa-question-circle"></i> 请选择需要监测的数据
-      </div>
-      <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <div ref="tempChart" style="width: 100%; height: 300px;"></div>
-            </div>
-            <div class="col-md-6">
-                <div ref="currentChart" style="width: 100%; height: 300px;"></div>
-            </div>
-        </div>
+  <div v-if="dataType === '温度' || dataType ==='temperature'">
+    <h3><i class="fas fa-thermometer-half"></i> {{ translations[selectedLanguage].temperatureDataTitle }}</h3>
+    <br>
+    <div class="data-container" v-for="(data, index) in temperatureData" :key="index">
+      <table class="data-table">
+        <tr>
+          <th>{{ translations[selectedLanguage].timeLabel }}：</th>
+          <td>{{ data.time }}</td>
+        </tr>
+        <tr>
+          <th>{{ translations[selectedLanguage].machineIdLabel }}：</th>
+          <td>{{ data.machineId }}</td>
+        </tr>
+        <tr>
+          <th>{{ translations[selectedLanguage].equipmentLabel }}：</th>
+          <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
+        </tr>
+      </table>
+      <br>
+      <table class="data-table">
+        <tr>
+          <th>{{ translations[selectedLanguage].temperatureMessageLabel }}：</th>
+          <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
+        </tr>
+      </table>
+      <table class="data-table">
+        <thead>
+          <th colspan="4">{{ translations[selectedLanguage].temperatureMonitoringLabel }}</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">{{ translations[selectedLanguage].monitorLabel }} {{ i }}</td>
+          </tr>
+          <tr>
+            <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} {{ translations[selectedLanguage].celsiusLabel }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br><br>
     </div>
-    <br><br>
+    <br>
+  </div>
+  <div v-else-if="dataType === '电流' || dataType ==='current'">
+    <h3><i class="fas fa-bolt"></i> {{ translations[selectedLanguage].currentDataTitle }}</h3>
+    <br>
+    <div class="data-container" v-for="(data, index) in currentData" :key="index">
+      <table class="data-table">
+        <tr>
+          <th>{{ translations[selectedLanguage].timeLabel }}：</th>
+          <td>{{ data.time }}</td>
+        </tr>
+        <tr>
+          <th>{{ translations[selectedLanguage].machineIdLabel }}：</th>
+          <td>{{ data.machineId }}</td>
+        </tr>
+        <tr>
+          <th>{{ translations[selectedLanguage].equipmentLabel }}：</th>
+          <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
+        </tr>
+      </table>
+      <br>
+      <table class="data-table">
+        <tr>
+          <th>{{ translations[selectedLanguage].currentMessageLabel }}：</th>
+          <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
+        </tr>
+      </table>
+      <table class="data-table">
+        <thead>
+          <th colspan="4">{{ translations[selectedLanguage].currentMonitoringLabel }}</th>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">{{ translations[selectedLanguage].monitorLabel }} {{ i }}</td>
+          </tr>
+          <tr>
+            <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} {{ translations[selectedLanguage].ampereLabel }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <br><br>
+    </div>
+    <br>
+  </div>
+  <div v-else>
+    <i class="fas fa-question-circle"></i> {{ translations[selectedLanguage].selectDataMessage }}
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <div ref="tempChart" style="width: 100%; height: 300px;"></div>
+      </div>
+      <div class="col-md-6">
+        <div ref="currentChart" style="width: 100%; height: 300px;"></div>
+      </div>
+    </div>
+  </div>
+  <br><br>
 </template>
   
 <script>
   import * as echarts from 'echarts';
+  import Cookies from 'js-cookie'; // Import the js-cookie library
   export default {
     name:"Main_Content",
     props: {
@@ -115,9 +116,79 @@
       equipment: String
     },
     data() {
-      return {
-        initial: true,
+    return {
+      initial: true,
+      selectedLanguage: 'chinese', // Default language
+      translations: {
+        chinese: {
+          temperatureDataTitle: '温度监测数据',
+          currentDataTitle: '电流监测数据',
+          selectDataMessage: '请选择需要监测的数据',
+          timeLabel: '时间',
+          machineIdLabel: '设备编号',
+          equipmentLabel: '设备类型',
+          temperatureMessageLabel: '温度消息等级',
+          currentMessageLabel: '电流消息等级',
+          temperatureMonitoringLabel: '温度监测',
+          currentMonitoringLabel: '电流监测',
+          monitorLabel: '监测',
+          celsiusLabel: '摄氏度',
+          ampereLabel: '安培',
+          normalMessage: '普通消息',
+          controlMessage: '控制消息',
+          warningMessage: '告警消息',
+          criticalMessage: '严重警告',
+          temperatureChartTitle: '温度数据',  
+          temperature1: '温度1',             
+          temperature2: '温度2',             
+          temperature3: '温度3',            
+          temperature4: '温度4',            
+          currentChartTitle: '电流数据',     
+          current1: '电流1',                 
+          current2: '电流2',                 
+          current3: '电流3',                 
+          current4: '电流4',
+        },
+        english: {
+          temperatureDataTitle: 'Temperature Monitoring Data',
+          currentDataTitle: 'Current Monitoring Data',
+          selectDataMessage: 'Please select the data to monitor',
+          timeLabel: 'Time',
+          machineIdLabel: 'Machine ID',
+          equipmentLabel: 'Equipment Type',
+          temperatureMessageLabel: 'Temperature Message Level',
+          currentMessageLabel: 'Current Message Level',
+          temperatureMonitoringLabel: 'Temperature Monitoring',
+          currentMonitoringLabel: 'Current Monitoring',
+          monitorLabel: 'Monitor',
+          celsiusLabel: '°C',
+          ampereLabel: 'A',
+          normalMessage: 'Normal Message',
+          controlMessage: 'Control Message',
+          warningMessage: 'Warning Message',
+          criticalMessage: 'Critical Warning',
+          temperatureChartTitle: 'Temperature Data', 
+          temperature1: 'Temp 1',              
+          temperature2: 'Temp 2',              
+          temperature3: 'Temp 3',             
+          temperature4: 'Temp 4',             
+          currentChartTitle: 'Current Data',          
+          current1: 'Current 1',                     
+          current2: 'Current 2',                     
+          current3: 'Current 3',                     
+          current4: 'Current 4',
+        },
       }
+    }
+  },
+
+    created() {
+      const selectedLanguageCookie = Cookies.get('selectedLanguage');
+    
+    // Check if the cookie is set and update the selectedLanguage data property
+    if (selectedLanguageCookie) {
+      this.selectedLanguage = selectedLanguageCookie;
+    }
     },
     mounted() {
       if (this.ChartTempX.length > 0 && this.ChartCurrentX.length > 0) {
@@ -155,15 +226,25 @@
     },
     methods: {
       getMessageClass(message) {
-        let messageClass = '';
-        switch (message) {
-          case '普通消息': messageClass = 'normal-message'; break;
-          case '控制消息': messageClass = 'control-message'; break;
-          case '告警消息': messageClass = 'warning-message'; break;
-          case '严重警告': messageClass = 'critical-message'; break;
-        }
-        return messageClass;
-      },
+      let messageClass = '';
+      switch (message) {
+      case this.translations[this.selectedLanguage].normalMessage: 
+        messageClass = 'normal-message';
+        break;
+      case this.translations[this.selectedLanguage].controlMessage: 
+        messageClass = 'control-message';
+        break;
+      case this.translations[this.selectedLanguage].warningMessage: 
+        messageClass = 'warning-message';
+        break;
+      case this.translations[this.selectedLanguage].criticalMessage: 
+        messageClass = 'critical-message';
+        break;
+      default:
+        messageClass = ''; // Default class if no match is found
+  }
+  return messageClass;
+},
       renderChart() {
         const limit = 20;
         
@@ -194,7 +275,7 @@
             right: 10,
           },
           title: {
-            text: "温度数据",
+            text: this.translations[this.selectedLanguage].temperatureChartTitle,
           },
           tooltip: {
             trigger: "axis",
@@ -210,11 +291,11 @@
             },
           },
           series: [
-            { name: '温度1', type: 'line', data: TempY1 },
-            { name: '温度2', type: 'line', data: TempY2 },
-            { name: '温度3', type: 'line', data: TempY3 },
-            { name: '温度4', type: 'line', data: TempY4 },
-          ],
+          { name: this.translations[this.selectedLanguage].temperature1, type: 'line', data: TempY1 },
+          { name: this.translations[this.selectedLanguage].temperature2, type: 'line', data: TempY2 },
+          { name: this.translations[this.selectedLanguage].temperature3, type: 'line', data: TempY3 },
+          { name: this.translations[this.selectedLanguage].temperature4, type: 'line', data: TempY4 },
+        ],
         };
         TempChart.setOption(TempOption);
 
@@ -246,7 +327,7 @@
             right: 10,
           },
           title: {
-            text: "电流数据",
+            text: this.translations[this.selectedLanguage].currentChartTitle,
           },
           tooltip: {
             trigger: "axis",
@@ -262,11 +343,11 @@
             },
           },
           series: [
-            { name: '电流1', type: 'line', data: CurrentY1 },
-            { name: '电流2', type: 'line', data: CurrentY2 },
-            { name: '电流3', type: 'line', data: CurrentY3 },
-            { name: '电流4', type: 'line', data: CurrentY4 },
-          ],
+          { name: this.translations[this.selectedLanguage].current1, type: 'line', data: CurrentY1 },
+          { name: this.translations[this.selectedLanguage].current2, type: 'line', data: CurrentY2 },
+          { name: this.translations[this.selectedLanguage].current3, type: 'line', data: CurrentY3 },
+          { name: this.translations[this.selectedLanguage].current4, type: 'line', data: CurrentY4 },
+        ],
         };
         CurrentChart.setOption(CurrentOption);
       },

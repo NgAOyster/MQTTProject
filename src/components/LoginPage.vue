@@ -112,14 +112,17 @@ export default {
     };
   },
   methods: {
+    setLanguageCookie() {
+      document.cookie = `selectedLanguage=${this.selectedLanguage}; expires=Thu, 01 Jan 2099 00:00:00 UTC; path=/`;
+    },
     connect() {
-      if (this.username === '' || this.password === '' || this.officeID === '') {
-        this.errorMessage = this.translations[this.selectedLanguage].fillFormError;
-        return;
-      } else {
-        this.connecting = true;
-        this.errorMessage = ''; // Clear any previous error message
-        const actualUser = this.officeID + '_' + this.username;
+    if (this.username === '' || this.password === '' || this.officeID === '') {
+      this.errorMessage = this.translations[this.selectedLanguage].fillFormError;
+      return;
+    } else {
+      this.connecting = true;
+      this.errorMessage = ''; // Clear any previous error message
+      const actualUser = this.officeID + '_' + this.username;
         const options = {
           useSSL: false,
           userName: this.username, // may change in the future
@@ -146,20 +149,23 @@ export default {
           },
         };
 
-        this.client = new Paho.Client(this.brokerUrl, 'clientId');
+      this.client = new Paho.Client(this.brokerUrl, 'clientId');
 
-        // Set up a timeout to handle connection failure
-        let connectionTimeoutId = null;
-        const handleConnectionTimeout = () => {
-          this.client.disconnect();
-          this.errorMessage = this.translations[this.selectedLanguage].connectionError;
-          this.connecting = false;
-        };
-        connectionTimeoutId = setTimeout(handleConnectionTimeout, this.connectionTimeout);
+      // Set up a timeout to handle connection failure
+      let connectionTimeoutId = null;
+      const handleConnectionTimeout = () => {
+        this.client.disconnect();
+        this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+        this.connecting = false;
+      };
+      connectionTimeoutId = setTimeout(handleConnectionTimeout, this.connectionTimeout);
 
-        this.client.connect(options);
-      }
-    },
+      this.client.connect(options);
+
+      // Call setLanguageCookie to set the selectedLanguage cookie
+      this.setLanguageCookie();
+    }
+      },
     disconnect() {
       if (this.client && this.client.isConnected()) {
         this.client.disconnect();
