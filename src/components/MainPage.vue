@@ -105,7 +105,7 @@ export default {
       reconnectStatus: false,
       disconnect: false,
       onlineStatus: true,
-      selectedDataType: "温度"|| "temperature", // Default data type
+      selectedDataType: "选择设备" || "Choose Equipment", // Default data type
       mqttClient: null,
       machineID: null,
       equipment:null,
