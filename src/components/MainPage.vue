@@ -30,13 +30,16 @@
       </li>
       <li class="nav-item">
         <div class="dropdown">
-          <button class="btn dropdown-toggle" type="button" id="logoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-            <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
-          </button>
-          <div class="dropdown-menu" aria-labelledby="logoutDropdown">
+                <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
+                </button>
+              <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
+            <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
+            <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
+            <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ translations[selectedLanguage].logout }}</a>
           </div>
-        </div>
+          </div>
       </li>
     </ul>
   </div>
@@ -46,7 +49,9 @@
         <div class="row">
           <div class="col-md-2 sideComp text-start">
             <!-- Sidebar Component -->
-            <Sidebar @data-type-selected="updateDataType" :selectedDataType="selectedDataType" />
+            <Sidebar @data-type-selected="updateDataType" 
+            :selectedDataType="selectedDataType"
+            :selectedLanguage="selectedLanguage" />
           </div>
           <div class="col-md-10 text-start">
             <!-- Content Component -->
@@ -60,8 +65,9 @@
               :ChartCurrentY="ChartCurrentY"
               :machineID="machineID"
               :equipment="equipment"
+              :selectedLanguage="selectedLanguage"
             />
-          </div>
+        </div>
         </div>
       </div>
       <br />
@@ -103,6 +109,7 @@ export default {
       mqttClient: null,
       machineID: null,
       equipment:null,
+      selectedLanguage: 'chinese',
       translations: {
         chinese: {
           temperature: '温度',
@@ -212,6 +219,12 @@ export default {
     }
   },
   methods: {
+    changeLanguage(language) {
+      this.selectedLanguage = language;
+      Cookies.set('selectedLanguage', language, { expires: 365 }); // Update the entire cookie with a 1-year expiration
+
+      },
+
     initMQTT() {
       this.disconnect = false;
       const randomPart = Math.random().toString(36).substr(2, 8); // Generate a random string

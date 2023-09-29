@@ -101,7 +101,6 @@
   
 <script>
   import * as echarts from 'echarts';
-  import Cookies from 'js-cookie'; // Import the js-cookie library
   export default {
     name:"Main_Content",
     props: {
@@ -113,12 +112,12 @@
       ChartCurrentX: Array,
       ChartCurrentY: Array,
       machineID: String,
-      equipment: String
+      equipment: String,
+      selectedLanguage: String,
     },
     data() {
     return {
       initial: true,
-      selectedLanguage: 'chinese', // Default language
       translations: {
         chinese: {
           temperatureDataTitle: '温度监测数据',
@@ -181,15 +180,6 @@
       }
     }
   },
-
-    created() {
-      const selectedLanguageCookie = Cookies.get('selectedLanguage');
-    
-    // Check if the cookie is set and update the selectedLanguage data property
-    if (selectedLanguageCookie) {
-      this.selectedLanguage = selectedLanguageCookie;
-    }
-    },
     mounted() {
       if (this.ChartTempX.length > 0 && this.ChartCurrentX.length > 0) {
         this.renderChart();

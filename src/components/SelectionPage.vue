@@ -10,14 +10,17 @@
       <div class="collapse navbar-collapse" id="mobileNav">
         <ul class="navbar-nav ms-auto p-8 align-items-center">
           <li class="nav-item">
-            <div class="dropdown">
-              <button class="btn dropdown-toggle" type="button" id="logoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+              <div class="dropdown">
+                <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
                 <i class="fas fa-user"></i> {{ currentTranslations.welcomeMessage }}, {{ username }}
-              </button>
-              <div class="dropdown-menu" aria-labelledby="logoutDropdown">
-                <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ currentTranslations.logout }}</a>
-              </div>
-            </div>
+                </button>
+              <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
+            <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
+            <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ currentTranslations.logout }}</a>
+          </div>
+          </div>
           </li>
         </ul>
       </div>
@@ -121,6 +124,10 @@ export default {
     };
   },
   methods: {
+    changeLanguage(language) {
+      this.selectedLanguage = language;
+      Cookies.set('selectedLanguage', language); // Update the cookie with the selected language
+    },
     confirmLogout() {
       const confirmLogout = window.confirm(this.currentTranslations.logoutConfirmation);
       if (confirmLogout) {
