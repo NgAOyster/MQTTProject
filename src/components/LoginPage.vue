@@ -121,6 +121,15 @@ export default {
       } else {
         this.connecting = true;
         this.errorMessage = '';
+        
+        // API still in testing, use this if you want do other page features
+        // this.$emit('login-success', {
+        //   actualUser: "Helloml001",
+        //   username: "ml001",
+        //   password: "ml001",
+        //   token: "e76g4r1w2", // random type, just use in demo of success login
+        // });
+
         // fetch way
         const url = `http://222.222.119.72:15518/login?cpid=${this.cpid}&username=${this.username}&password=${this.password}`;
         fetch(url, {
