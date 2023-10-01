@@ -9,7 +9,7 @@
         <div class="input-group">
           <label for="office">{{ translations[selectedLanguage].officeLabel }}:</label>
           <div class="office-input">
-            <input v-model="officeID" type="text" id="officeID" :disabled="connecting" />
+            <input v-model="cpid" type="text" id="cpid" :disabled="connecting" />
             <font-awesome-icon icon="building" class="building-icon" />
           </div>
           <br>
@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import Paho from 'paho-mqtt';
+import axios from 'axios';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faLock, faUser, faKey, faBuilding } from "@fortawesome/free-solid-svg-icons";
@@ -72,12 +72,11 @@ export default {
       brokerUrl: 'ws://222.222.119.72:8083/mqtt',
       username: '',
       password: '',
-      officeID: '',
+      cpid: '',
       connectingMessage: '',
       errorMessage: '',
       connecting: false,
-      connectionTimeout: 5000,
-      randomToken: '',
+      returnToken: '',
       selectedLanguage: 'chinese', // Default selected language is Chinese
       languages: [
         { value: 'chinese', label: '中文  ' },
@@ -99,7 +98,7 @@ export default {
         english: {
           title: 'Fei Da Services Database System',
           company: '©D&G Machinery',
-          officeLabel: 'Office Number',
+          officeLabel: 'Company ID',
           usernameLabel: 'Username',
           passwordLabel:'Password',
           icpNumber: '冀ICP备09032629号-3',
@@ -116,71 +115,47 @@ export default {
       document.cookie = `selectedLanguage=${this.selectedLanguage}; expires=Thu, 01 Jan 2099 00:00:00 UTC; path=/`;
     },
     connect() {
-    if (this.username === '' || this.password === '' || this.officeID === '') {
+    if (this.username === '' || this.password === '' || this.cpid === '') {
       this.errorMessage = this.translations[this.selectedLanguage].fillFormError;
       return;
     } else {
       this.connecting = true;
-      this.errorMessage = ''; // Clear any previous error message
-      const actualUser = this.officeID + '_' + this.username;
-        const options = {
-          useSSL: false,
-          userName: this.username, // may change in the future
-          password: this.password,
-          onSuccess: () => {
-            clearTimeout(connectionTimeoutId);
+      this.errorMessage = '';
+      const apiUrl = 'http://222.222.119.72:15518/login';
+      const params = {
+        cpid: this.cpid,
+        username: this.username,
+        password: this.password,
+      };
+
+      axios.get(apiUrl, { params })
+        .then(response => {
+          // Check if the API call was successful and a token was received
+          if (response.data && response.data.token) {
+            this.returnToken = response.data.token;
+            console.log(this.returnToken);
             this.connecting = false;
             this.errorMessage = '';
-            this.disconnect(); // Call the disconnect method after a successful connection
-            this.generateRandomToken();
+            // Call setLanguageCookie to set the selectedLanguage cookie
+            this.setLanguageCookie();
+            const actualUser = this.cpid + this.username;
             this.$emit('login-success', {
               actualUser: actualUser,
               username: this.username,
               password: this.password,
-              token: this.randomToken,
+              token: this.returnToken,
             });
-          },
-
-          onFailure: (error) => {
-            clearTimeout(connectionTimeoutId);
-            console.error('MQTT connection error:', error.errorMessage);
+          } else {
             this.errorMessage = this.translations[this.selectedLanguage].connectionError;
             this.connecting = false;
-          },
-        };
-
-      this.client = new Paho.Client(this.brokerUrl, 'clientId');
-
-      // Set up a timeout to handle connection failure
-      let connectionTimeoutId = null;
-      const handleConnectionTimeout = () => {
-        this.client.disconnect();
-        this.errorMessage = this.translations[this.selectedLanguage].connectionError;
-        this.connecting = false;
-      };
-      connectionTimeoutId = setTimeout(handleConnectionTimeout, this.connectionTimeout);
-
-      this.client.connect(options);
-
-      // Call setLanguageCookie to set the selectedLanguage cookie
-      this.setLanguageCookie();
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+          this.connecting = false;
+        });
     }
-      },
-    disconnect() {
-      if (this.client && this.client.isConnected()) {
-        this.client.disconnect();
-      }
-    },
-    generateRandomToken() {
-      // Generate a random token (you can customize this part)
-      const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      const tokenLength = 3;
-      let token = '';
-      for (let i = 0; i < tokenLength; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        token += characters.charAt(randomIndex);
-      }
-      this.randomToken = token;
     },
   },
 };
