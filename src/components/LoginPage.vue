@@ -121,6 +121,7 @@ export default {
       } else {
         this.connecting = true;
         this.errorMessage = '';
+        
         // fetch way
         const url = `http://222.222.119.72:15518/login?cpid=${this.cpid}&username=${this.username}&password=${this.password}`;
         fetch(url, {
@@ -128,7 +129,6 @@ export default {
           headers: {
             'Content-Type': 'application/json',
           },
-          
         })
           .then(response => {
             if (!response.ok) {
@@ -160,7 +160,7 @@ export default {
             this.connecting = false;
           });
           
-          // Axios way
+        // Axios way
         // try {
         //   // Make the HTTP request to the API
         //   const response = await axios.get(
