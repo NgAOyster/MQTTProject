@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faLock, faUser, faKey, faBuilding } from "@fortawesome/free-solid-svg-icons";
@@ -114,30 +114,31 @@ export default {
     setLanguageCookie() {
       document.cookie = `selectedLanguage=${this.selectedLanguage}; expires=Thu, 01 Jan 2099 00:00:00 UTC; path=/`;
     },
-    async connect() {
+    connect() {
       if (this.username === '' || this.password === '' || this.cpid === '') {
         this.errorMessage = this.translations[this.selectedLanguage].fillFormError;
         return;
       } else {
         this.connecting = true;
         this.errorMessage = '';
-        try {
-          // Make the HTTP request to the API
-          const response = await axios.get(
-            'http://222.222.119.72:15518/login',
-            {
-              params: {
-                cpid: this.cpid,
-                username: this.username,
-                password: this.password,
-              }
+        // fetch way
+        const url = `http://222.222.119.72:15518/login?cpid=${this.cpid}&username=${this.username}&password=${this.password}`;
+        fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          
+        })
+          .then(response => {
+            if (!response.ok) {
+              this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+              this.connecting = false;
             }
-          );
-
-          // Check if the response status is OK (200)
-          if (response.status === 200) {
-            // Assuming the response body contains a JSON object with a 'token' field
-            const token = response.data.token;
+            return response.json();
+          })
+          .then(data => {
+            const token = data.token;
             this.returnToken = token;
             console.log('Token:', token);
             
@@ -152,16 +153,55 @@ export default {
               password: this.password,
               token: this.returnToken,
             });
-          } else {
-            console.error('Failed to retrieve token');
+          })
+          .catch(error => {
+            console.error('An error occurred:', error);
             this.errorMessage = this.translations[this.selectedLanguage].connectionError;
             this.connecting = false;
-          }
-        } catch (error) {
-          console.error('An error occurred:', error);
-          this.errorMessage = this.translations[this.selectedLanguage].connectionError;
-          this.connecting = false;
-        }
+          });
+          
+          // Axios way
+        // try {
+        //   // Make the HTTP request to the API
+        //   const response = await axios.get(
+        //     'http://222.222.119.72:15518/login',
+        //     {
+        //       params: {
+        //         cpid: this.cpid,
+        //         username: this.username,
+        //         password: this.password,
+        //       }
+        //     }
+        //   );
+
+        //   // Check if the response status is OK (200)
+        //   if (response.status === 200) {
+        //     // Assuming the response body contains a JSON object with a 'token' field
+        //     const token = response.data.token;
+        //     this.returnToken = token;
+        //     console.log('Token:', token);
+            
+        //     this.connecting = false;
+        //     this.errorMessage = '';
+        //     this.setLanguageCookie(); // Call setLanguageCookie to set the selectedLanguage cookie
+        //     const actualUser = this.cpid + this.username;
+            
+        //     this.$emit('login-success', {
+        //       actualUser: actualUser,
+        //       username: this.username,
+        //       password: this.password,
+        //       token: this.returnToken,
+        //     });
+        //   } else {
+        //     console.error('Failed to retrieve token');
+        //     this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+        //     this.connecting = false;
+        //   }
+        // } catch (error) {
+        //   console.error('An error occurred:', error);
+        //   this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+        //   this.connecting = false;
+        // }
       }
     },
   },
