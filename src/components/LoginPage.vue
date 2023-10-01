@@ -114,31 +114,38 @@ export default {
     setLanguageCookie() {
       document.cookie = `selectedLanguage=${this.selectedLanguage}; expires=Thu, 01 Jan 2099 00:00:00 UTC; path=/`;
     },
-    connect() {
-    if (this.username === '' || this.password === '' || this.cpid === '') {
-      this.errorMessage = this.translations[this.selectedLanguage].fillFormError;
-      return;
-    } else {
-      this.connecting = true;
-      this.errorMessage = '';
-      const apiUrl = 'http://222.222.119.72:15518/login';
-      const params = {
-        cpid: this.cpid,
-        username: this.username,
-        password: this.password,
-      };
+    async connect() {
+      if (this.username === '' || this.password === '' || this.cpid === '') {
+        this.errorMessage = this.translations[this.selectedLanguage].fillFormError;
+        return;
+      } else {
+        this.connecting = true;
+        this.errorMessage = '';
+        try {
+          // Make the HTTP request to the API
+          const response = await axios.get(
+            'http://222.222.119.72:15518/login',
+            {
+              params: {
+                cpid: this.cpid,
+                username: this.username,
+                password: this.password,
+              }
+            }
+          );
 
-      axios.get(apiUrl, { params })
-        .then(response => {
-          // Check if the API call was successful and a token was received
-          if (response.data && response.data.token) {
-            this.returnToken = response.data.token;
-            console.log(this.returnToken);
+          // Check if the response status is OK (200)
+          if (response.status === 200) {
+            // Assuming the response body contains a JSON object with a 'token' field
+            const token = response.data.token;
+            this.returnToken = token;
+            console.log('Token:', token);
+            
             this.connecting = false;
             this.errorMessage = '';
-            // Call setLanguageCookie to set the selectedLanguage cookie
-            this.setLanguageCookie();
+            this.setLanguageCookie(); // Call setLanguageCookie to set the selectedLanguage cookie
             const actualUser = this.cpid + this.username;
+            
             this.$emit('login-success', {
               actualUser: actualUser,
               username: this.username,
@@ -146,16 +153,16 @@ export default {
               token: this.returnToken,
             });
           } else {
+            console.error('Failed to retrieve token');
             this.errorMessage = this.translations[this.selectedLanguage].connectionError;
             this.connecting = false;
           }
-        })
-        .catch(error => {
-          console.error('Error:', error);
+        } catch (error) {
+          console.error('An error occurred:', error);
           this.errorMessage = this.translations[this.selectedLanguage].connectionError;
           this.connecting = false;
-        });
-    }
+        }
+      }
     },
   },
 };
