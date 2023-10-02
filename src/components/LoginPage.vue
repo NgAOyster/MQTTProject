@@ -123,50 +123,50 @@ export default {
         this.errorMessage = '';
         
         // API still in testing, use this if you want do other page features
-        // this.$emit('login-success', {
-        //   actualUser: "Helloml001",
-        //   username: "ml001",
-        //   password: "ml001",
-        //   token: "e76g4r1w2", // random type, just use in demo of success login
-        // });
+        this.$emit('login-success', {
+          actualUser: "Helloml001",
+          username: "ml001",
+          password: "ml001",
+          token: "e76g4r1w2", // random type, just use in demo of success login
+        });
 
         // fetch way
-        const url = `http://222.222.119.72:15518/login?cpid=${this.cpid}&username=${this.username}&password=${this.password}`;
-        fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then(response => {
-            if (!response.ok) {
-              this.errorMessage = this.translations[this.selectedLanguage].connectionError;
-              this.connecting = false;
-            }
-            return response.json();
-          })
-          .then(data => {
-            const token = data.token;
-            this.returnToken = token;
-            console.log('Token:', token);
+        // const url = `http://222.222.119.72:15518/login?cpid=${this.cpid}&username=${this.username}&password=${this.password}`;
+        // fetch(url, {
+        //   method: 'GET',
+        //   headers: {
+        //     'Content-Type': 'application/json',
+        //   },
+        // })
+        //   .then(response => {
+        //     if (!response.ok) {
+        //       this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+        //       this.connecting = false;
+        //     }
+        //     return response.json();
+        //   })
+        //   .then(data => {
+        //     const token = data.token;
+        //     this.returnToken = token;
+        //     console.log('Token:', token);
             
-            this.connecting = false;
-            this.errorMessage = '';
-            this.setLanguageCookie(); // Call setLanguageCookie to set the selectedLanguage cookie
-            const actualUser = this.cpid + this.username;
+        //     this.connecting = false;
+        //     this.errorMessage = '';
+        //     this.setLanguageCookie(); // Call setLanguageCookie to set the selectedLanguage cookie
+        //     const actualUser = this.cpid + this.username;
             
-            this.$emit('login-success', {
-              actualUser: actualUser,
-              username: this.username,
-              password: this.password,
-              token: this.returnToken,
-            });
-          })
-          .catch(error => {
-            console.error('An error occurred:', error);
-            this.errorMessage = this.translations[this.selectedLanguage].connectionError;
-            this.connecting = false;
-          });
+        //     this.$emit('login-success', {
+        //       actualUser: actualUser,
+        //       username: this.username,
+        //       password: this.password,
+        //       token: this.returnToken,
+        //     });
+        //   })
+        //   .catch(error => {
+        //     console.error('An error occurred:', error);
+        //     this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+        //     this.connecting = false;
+        //   });
           
         // Axios way
         // try {
