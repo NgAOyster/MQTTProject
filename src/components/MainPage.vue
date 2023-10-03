@@ -301,17 +301,13 @@ export default {
       if (this.mqttClient.isConnected()) {
         const tempTopic = "dgmg01/peripheral/station1/device54/othertemperature";
         const tempData = {
-          temp1: this.getRandomNumber(50, 120),
-          temp2: this.getRandomNumber(50, 120),
-          temp3: this.getRandomNumber(50, 120),
-          temp4: this.getRandomNumber(50, 120),
+          temp1: this.getRandomNumber(50, 120), temp2: this.getRandomNumber(50, 120), 
+          temp3: this.getRandomNumber(50, 120), temp4: this.getRandomNumber(50, 120),
         };
         const currentTopic = "dgmg01/peripheral/station1/device54/othercurrent";
         const currentData = {
-          current1: this.getRandomDecimal(5.00, 20.00, 2),
-          current2: this.getRandomDecimal(5.00, 20.00, 2),
-          current3: this.getRandomDecimal(5.00, 20.00, 2),
-          current4: this.getRandomDecimal(5.00, 20.00, 2),
+          current1: this.getRandomDecimal(5.00, 20.00, 2), current2: this.getRandomDecimal(5.00, 20.00, 2), 
+          current3: this.getRandomDecimal(5.00, 20.00, 2), current4: this.getRandomDecimal(5.00, 20.00, 2),
         };
         const tempMessage = new Paho.Message(JSON.stringify(tempData));
         tempMessage.destinationName = tempTopic;
@@ -333,64 +329,64 @@ export default {
       return Math.round((Math.random() * (max - min) + min) * factor) / factor;
     },
     handleMessage(message, topic, dataCollection) {
-  const isTemperature = topic.endsWith("/othertemperature");
-  const isCurrent = topic.endsWith("/othercurrent");
-  if (isTemperature || isCurrent) {
-    const jsonData = JSON.parse(message);
-    const localTimeString = new Date().toLocaleString();
-    const currentTime = new Date().toLocaleTimeString();
-    let dgmgMessage = this.translations[this.selectedLanguage].ordinaryMessage;
-    const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-    if (topicPrefix === "dgmg02") { dgmgMessage = this.translations[this.selectedLanguage].controlMessage; }
-    else if (topicPrefix === "dgmg03") { dgmgMessage = this.translations[this.selectedLanguage].alarmMessage; }
-    else if (topicPrefix === "dgmg04") { dgmgMessage = this.translations[this.selectedLanguage].seriousWarning; }
-    let equipment = this.translations[this.selectedLanguage].asphaltMixingPlant;
-    const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-    if (charactersAfterSeventh === "asphaltcrush") { equipment = this.translations[this.selectedLanguage].asphaltCrushing; }
-    else if (charactersAfterSeventh === "warmingmix") { equipment = this.translations[this.selectedLanguage].warmingMixingFoaming; }
-    else if (charactersAfterSeventh === "stonecrush") { equipment = this.translations[this.selectedLanguage].aggregateShapingCrushing; }
-    else if (charactersAfterSeventh === "peripheral") { equipment = this.translations[this.selectedLanguage].peripheralEquipment; }
-    // Extract machineId from the topic
-    const topicParts = topic.split('/');
-    const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
-    const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
-    const typeEquipment = equipment;
-    this.machineID = machineId.toString();
-    this.equipment = typeEquipment;
-    const data = {
-      time: localTimeString,
-      machineId,
-      equipment,
-    };
-    if (isTemperature) {
-      data.TempdgmgMessage = dgmgMessage;
-      data.temp1 = jsonData.temp1;
-      data.temp2 = jsonData.temp2;
-      data.temp3 = jsonData.temp3;
-      data.temp4 = jsonData.temp4;
-      this.ChartTempX.push(currentTime);
-      this.ChartTempY.push([jsonData.temp1, jsonData.temp2, jsonData.temp3, jsonData.temp4]);
-    } else if (isCurrent) {
-      data.CurrentdgmgMessage = dgmgMessage;
-      data.current1 = jsonData.current1;
-      data.current2 = jsonData.current2;
-      data.current3 = jsonData.current3;
-      data.current4 = jsonData.current4;
-      this.ChartCurrentX.push(currentTime);
-      this.ChartCurrentY.push([jsonData.current1, jsonData.current2, jsonData.current3, jsonData.current4]);
-    }
-    const existingIndex = dataCollection.findIndex(
-      (dataItem) =>
-        dataItem.machineId === machineId &&
-        dataItem.equipment === equipment
-    );
-    if (existingIndex !== -1) {
-      dataCollection[existingIndex] = data;
-    } else {
-      dataCollection.push(data);
-    }
-  }
-},
+      const isTemperature = topic.endsWith("/othertemperature");
+      const isCurrent = topic.endsWith("/othercurrent");
+      if (isTemperature || isCurrent) {
+        const jsonData = JSON.parse(message);
+        const localTimeString = new Date().toLocaleString();
+        const currentTime = new Date().toLocaleTimeString();
+        let dgmgMessage = this.translations[this.selectedLanguage].ordinaryMessage;
+        const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
+        if (topicPrefix === "dgmg02") { dgmgMessage = this.translations[this.selectedLanguage].controlMessage; }
+        else if (topicPrefix === "dgmg03") { dgmgMessage = this.translations[this.selectedLanguage].alarmMessage; }
+        else if (topicPrefix === "dgmg04") { dgmgMessage = this.translations[this.selectedLanguage].seriousWarning; }
+        let equipment = this.translations[this.selectedLanguage].asphaltMixingPlant;
+        const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
+        if (charactersAfterSeventh === "asphaltcrush") { equipment = this.translations[this.selectedLanguage].asphaltCrushing; }
+        else if (charactersAfterSeventh === "warmingmix") { equipment = this.translations[this.selectedLanguage].warmingMixingFoaming; }
+        else if (charactersAfterSeventh === "stonecrush") { equipment = this.translations[this.selectedLanguage].aggregateShapingCrushing; }
+        else if (charactersAfterSeventh === "peripheral") { equipment = this.translations[this.selectedLanguage].peripheralEquipment; }
+        // Extract machineId from the topic
+        const topicParts = topic.split('/');
+        const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
+        const machineId = parseInt(machineIdPart.replace('device', '')); // Remove 'device' prefix and parse as an integer
+        const typeEquipment = equipment;
+        this.machineID = machineId.toString();
+        this.equipment = typeEquipment;
+        const data = {
+          time: localTimeString,
+          machineId,
+          equipment,
+        };
+        if (isTemperature) {
+          data.TempdgmgMessage = dgmgMessage;
+          data.temp1 = jsonData.temp1;
+          data.temp2 = jsonData.temp2;
+          data.temp3 = jsonData.temp3;
+          data.temp4 = jsonData.temp4;
+          this.ChartTempX.push(currentTime);
+          this.ChartTempY.push([jsonData.temp1, jsonData.temp2, jsonData.temp3, jsonData.temp4]);
+        } else if (isCurrent) {
+          data.CurrentdgmgMessage = dgmgMessage;
+          data.current1 = jsonData.current1;
+          data.current2 = jsonData.current2;
+          data.current3 = jsonData.current3;
+          data.current4 = jsonData.current4;
+          this.ChartCurrentX.push(currentTime);
+          this.ChartCurrentY.push([jsonData.current1, jsonData.current2, jsonData.current3, jsonData.current4]);
+        }
+        const existingIndex = dataCollection.findIndex(
+          (dataItem) =>
+            dataItem.machineId === machineId &&
+            dataItem.equipment === equipment
+        );
+        if (existingIndex !== -1) {
+          dataCollection[existingIndex] = data;
+        } else {
+          dataCollection.push(data);
+        }
+      }
+    },
 
     clearConnectionTimer() {
       if (this.connectionTimer) {
@@ -445,19 +441,19 @@ export default {
       if (this.disconnect) { return 'disconnected'; }
     },
     getStatusText() {
-  if (!this.onlineStatus) { return this.translations[this.selectedLanguage].networkDisconnect; }
-  if (this.connectStatus) { return this.translations[this.selectedLanguage].connected; }
-  if (this.reconnectStatus) { return this.translations[this.selectedLanguage].reconnecting; }
-  if (this.disconnect) { return this.translations[this.selectedLanguage].disconnected; }
-},
+      if (!this.onlineStatus) { return this.translations[this.selectedLanguage].networkDisconnect; }
+      if (this.connectStatus) { return this.translations[this.selectedLanguage].connected; }
+      if (this.reconnectStatus) { return this.translations[this.selectedLanguage].reconnecting; }
+      if (this.disconnect) { return this.translations[this.selectedLanguage].disconnected; }
+    },
 
     confirmLogout() {
-  const confirmLogout = window.confirm(this.translations[this.selectedLanguage].logoutConfirmation);
-  if (confirmLogout) {
-    alert(this.translations[this.selectedLanguage].logoutSuccessMessage);
-    this.$emit('logout');
-  }
-},
+      const confirmLogout = window.confirm(this.translations[this.selectedLanguage].logoutConfirmation);
+      if (confirmLogout) {
+        alert(this.translations[this.selectedLanguage].logoutSuccessMessage);
+        this.$emit('logout');
+      }
+    },
     returnFunc(){
       this.$emit('returnBack');
     }

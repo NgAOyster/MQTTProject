@@ -216,25 +216,25 @@
     },
     methods: {
       getMessageClass(message) {
-      let messageClass = '';
-      switch (message) {
-      case this.translations[this.selectedLanguage].normalMessage: 
-        messageClass = 'normal-message';
-        break;
-      case this.translations[this.selectedLanguage].controlMessage: 
-        messageClass = 'control-message';
-        break;
-      case this.translations[this.selectedLanguage].warningMessage: 
-        messageClass = 'warning-message';
-        break;
-      case this.translations[this.selectedLanguage].criticalMessage: 
-        messageClass = 'critical-message';
-        break;
-      default:
-        messageClass = ''; // Default class if no match is found
-  }
-  return messageClass;
-},
+        let messageClass = '';
+        switch (message) {
+          case this.translations[this.selectedLanguage].normalMessage: 
+            messageClass = 'normal-message';
+            break;
+          case this.translations[this.selectedLanguage].controlMessage: 
+            messageClass = 'control-message';
+            break;
+          case this.translations[this.selectedLanguage].warningMessage: 
+            messageClass = 'warning-message';
+            break;
+          case this.translations[this.selectedLanguage].criticalMessage: 
+            messageClass = 'critical-message';
+            break;
+          default:
+            messageClass = ''; // Default class if no match is found
+        }
+        return messageClass;
+      },
       renderChart() {
         const limit = 20;
         
