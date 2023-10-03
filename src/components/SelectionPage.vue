@@ -2,7 +2,6 @@
   <div>
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav" style="padding: 10px;">
-      <a class="navbar-brand" href="#" style="color: white;">{{ currentTranslations.temperature }}</a>
       <!-- Hamburger Menu Icon -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
         <span class="navbar-toggler-icon"></span>
@@ -81,7 +80,6 @@ export default {
       selectedLanguage: 'chinese', // Set the default language
       translations: {
         chinese: {
-          temperature: '温度',
           selectDevice: '請选择设备',
           connectingToMQTT: '正在连接MQTT服务器...',
           pleaseWait: '这可能需要几秒钟时间。请稍等...',
@@ -101,7 +99,6 @@ export default {
           subDeviceD: '子设备D',
         },
         english: {
-          temperature: 'temperature',
           selectDevice: 'Please select a device',
           connectingToMQTT: 'Currently connecting to MQTT Services...',
           pleaseWait: 'This will take a few seconds, please wait for a while...',
