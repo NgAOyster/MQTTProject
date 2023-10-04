@@ -2,6 +2,7 @@
   <div>
     <!-- Navbar Start -->
     <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav" style="padding: 10px;">
+      <a class="navbar-brand" href="#" style="color: white;">{{ currentTranslations.title }}</a>
       <!-- Hamburger Menu Icon -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
         <span class="navbar-toggler-icon"></span>
@@ -34,7 +35,7 @@
             <ul class="list-unstyled tree">
               <li>
                 <!-- Apply circular container to the button element -->
-                <button class="circular-btn" @click="ButtonClick(deviceGroup.name)">
+                <button class="circular-btn" @click="ButtonClick(deviceGroup.name, selectedLanguage)">
                   <i class="fas fa-folder icon-with-space"></i> {{ deviceGroup.name }}
                 </button>
                 <br><br>
@@ -76,10 +77,10 @@ export default {
   },
   data() {
     return {
-      deviceGroup: '',
       selectedLanguage: 'chinese', // Set the default language
       translations: {
         chinese: {
+          title: '设备',
           selectDevice: '請选择设备',
           connectingToMQTT: '正在连接MQTT服务器...',
           pleaseWait: '这可能需要几秒钟时间。请稍等...',
@@ -99,6 +100,7 @@ export default {
           subDeviceD: '子设备D',
         },
         english: {
+          title: 'Device',
           selectDevice: 'Please select a device',
           connectingToMQTT: 'Currently connecting to MQTT Services...',
           pleaseWait: 'This will take a few seconds, please wait for a while...',
@@ -132,10 +134,22 @@ export default {
         this.$emit('logout');
       }
     },
-    ButtonClick(groupName) {
-      this.deviceGroup = groupName;
-      this.$emit('select-item', { deviceGroup: this.deviceGroup });
-    }
+    ButtonClick(groupName, language) {
+      if(language === 'chinese'){
+        const deviceGroupCN = groupName;
+        const Key = this.getKeyByValue(this.translations.chinese, deviceGroupCN);
+        const deviceGroupEN = this.translations.english[Key]
+        this.$emit('select-item', { deviceGroupCN: deviceGroupCN, deviceGroupEN: deviceGroupEN });
+      } else if (language === 'english'){
+        const deviceGroupEN = groupName;
+        const Key = this.getKeyByValue(this.translations.english, deviceGroupEN);
+        const deviceGroupCN = this.translations.chinese[Key]
+        this.$emit('select-item', { deviceGroupCN: deviceGroupCN, deviceGroupEN: deviceGroupEN });
+      }
+    },
+    getKeyByValue(object, value) {
+      return Object.keys(object).find(key => object[key] === value);
+    },
   },
   created() {
     const selectedLanguageCookie = Cookies.get('selectedLanguage');

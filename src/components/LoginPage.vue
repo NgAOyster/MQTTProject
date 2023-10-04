@@ -54,7 +54,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+//import axios from 'axios';
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { faLock, faUser, faKey, faBuilding } from "@fortawesome/free-solid-svg-icons";
@@ -123,13 +123,13 @@ export default {
         this.errorMessage = '';
         
         // API still in testing, use this if you want do other page features
-        // this.setLanguageCookie();
-        // this.$emit('login-success', {
-        //   actualUser: "Helloml001",
-        //   username: "ml001",
-        //   password: "ml001",
-        //   token: "e76g4r1w2", // random type, just use in demo of success login
-        // });
+        this.setLanguageCookie();
+        this.$emit('login-success', {
+          actualUser: "Helloml001",
+          username: "ml001",
+          password: "ml001",
+          token: "e76g4r1w2", // random type, just use in demo of success login
+        });
 
         // fetch way
         // const url = `http://222.222.119.72:15518/login?cpid=${this.cpid}&username=${this.username}&password=${this.password}`;
@@ -170,47 +170,47 @@ export default {
         //   });
           
         // Axios way
-        try {
-          // Make the HTTP request to the API
-          const response = await axios.get(
-            'http://222.222.119.72:15518/login',
-            {
-              params: {
-                cpid: this.cpid,
-                username: this.username,
-                password: this.password,
-              }
-            }
-          );
+        // try {
+        //   // Make the HTTP request to the API
+        //   const response = await axios.get(
+        //     'http://222.222.119.72:15518/login',
+        //     {
+        //       params: {
+        //         cpid: this.cpid,
+        //         username: this.username,
+        //         password: this.password,
+        //       }
+        //     }
+        //   );
 
-          // Check if the response status is OK (200)
-          if (response.status === 200) {
-            // Assuming the response body contains a JSON object with a 'token' field
-            const token = response.data.token;
-            this.returnToken = token;
-            console.log('Token:', token);
+        //   // Check if the response status is OK (200)
+        //   if (response.status === 200) {
+        //     // Assuming the response body contains a JSON object with a 'token' field
+        //     const token = response.data.token;
+        //     this.returnToken = token;
+        //     console.log('Token:', token);
             
-            this.connecting = false;
-            this.errorMessage = '';
-            this.setLanguageCookie(); // Call setLanguageCookie to set the selectedLanguage cookie
-            const actualUser = this.cpid + this.username;
+        //     this.connecting = false;
+        //     this.errorMessage = '';
+        //     this.setLanguageCookie(); // Call setLanguageCookie to set the selectedLanguage cookie
+        //     const actualUser = this.cpid + this.username;
             
-            this.$emit('login-success', {
-              actualUser: actualUser,
-              username: this.username,
-              password: this.password,
-              token: this.returnToken,
-            });
-          } else {
-            console.error('Failed to retrieve token');
-            this.errorMessage = this.translations[this.selectedLanguage].connectionError;
-            this.connecting = false;
-          }
-        } catch (error) {
-          console.error('An error occurred:', error);
-          this.errorMessage = this.translations[this.selectedLanguage].connectionError;
-          this.connecting = false;
-        }
+        //     this.$emit('login-success', {
+        //       actualUser: actualUser,
+        //       username: this.username,
+        //       password: this.password,
+        //       token: this.returnToken,
+        //     });
+        //   } else {
+        //     console.error('Failed to retrieve token');
+        //     this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+        //     this.connecting = false;
+        //   }
+        // } catch (error) {
+        //   console.error('An error occurred:', error);
+        //   this.errorMessage = this.translations[this.selectedLanguage].connectionError;
+        //   this.connecting = false;
+        // }
       }
     },
   },

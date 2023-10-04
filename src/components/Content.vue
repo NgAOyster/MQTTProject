@@ -1,5 +1,5 @@
 <template>
-  <div v-if="dataType === '温度' || dataType ==='temperature'">
+  <div v-if="dataType === '温度' || dataType ==='Temperature'">
     <h3><i class="fas fa-thermometer-half"></i> {{ translations[selectedLanguage].temperatureDataTitle }}</h3>
     <br>
     <div class="data-container" v-for="(data, index) in temperatureData" :key="index">
@@ -14,14 +14,14 @@
         </tr>
         <tr>
           <th>{{ translations[selectedLanguage].equipmentLabel }}：</th>
-          <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
+          <td>{{ PageLanguage(data.equipment) }}</td>
         </tr>
       </table>
       <br>
       <table class="data-table">
         <tr>
           <th>{{ translations[selectedLanguage].temperatureMessageLabel }}：</th>
-          <td :class="getMessageClass(data.TempdgmgMessage)">{{ data.TempdgmgMessage }}</td>
+          <td :class="getMessageClass(data.TempdgmgMessage)">{{ PageLanguage(data.TempdgmgMessage) }}</td>
         </tr>
       </table>
       <table class="data-table">
@@ -41,7 +41,7 @@
     </div>
     <br>
   </div>
-  <div v-else-if="dataType === '电流' || dataType ==='current'">
+  <div v-else-if="dataType === '电流' || dataType ==='Current'">
     <h3><i class="fas fa-bolt"></i> {{ translations[selectedLanguage].currentDataTitle }}</h3>
     <br>
     <div class="data-container" v-for="(data, index) in currentData" :key="index">
@@ -56,14 +56,14 @@
         </tr>
         <tr>
           <th>{{ translations[selectedLanguage].equipmentLabel }}：</th>
-          <td :class="getMessageClass(data.equipment)">{{ data.equipment }}</td>
+          <td>{{ PageLanguage(data.equipment) }}</td>
         </tr>
       </table>
       <br>
       <table class="data-table">
         <tr>
           <th>{{ translations[selectedLanguage].currentMessageLabel }}：</th>
-          <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ data.CurrentdgmgMessage }}</td>
+          <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ PageLanguage(data.CurrentdgmgMessage) }}</td>
         </tr>
       </table>
       <table class="data-table">
@@ -85,14 +85,17 @@
   </div>
   <div v-else>
     <i class="fas fa-question-circle"></i> {{ translations[selectedLanguage].selectDataMessage }}
+    <br><br>
   </div>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6">
-        <div ref="tempChart" style="width: 100%; height: 300px;"></div>
-      </div>
-      <div class="col-md-6">
-        <div ref="currentChart" style="width: 100%; height: 300px;"></div>
+  <div v-if="dataType !== '选择设备' || dataType !== 'Choose Equipment'">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div ref="tempChart" style="width: 100%; height: 300px;"></div>
+        </div>
+        <div class="col-md-6">
+          <div ref="currentChart" style="width: 100%; height: 300px;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -133,10 +136,6 @@
           monitorLabel: '监测',
           celsiusLabel: '摄氏度',
           ampereLabel: '安培',
-          normalMessage: '普通消息',
-          controlMessage: '控制消息',
-          warningMessage: '告警消息',
-          criticalMessage: '严重警告',
           temperatureChartTitle: '温度数据',  
           temperature1: '温度1',             
           temperature2: '温度2',             
@@ -162,10 +161,6 @@
           monitorLabel: 'Monitor',
           celsiusLabel: '°C',
           ampereLabel: 'A',
-          normalMessage: 'Normal Message',
-          controlMessage: 'Control Message',
-          warningMessage: 'Warning Message',
-          criticalMessage: 'Critical Warning',
           temperatureChartTitle: 'Temperature Data', 
           temperature1: 'Temp 1',              
           temperature2: 'Temp 2',              
@@ -181,12 +176,25 @@
     }
   },
     mounted() {
-      if (this.ChartTempX.length > 0 && this.ChartCurrentX.length > 0) {
+      const TempChart = echarts.getInstanceByDom(this.$refs.tempChart);
+      const CurrentChart = echarts.getInstanceByDom(this.$refs.currentChart);
+
+      if (this.ChartTempX.length > 0 && this.ChartCurrentX.length > 0 && TempChart && CurrentChart) {
         this.renderChart();
       }
       this.initial = false;
     },
     watch: {
+      dataType: {
+        handler() {
+          if (this.dataType === '选择设备' || this.dataType === 'Choose Equipment') {
+            if (!this.initial) { this.DisposeChart(); }
+          } else {
+            this.DisposeChart();
+            this.renderChart();
+          }
+        },
+      },
       temperatureData:{
         handler() {
           this.LocalStore();
@@ -218,16 +226,16 @@
       getMessageClass(message) {
         let messageClass = '';
         switch (message) {
-          case this.translations[this.selectedLanguage].normalMessage: 
+          case '普通消息': 
             messageClass = 'normal-message';
             break;
-          case this.translations[this.selectedLanguage].controlMessage: 
+          case  '控制消息': 
             messageClass = 'control-message';
             break;
-          case this.translations[this.selectedLanguage].warningMessage: 
+          case '告警消息': 
             messageClass = 'warning-message';
             break;
-          case this.translations[this.selectedLanguage].criticalMessage: 
+          case '严重警告': 
             messageClass = 'critical-message';
             break;
           default:
@@ -357,6 +365,23 @@
           localStorage.setItem(this.equipment + '_' + this.machineID + '_currentData', JSON.stringify(lastCurrent));
         }
       },
+      PageLanguage(dataText){
+        const language = this.selectedLanguage;
+        if (language === 'english'){
+          switch(dataText){
+            case '普通消息': dataText = 'Ordinary Message'; break;
+            case '控制消息': dataText = 'Control Message'; break;
+            case '告警消息': dataText = 'Alarm Message'; break;
+            case '严重警告': dataText = 'Serious Warning'; break;
+            case '沥青搅拌站': dataText = 'Asphalt Mixing Plant'; break;
+            case '沥青料破碎': dataText = 'Asphalt Crushing'; break;
+            case '温拌发泡设备': dataText = 'Warming Mixing Foaming'; break;
+            case '骨料整形破碎': dataText = 'Aggregate Shaping Crushing'; break;
+            case '周边设备': dataText = 'Peripheral Equipment'; break;
+          } 
+        }
+        return dataText;
+      }
     }
   };
 </script>

@@ -32,8 +32,8 @@ export default {
         },
         english: {
           monitoringData: 'Monitoring Data',
-          temperature: 'temperature',
-          current: 'current',
+          temperature: 'Temperature',
+          current: 'Current',
         },
       },
       dataTypes: [], // Initialize dataTypes as an empty array
@@ -54,6 +54,9 @@ export default {
   methods: {
     updateDataTypes() {
       this.dataTypes = [this.currentTranslations.temperature, this.currentTranslations.current];
+      const language = this.selectedLanguage;
+      if(language === 'chinese') { this.selectDataType("选择设备"); }
+      else if (language === 'english') {this.selectDataType("Choose Equipment"); }
     },
     selectDataType(dataType) {
       this.$emit("data-type-selected", dataType);

@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="connecting" v-if="!connected">
-  <p>{{ translations[selectedLanguage].connectingToMQTT }}</p>
-  <p>{{ translations[selectedLanguage].pleaseWait }}</p>
+      <p>{{ translations[selectedLanguage].connectingToMQTT }}</p>
+      <p>{{ translations[selectedLanguage].pleaseWait }}</p>
     </div>
     <div v-else>
       <!-- Navbar Start -->
@@ -10,40 +10,40 @@
         <button class="navbar-brand btn" @click="returnFunc()">
           <i class="fas fa-arrow-left" style="color: white;"></i>
         </button>
-        <a class="navbar-brand" href="#" style="color: white;">{{ translations[selectedLanguage].deviceGroup }}</a>
-  <!-- Hamburger Menu Icon -->
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <div class="collapse navbar-collapse" id="mobileNav">
-    <ul class="navbar-nav ms-auto p-8 align-items-center">
-      <li class="nav-item">
-        <div class="mx-4">{{ translations[selectedLanguage].currentStatus }}<span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
-      </li>
-      <li class="nav-item">
-        <div class="mx-4" v-if="Timer">
-        {{ translations[selectedLanguage].connected }}: {{ connectionTime }}
+        <a class="navbar-brand" href="#" style="color: white;">{{ DeviceGroupLanguage(selectedLanguage) }}</a>
+        <!-- Hamburger Menu Icon -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mobileNav">
+          <ul class="navbar-nav ms-auto p-8 align-items-center">
+            <li class="nav-item">
+              <div class="mx-4">{{ translations[selectedLanguage].currentStatus }}<span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
+            </li>
+            <li class="nav-item">
+              <div class="mx-4" v-if="Timer">
+              {{ translations[selectedLanguage].connected }}: {{ connectionTime }}
+              </div>
+              <div class="mx-4" v-else>
+              {{ translations[selectedLanguage].disconnected }}
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="dropdown">
+                      <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                      <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
+                      </button>
+                    <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
+                  <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
+                  <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ translations[selectedLanguage].logout }}</a>
+                </div>
+                </div>
+            </li>
+          </ul>
         </div>
-        <div class="mx-4" v-else>
-        {{ translations[selectedLanguage].disconnected }}
-        </div>
-      </li>
-      <li class="nav-item">
-        <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-                <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
-                </button>
-              <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
-            <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
-            <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ translations[selectedLanguage].logout }}</a>
-          </div>
-          </div>
-      </li>
-    </ul>
-  </div>
-</nav>
+      </nav>
       <!-- Navbar End -->
       <div class="container-fluid" style="height: 100vh;">
         <div class="row">
@@ -84,7 +84,8 @@ export default {
   props: {
     username: String,
     password: String,
-    deviceGroup: String
+    deviceGroupCN: String,
+    deviceGroupEN: String,
   },
   components: {
     Sidebar,
@@ -125,15 +126,6 @@ export default {
           logoutSuccessMessage: '您已成功登出',
           connectionLostAlert: '与MQTT服务器的连接已断开...',
           mqttConnectionErrorAlert: '无法连接到MQTT服务器, 请检查服务器配置并尝试重新连接。',
-          ordinaryMessage: '普通消息',
-          controlMessage: '控制消息',
-          alarmMessage: '告警消息',
-          seriousWarning: '严重警告',
-          asphaltMixingPlant: '沥青搅拌站',
-          asphaltCrushing: '沥青料破碎',
-          warmingMixingFoaming: '温拌发泡设备',
-          aggregateShapingCrushing: '骨料整形破碎',
-          peripheralEquipment: '周边设备',
           networkDisconnectMessage: '网络连接已断开，您现在处于离线状态。',
           logout: '登出',
         },
@@ -151,15 +143,6 @@ export default {
           logoutSuccessMessage: 'You have successfully logged out',
           connectionLostAlert: 'The connection to the MQTT server has been lost...',
           mqttConnectionErrorAlert: 'Unable to connect to the MQTT server, please check the server configuration and try to reconnect.',
-          ordinaryMessage: 'Ordinary Message',
-          controlMessage: 'Control Message',
-          alarmMessage: 'Alarm Message',
-          seriousWarning: 'Serious Warning',
-          asphaltMixingPlant: 'Asphalt Mixing Plant',
-          asphaltCrushing: 'Asphalt Crushing',
-          warmingMixingFoaming: 'Warming Mixing Foaming',
-          aggregateShapingCrushing: 'Aggregate Shaping Crushing',
-          peripheralEquipment: 'Peripheral Equipment',
           networkDisconnectMessage: 'Network connection is disconnected, you are now in offline mode.',
           logout: 'Logout',
         },
@@ -222,9 +205,11 @@ export default {
     changeLanguage(language) {
       this.selectedLanguage = language;
       Cookies.set('selectedLanguage', language, { expires: 365 }); // Update the entire cookie with a 1-year expiration
-
-      },
-
+    },
+    DeviceGroupLanguage(selectedLanguage){
+      if (selectedLanguage === 'chinese') { return this.deviceGroupCN; }
+      else if (selectedLanguage === 'english') { return this.deviceGroupEN; }
+    },
     initMQTT() {
       this.disconnect = false;
       const randomPart = Math.random().toString(36).substr(2, 8); // Generate a random string
@@ -335,17 +320,17 @@ export default {
         const jsonData = JSON.parse(message);
         const localTimeString = new Date().toLocaleString();
         const currentTime = new Date().toLocaleTimeString();
-        let dgmgMessage = this.translations[this.selectedLanguage].ordinaryMessage;
+        let dgmgMessage = '普通消息';
         const topicPrefix = topic.substring(0, 6); // Get the first 6 characters of the topic
-        if (topicPrefix === "dgmg02") { dgmgMessage = this.translations[this.selectedLanguage].controlMessage; }
-        else if (topicPrefix === "dgmg03") { dgmgMessage = this.translations[this.selectedLanguage].alarmMessage; }
-        else if (topicPrefix === "dgmg04") { dgmgMessage = this.translations[this.selectedLanguage].seriousWarning; }
-        let equipment = this.translations[this.selectedLanguage].asphaltMixingPlant;
+        if (topicPrefix === "dgmg02") { dgmgMessage = '控制消息'; }
+        else if (topicPrefix === "dgmg03") { dgmgMessage = '告警消息'; }
+        else if (topicPrefix === "dgmg04") { dgmgMessage = '严重警告'; }
+        let equipment = '沥青搅拌站';
         const charactersAfterSeventh = topic.substring(7, topic.indexOf('/', 7));
-        if (charactersAfterSeventh === "asphaltcrush") { equipment = this.translations[this.selectedLanguage].asphaltCrushing; }
-        else if (charactersAfterSeventh === "warmingmix") { equipment = this.translations[this.selectedLanguage].warmingMixingFoaming; }
-        else if (charactersAfterSeventh === "stonecrush") { equipment = this.translations[this.selectedLanguage].aggregateShapingCrushing; }
-        else if (charactersAfterSeventh === "peripheral") { equipment = this.translations[this.selectedLanguage].peripheralEquipment; }
+        if (charactersAfterSeventh === "asphaltcrush") { equipment =  '沥青料破碎'; }
+        else if (charactersAfterSeventh === "warmingmix") { equipment = '温拌发泡设备'; }
+        else if (charactersAfterSeventh === "stonecrush") { equipment = '骨料整形破碎'; }
+        else if (charactersAfterSeventh === "peripheral") { equipment = '周边设备'; }
         // Extract machineId from the topic
         const topicParts = topic.split('/');
         const machineIdPart = topicParts[topicParts.length - 2]; // Assuming machineId is the second-to-last part of the topic
@@ -387,7 +372,6 @@ export default {
         }
       }
     },
-
     clearConnectionTimer() {
       if (this.connectionTimer) {
         clearInterval(this.connectionTimer);
@@ -446,7 +430,6 @@ export default {
       if (this.reconnectStatus) { return this.translations[this.selectedLanguage].reconnecting; }
       if (this.disconnect) { return this.translations[this.selectedLanguage].disconnected; }
     },
-
     confirmLogout() {
       const confirmLogout = window.confirm(this.translations[this.selectedLanguage].logoutConfirmation);
       if (confirmLogout) {
