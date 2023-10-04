@@ -8,19 +8,19 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mobileNav">
-        <ul class="navbar-nav ms-auto p-8 align-items-center">
+        <ul class="navbar-nav ms-auto p-2 align-items-center">
           <li class="nav-item">
-              <div class="dropdown">
-                <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+            <div class="dropdown">
+              <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
                 <i class="fas fa-user"></i> {{ currentTranslations.welcomeMessage }}, {{ username }}
-                </button>
+              </button>
               <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
-            <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
-            <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ currentTranslations.logout }}</a>
-          </div>
-          </div>
+                <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
+                <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ currentTranslations.logout }}</a>
+              </div>
+            </div>
           </li>
         </ul>
       </div>
@@ -30,7 +30,7 @@
     <h3>{{ currentTranslations.selectDevice }}</h3><br>
     <div class="container">
       <div class="row">
-        <div v-for="(deviceGroup, index) in deviceGroups" :key="index" class="col-md-6 device-group-space">
+        <div v-for="(deviceGroup, index) in deviceGroups" :key="index" class="col-md-6 device-group-space col-sm-12">
           <div class="text-center mt-4">
             <ul class="list-unstyled tree">
               <li>
@@ -40,10 +40,11 @@
                 </button>
                 <br><br>
                 <div class="row">
-                  <div class="col-md-6" v-for="(device, deviceIndex) in deviceGroup.devices" :key="deviceIndex">
-                    <!-- Apply circular container to the div element -->
-                    <div class="circular-div mb-4">
-                      <i class="fas fa-cogs icon-with-space"></i> {{ device }}
+                  <div class="col-sm-12">
+                    <div class="d-flex flex-wrap">
+                      <div v-for="(device, deviceIndex) in deviceGroup.devices" :key="deviceIndex" class="circular-div mb-4 mr-2" :class="device.type === 'main' ? 'main-device-text' : 'sub-device-text'">
+                        <i class="fas fa-cogs icon-with-space"></i> {{ device.name }}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -68,10 +69,10 @@ export default {
     },
     deviceGroups() {
       return [
-        { name: this.currentTranslations.deviceGroupA, devices: [this.currentTranslations.mainDeviceA, this.currentTranslations.subDeviceA] },
-        { name: this.currentTranslations.deviceGroupB, devices: [this.currentTranslations.mainDeviceB, this.currentTranslations.subDeviceB] },
-        { name: this.currentTranslations.deviceGroupC, devices: [this.currentTranslations.mainDeviceC, this.currentTranslations.subDeviceC] },
-        { name: this.currentTranslations.deviceGroupD, devices: [this.currentTranslations.mainDeviceD, this.currentTranslations.subDeviceD] },
+        { name: this.currentTranslations.deviceGroupA, devices: [ { name: this.currentTranslations.mainDeviceA, type: 'main' }, { name: this.currentTranslations.subDeviceA, type: 'sub' } ]},
+        { name: this.currentTranslations.deviceGroupB, devices: [ { name: this.currentTranslations.mainDeviceB, type: 'main' }, { name: this.currentTranslations.subDeviceB, type: 'sub' } ] },
+        { name: this.currentTranslations.deviceGroupC, devices: [ { name: this.currentTranslations.mainDeviceC, type: 'main' }, { name: this.currentTranslations.subDeviceC, type: 'sub' } ] },
+        { name: this.currentTranslations.deviceGroupD, devices: [ { name: this.currentTranslations.mainDeviceD, type: 'main' }, { name: this.currentTranslations.subDeviceD, type: 'sub' } ] },
       ];
     },
   },
@@ -209,5 +210,17 @@ export default {
 
   .circular-btn:hover {
     background-color: #0056b3;
+  }
+
+  .main-device-text {
+    background-color: #f3502b; 
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .sub-device-text {
+    background-color: #05b325; 
+    padding: 5px;
+    border-radius: 5px;
   }
 </style>

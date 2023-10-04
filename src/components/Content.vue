@@ -84,7 +84,8 @@
     <br>
   </div>
   <div v-else>
-    <i class="fas fa-question-circle"></i> {{ translations[selectedLanguage].selectDataMessage }}
+    <i class="fas fa-question-circle"></i>
+    {{ isMobile ? translations[selectedLanguage].selectDataMessageMobile : translations[selectedLanguage].selectDataMessage }}
     <br><br>
   </div>
   <div v-if="dataType !== '选择设备' || dataType !== 'Choose Equipment'">
@@ -121,11 +122,13 @@
     data() {
     return {
       initial: true,
+      isMobile: false,
       translations: {
         chinese: {
           temperatureDataTitle: '温度监测数据',
           currentDataTitle: '电流监测数据',
           selectDataMessage: '请选择需要监测的数据',
+          selectDataMessageMobile: '请从目录内选择需要监测的数据',
           timeLabel: '时间',
           machineIdLabel: '设备编号',
           equipmentLabel: '设备类型',
@@ -151,6 +154,7 @@
           temperatureDataTitle: 'Temperature Monitoring Data',
           currentDataTitle: 'Current Monitoring Data',
           selectDataMessage: 'Please select the data to monitor',
+          selectDataMessageMobile: 'Please select the data inside menu to monitor',
           timeLabel: 'Time',
           machineIdLabel: 'Machine ID',
           equipmentLabel: 'Equipment Type',
@@ -183,6 +187,7 @@
         this.renderChart();
       }
       this.initial = false;
+      this.checkMobileDevice();
     },
     watch: {
       dataType: {
@@ -209,20 +214,34 @@
       },
       ChartTempX:{
         handler() {
-          this.DisposeChart();
-          this.renderChart();
+          if (this.dataType === '选择设备' || this.dataType === 'Choose Equipment') {
+            if (!this.initial) { this.DisposeChart(); }
+          } else {
+            this.DisposeChart();
+            this.renderChart();
+          }
         },
         deep: true,
       },
       ChartCurrentX:{
         handler() {
-          this.DisposeChart();
-          this.renderChart();
+          if (this.dataType === '选择设备' || this.dataType === 'Choose Equipment') {
+            if (!this.initial) { this.DisposeChart(); }
+          } else {
+            this.DisposeChart();
+            this.renderChart();
+          }
         },
         deep: true,
       }
     },
     methods: {
+      checkMobileDevice() {
+        if (window.innerWidth <= 768) {
+          // Set isMobile to true if the screen width is less than or equal to 768 pixels (adjust this threshold as needed)
+          this.isMobile = true;
+        }
+      },
       getMessageClass(message) {
         let messageClass = '';
         switch (message) {
