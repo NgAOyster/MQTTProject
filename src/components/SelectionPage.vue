@@ -1,10 +1,10 @@
 <template>
   <div>
     <!-- Navbar Start -->
-    <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav" style="padding: 10px;">
-      <a class="navbar-brand" href="#" style="color: white;">{{ currentTranslations.title }}</a>
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav">
+      <a class="navbar-brand" href="#" style="color: white; margin-left: 10px;">{{ currentTranslations.title }}</a>
       <!-- Hamburger Menu Icon -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" style="margin-right: 10px;">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="mobileNav">

@@ -6,13 +6,13 @@
     </div>
     <div v-else>
       <!-- Navbar Start -->
-      <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav" style="padding: 10px;">
+      <nav class="navbar navbar-expand-lg navbar-light sticky-top mainNav">
         <button class="navbar-brand btn" @click="returnFunc()">
           <i class="fas fa-arrow-left" style="color: white;"></i>
         </button>
         <a class="navbar-brand" href="#" style="color: white;">{{ DeviceGroupLanguage(selectedLanguage) }}</a>
         <!-- Hamburger Menu Icon -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" style="margin-right: 10px;">
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="mobileNav">
@@ -30,7 +30,7 @@
             </li>
             <li class="nav-item">
               <div class="dropdown">
-                      <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
                       <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
                       </button>
                     <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
