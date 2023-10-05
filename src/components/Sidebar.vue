@@ -95,34 +95,7 @@ export default {
 </script>
 
 <style>
-/* Style for the mobile sidebar toggle button */
-.mobile-toggle-button {
-  display: none; /* Hide by default on non-mobile screens */
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #333;
-  cursor: pointer;
-}
-
-/* Show the toggle button on mobile screens */
-@media (max-width: 768px) {
-  .mobile-toggle-button {
-    display: block;
-  }
-}
-
-/* Style for the sidebar content */
-.sidebar {
-  /* Your existing sidebar styles */
-  display: block; /* Display sidebar content by default */
-}
-
-/* Hide the sidebar content on mobile screens when isMobileSidebarVisible is false */
-.sidebar:not(.mobile-visible) {
-  display: none;
-}
-
+  @import '../CSS/Sidebar.css';
 </style>
 
 
