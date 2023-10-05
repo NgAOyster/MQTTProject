@@ -263,7 +263,7 @@
         return messageClass;
       },
       renderChart() {
-        const limit = 20;
+        const limit = 15;
         
         const TempX = [], TempY1 = [], TempY2 = [], TempY3 = [], TempY4 = [];
         for (let i = Math.max(0, this.ChartTempX.length - limit); i < this.ChartTempX.length; i++) {
@@ -292,12 +292,14 @@
             text: this.translations[this.selectedLanguage].temperatureChartTitle,
             left: 'center',
           },
-          legend: {
-            right: '10%',   
+          legend: {  
             top: '10%',     
           },
           grid: {
-            top: '30%',     
+            left: '5%',      // Left padding
+            right: '5%',     // Right padding
+            top: '30%',
+            containLabel: true, // Ensure that labels (axis names, legends) are contained within the grid
           },
           tooltip: {
             trigger: "axis",
@@ -350,12 +352,14 @@
             text: this.translations[this.selectedLanguage].currentChartTitle,
             left: 'center',
           },
-          legend: {
-            right: '10%',   
+          legend: { 
             top: '10%',     
           },
           grid: {
-            top: '30%',     
+            left: '5%',      // Left padding
+            right: '5%',     // Right padding
+            top: '30%',
+            containLabel: true, // Ensure that labels (axis names, legends) are contained within the grid
           },
           tooltip: {
             trigger: "axis",
