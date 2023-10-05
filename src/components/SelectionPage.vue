@@ -165,5 +165,62 @@ export default {
 
 
 <style>
-  @import '../CSS/SelectionPage.css';
+  .icon-with-space {
+    margin-right: 5px;
+  }
+
+  .device-group-space {
+    border: 1px solid #ccc;
+    padding: 20px; 
+  }
+
+  .tree-node {
+    list-style-type: none;
+    padding-left: 20px;
+  }
+
+  .tree-node:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -15px;
+    border-left: 1px solid #ccc;
+    height: 100%;
+  }
+
+  .tree-node:first-child:before {
+    border: none;
+  }
+
+  .circular-btn,
+  .circular-div {
+    width: 150px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .circular-btn:hover {
+    background-color: #0056b3;
+  }
+
+  .main-device-text {
+    background-color: #f3502b; 
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .sub-device-text {
+    background-color: #05b325; 
+    padding: 5px;
+    border-radius: 5px;
+  }
 </style>
