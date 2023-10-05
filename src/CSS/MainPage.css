@@ -71,7 +71,7 @@
 /* New mobile styles */
 @media screen and (max-width: 1000px) {
   .data-container {
-    font-size: 14px; /* Font size for mobile */
+    font-size: 12px; /* Font size for mobile */
   }
   .navbar-nav.ms-auto.p-8.align-items-center {
     flex-direction: column;
