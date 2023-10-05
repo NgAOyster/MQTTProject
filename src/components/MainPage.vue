@@ -30,7 +30,7 @@
             </li>
             <li class="nav-item">
               <div class="dropdown">
-                      <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
+                      <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
                       </button>
                     <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
