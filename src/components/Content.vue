@@ -288,11 +288,16 @@
 
         const TempChart = echarts.init(this.$refs.tempChart);
         const TempOption = {
-          legend:{
-            right: 10,
-          },
           title: {
             text: this.translations[this.selectedLanguage].temperatureChartTitle,
+            left: 'center',
+          },
+          legend: {
+            right: '10%',   
+            top: '10%',     
+          },
+          grid: {
+            top: '30%',     
           },
           tooltip: {
             trigger: "axis",
@@ -303,6 +308,7 @@
           },
           yAxis: {
             type: "value",
+            nameLocation: 'start',
             axisLabel: {
               formatter: "{value} °C",
             },
@@ -340,11 +346,16 @@
 
         const CurrentChart = echarts.init(this.$refs.currentChart);
         const CurrentOption = {
-          legend:{
-            right: 10,
-          },
           title: {
             text: this.translations[this.selectedLanguage].currentChartTitle,
+            left: 'center',
+          },
+          legend: {
+            right: '10%',   
+            top: '10%',     
+          },
+          grid: {
+            top: '30%',     
           },
           tooltip: {
             trigger: "axis",
@@ -355,6 +366,7 @@
           },
           yAxis: {
             type: "value",
+            nameLocation: 'start',
             axisLabel: {
               formatter: "{value} A",
             },
