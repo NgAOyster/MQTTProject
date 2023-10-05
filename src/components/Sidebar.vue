@@ -15,7 +15,7 @@
           @click="selectDataType(dataType)"
           class="list-group-item"
           :class="{ active: selectedDataType === dataType }"
-          :style="{ backgroundColor: selectedDataType === dataType ? 'blue' : 'white' }"
+          :style="{ backgroundColor: selectedDataType === dataType ? (dataType === currentTranslations.current ? 'green' : (dataType === currentTranslations.temperature ? 'blue' : 'white')) : 'white'}"
         >
           {{ dataType }}
         </li>
