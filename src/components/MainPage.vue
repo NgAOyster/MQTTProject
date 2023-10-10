@@ -252,8 +252,8 @@ export default {
       });
       const options = {
         useSSL: false,
-        userName: this.username,
-        password: this.password,
+        userName: 'ml001',
+        password: 'ml001',
         onSuccess: () => {
           console.log('Connected to MQTT broker');
           this.connected = true;
