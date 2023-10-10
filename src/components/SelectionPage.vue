@@ -58,10 +58,12 @@
 </template>
 
 <script>
+import axios from 'axios';
 import Cookies from 'js-cookie'; // Import the js-cookie library
 export default {
   props: {
     username: String,
+    token: String,
   },
   computed: {
     currentTranslations() {
@@ -156,12 +158,32 @@ export default {
       return Object.keys(object).find(key => object[key] === value);
     },
   },
-  created() {
+  async created() {
     const selectedLanguageCookie = Cookies.get('selectedLanguage');
     
     // Check if the cookie is set and update the selectedLanguage data property
     if (selectedLanguageCookie) {
       this.selectedLanguage = selectedLanguageCookie;
+    }
+ 
+    const apiUrl = 'http://222.222.119.72:15518/equip/allequiplist'; 
+    try {
+      // Make the HTTP request to the API
+      const response = await axios.get(
+        apiUrl, {
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+        },
+      });
+
+      // Check if the response status is OK (200)
+      if (response.status === 200) {
+        console.log('Equipment list: ', response.data);
+      } else {
+        console.error('无法获取设备列表');
+      }
+    } catch (error) {
+      console.error('An error occurred:', error);
     }
   }
 };

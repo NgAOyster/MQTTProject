@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <LoginPage v-if="!token" @login-success="setUserCredentials" />
-    <SelectionPage v-else-if="token && !selection" :username="loggedInUsername" @select-item="setSelection" @logout="resetCredentials"/>
+    <SelectionPage v-else-if="token && !selection" :username="loggedInUsername" :token="token" @select-item="setSelection" @logout="resetCredentials"/>
     <MainPage v-else-if="token && selection" :actualUser = "loggedInActual" :username="loggedInUsername" :password="loggedInPassword" :deviceGroupCN="deviceGroupCN" :deviceGroupEN="deviceGroupEN" @logout="resetCredentials" @returnBack="cleanSelection"/>
   </div>
 </template>
