@@ -69,14 +69,14 @@ export default {
     currentTranslations() {
       return this.translations[this.selectedLanguage] || {};
     },
-    deviceGroups() {
-      return [
-        { name: this.currentTranslations.deviceGroupA, devices: [ { name: this.currentTranslations.mainDeviceA, type: 'main' }, { name: this.currentTranslations.subDeviceA, type: 'sub' } ]},
-        { name: this.currentTranslations.deviceGroupB, devices: [ { name: this.currentTranslations.mainDeviceB, type: 'main' }, { name: this.currentTranslations.subDeviceB, type: 'sub' } ] },
-        { name: this.currentTranslations.deviceGroupC, devices: [ { name: this.currentTranslations.mainDeviceC, type: 'main' }, { name: this.currentTranslations.subDeviceC, type: 'sub' } ] },
-        { name: this.currentTranslations.deviceGroupD, devices: [ { name: this.currentTranslations.mainDeviceD, type: 'main' }, { name: this.currentTranslations.subDeviceD, type: 'sub' } ] },
-      ];
-    },
+    // deviceGroups() {
+    //   return [
+    //     { name: this.currentTranslations.deviceGroupA, devices: [ { name: this.currentTranslations.mainDeviceA, type: 'main' }, { name: this.currentTranslations.subDeviceA, type: 'sub' } ]},
+    //     { name: this.currentTranslations.deviceGroupB, devices: [ { name: this.currentTranslations.mainDeviceB, type: 'main' }, { name: this.currentTranslations.subDeviceB, type: 'sub' } ] },
+    //     { name: this.currentTranslations.deviceGroupC, devices: [ { name: this.currentTranslations.mainDeviceC, type: 'main' }, { name: this.currentTranslations.subDeviceC, type: 'sub' } ] },
+    //     { name: this.currentTranslations.deviceGroupD, devices: [ { name: this.currentTranslations.mainDeviceD, type: 'main' }, { name: this.currentTranslations.subDeviceD, type: 'sub' } ] },
+    //   ];
+    // },
   },
   data() {
     return {
