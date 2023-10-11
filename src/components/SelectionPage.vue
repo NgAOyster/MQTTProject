@@ -30,20 +30,23 @@
     <h3>{{ currentTranslations.selectDevice }}</h3><br>
     <div class="container">
       <div class="row">
-        <div v-for="(deviceGroup, index) in deviceGroups" :key="index" class="col-md-6 device-group-space col-sm-12">
+        <div v-for="item in equiplist" :key="item.id" class="col-md-6 device-group-space col-sm-12">
           <div class="text-center mt-4">
             <ul class="list-unstyled tree">
               <li>
                 <!-- Apply circular container to the button element -->
-                <button class="circular-btn" @click="ButtonClick(deviceGroup.name, selectedLanguage)">
-                  <i class="fas fa-folder icon-with-space"></i> {{ deviceGroup.name }}
+                <button class="circular-btn" @click="ButtonClick(item.equp_name)">
+                  <i class="fas fa-folder icon-with-space"></i> {{ item.equp_name }}
                 </button>
                 <br><br>
                 <div class="row">
                   <div class="col-sm-12">
                     <div class="d-flex flex-wrap">
-                      <div v-for="(device, deviceIndex) in deviceGroup.devices" :key="deviceIndex" class="circular-div mb-4 mr-2" :class="device.type === 'main' ? 'main-device-text' : 'sub-device-text'">
-                        <i class="fas fa-cogs icon-with-space"></i> {{ device.name }}
+                      <div class="circular-div mb-4 mr-2 main-device-text">
+                        <i class="fas fa-cogs icon-with-space"></i> Device1
+                      </div>
+                      <div class="circular-div mb-4 mr-2 sub-device-text">
+                        <i class="fas fa-cogs icon-with-space"></i> Device2
                       </div>
                     </div>
                   </div>
@@ -69,18 +72,36 @@ export default {
     currentTranslations() {
       return this.translations[this.selectedLanguage] || {};
     },
+    // deviceGroups() {
+    //   return [
+    //     { name: this.currentTranslations.deviceGroupA, devices: [ { name: this.currentTranslations.mainDeviceA, type: 'main' }, { name: this.currentTranslations.subDeviceA, type: 'sub' } ]},
+    //     { name: this.currentTranslations.deviceGroupB, devices: [ { name: this.currentTranslations.mainDeviceB, type: 'main' }, { name: this.currentTranslations.subDeviceB, type: 'sub' } ] },
+    //     { name: this.currentTranslations.deviceGroupC, devices: [ { name: this.currentTranslations.mainDeviceC, type: 'main' }, { name: this.currentTranslations.subDeviceC, type: 'sub' } ] },
+    //     { name: this.currentTranslations.deviceGroupD, devices: [ { name: this.currentTranslations.mainDeviceD, type: 'main' }, { name: this.currentTranslations.subDeviceD, type: 'sub' } ] },
+    //   ];
+    // },
+
     deviceGroups() {
-      return [
-        { name: this.currentTranslations.deviceGroupA, devices: [ { name: this.currentTranslations.mainDeviceA, type: 'main' }, { name: this.currentTranslations.subDeviceA, type: 'sub' } ]},
-        { name: this.currentTranslations.deviceGroupB, devices: [ { name: this.currentTranslations.mainDeviceB, type: 'main' }, { name: this.currentTranslations.subDeviceB, type: 'sub' } ] },
-        { name: this.currentTranslations.deviceGroupC, devices: [ { name: this.currentTranslations.mainDeviceC, type: 'main' }, { name: this.currentTranslations.subDeviceC, type: 'sub' } ] },
-        { name: this.currentTranslations.deviceGroupD, devices: [ { name: this.currentTranslations.mainDeviceD, type: 'main' }, { name: this.currentTranslations.subDeviceD, type: 'sub' } ] },
-      ];
-    },
+    if (this.equiplist) {
+      return this.equiplist.map((item) => {
+        return {
+          name: item.equp_name,
+          devices: [
+            { name: this.currentTranslations.mainDeviceA, type: 'main' },
+            { name: this.currentTranslations.subDeviceA, type: 'sub' }
+          ]
+        };
+      });
+    } else {
+      // Fallback if equiplist is not available
+      return [];
+    }
+  },
   },
   data() {
     return {
       selectedLanguage: 'chinese', // Set the default language
+      equiplist: null,
       translations: {
         chinese: {
           title: '设备',
@@ -141,19 +162,20 @@ export default {
         this.$emit('logout');
       }
     },
-    ButtonClick(groupName, language) {
-      if(language === 'chinese'){
-        const deviceGroupCN = groupName;
-        const Key = this.getKeyByValue(this.translations.chinese, deviceGroupCN);
-        const deviceGroupEN = this.translations.english[Key]
-        this.$emit('select-item', { deviceGroupCN: deviceGroupCN, deviceGroupEN: deviceGroupEN });
-      } else if (language === 'english'){
-        const deviceGroupEN = groupName;
-        const Key = this.getKeyByValue(this.translations.english, deviceGroupEN);
-        const deviceGroupCN = this.translations.chinese[Key]
-        this.$emit('select-item', { deviceGroupCN: deviceGroupCN, deviceGroupEN: deviceGroupEN });
-      }
-    },
+    ButtonClick(groupName) {
+    if (this.selectedLanguage === 'chinese') {
+    const deviceGroupCN = groupName;
+    const Key = this.getKeyByValue(this.translations.chinese, deviceGroupCN);
+    const deviceGroupEN = this.translations.english[Key];
+    this.$emit('select-item', { deviceGroupCN: deviceGroupCN, deviceGroupEN: deviceGroupEN });
+    } else if (this.selectedLanguage === 'english') {
+    const deviceGroupEN = groupName;
+    const Key = this.getKeyByValue(this.translations.english, deviceGroupEN);
+    const deviceGroupCN = this.translations.chinese[Key];
+    this.$emit('select-item', { deviceGroupCN: deviceGroupCN, deviceGroupEN: deviceGroupEN });
+    }
+},
+
     getKeyByValue(object, value) {
       return Object.keys(object).find(key => object[key] === value);
     },
@@ -170,7 +192,9 @@ export default {
         });
         // Check if the response status is OK (200)
         if (response.status === 200) {
-          console.log('Equipment list: ', response.data);
+          // Assign the data to equiplist
+          this.equiplist = response.data;
+          console.log('Equipment list: ', this.equiplist);
         } else {
           console.error('无法获取设备列表');
         }
