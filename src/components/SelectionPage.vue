@@ -157,34 +157,37 @@ export default {
     getKeyByValue(object, value) {
       return Object.keys(object).find(key => object[key] === value);
     },
+    async getEquipList(){
+      const apiUrl = 'http://222.222.119.72:15518/equip/allequiplist'; 
+      const token = this.token;
+      try {
+        // Make the HTTP request to the API
+        const response = await axios.get(
+          apiUrl, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        // Check if the response status is OK (200)
+        if (response.status === 200) {
+          console.log('Equipment list: ', response.data);
+        } else {
+          console.error('无法获取设备列表');
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    },
   },
-  async created() {
+  created() {
     const selectedLanguageCookie = Cookies.get('selectedLanguage');
     
     // Check if the cookie is set and update the selectedLanguage data property
     if (selectedLanguageCookie) {
       this.selectedLanguage = selectedLanguageCookie;
     }
- 
-    const apiUrl = 'http://222.222.119.72:15518/equip/allequiplist'; 
-    try {
-      // Make the HTTP request to the API
-      const response = await axios.get(
-        apiUrl, {
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-        },
-      });
 
-      // Check if the response status is OK (200)
-      if (response.status === 200) {
-        console.log('Equipment list: ', response.data);
-      } else {
-        console.error('无法获取设备列表');
-      }
-    } catch (error) {
-      console.error('An error occurred:', error);
-    }
+    this.getEquipList();
   }
 };
 </script>
