@@ -34,8 +34,8 @@
                       <i class="fas fa-user"></i> {{ $t('mainPage.welcomeMessage') }} {{ username }}
                       </button>
                     <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
-                  <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
-                  <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
+                  <a class="dropdown-item" href="#" @click="changeLanguage('en')">English</a>
+                  <a class="dropdown-item" href="#" @click="changeLanguage('cn')">中文</a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ $t('mainPage.logout') }}</a>
                 </div>

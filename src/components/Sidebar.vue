@@ -41,16 +41,15 @@ export default {
     selectedDataType: String,
   },
   computed: {
-    currentLanguage() {
-      return this.$i18n.locale;
-    },
     isMobile() {
       // Define a breakpoint for mobile screens (adjust as needed)
       return window.innerWidth <= 768;
     },
   },
   watch: {
-    selectedLanguage: 'updateDataTypes', // Watch for changes in selectedLanguage and call updateDataTypes
+    '$i18n.locale'() {
+      this.updateDataTypes();
+    }, 
     // Watch for changes in window.innerWidth and update isMobileSidebarVisible
     '$route'() {
       this.checkMobile();
