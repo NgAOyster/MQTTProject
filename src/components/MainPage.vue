@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="connecting" v-if="!connected">
-      <p>{{ translations[selectedLanguage].connectingToMQTT }}</p>
-      <p>{{ translations[selectedLanguage].pleaseWait }}</p>
+      <p>{{ $t('mainPage.connectingToMQTT') }}</p>
+      <p>{{ $t('mainPage.pleaseWait') }}</p>
     </div>
     <div v-else>
       <!-- Navbar Start -->
@@ -10,7 +10,7 @@
         <button class="navbar-brand btn" @click="returnFunc()">
           <i class="fas fa-arrow-left" style="color: white;"></i>
         </button>
-        <a class="navbar-brand" href="#" style="color: white;">{{ DeviceGroupLanguage(selectedLanguage) }}</a>
+        <a class="navbar-brand" href="#" style="color: white;">{{ device }}</a>
         <!-- Hamburger Menu Icon -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNav" style="margin-right: 10px;">
           <span class="navbar-toggler-icon"></span>
@@ -18,26 +18,26 @@
         <div class="collapse navbar-collapse" id="mobileNav">
           <ul class="navbar-nav ms-auto p-8 align-items-center">
             <li class="nav-item">
-              <div class="mx-4">{{ translations[selectedLanguage].currentStatus }}<span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
+              <div class="mx-4">{{ $t('mainPage.currentStatus') }}<span :class="getStatusColorClass()">{{ getStatusText() }}</span></div>
             </li>
             <li class="nav-item">
               <div class="mx-4" v-if="Timer">
-              {{ translations[selectedLanguage].connected }}: {{ connectionTime }}
+              {{ $t('mainPage.connected') }}: {{ connectionTime }}
               </div>
               <div class="mx-4" v-else>
-              {{ translations[selectedLanguage].disconnected }}
+              {{ $t('mainPage.disconnected') }}
               </div>
             </li>
             <li class="nav-item">
               <div class="dropdown">
                       <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-                      <i class="fas fa-user"></i> {{ translations[selectedLanguage].welcomeMessage }} {{ username }}
+                      <i class="fas fa-user"></i> {{ $t('mainPage.welcomeMessage') }} {{ username }}
                       </button>
                     <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
                   <a class="dropdown-item" href="#" @click="changeLanguage('english')">English</a>
                   <a class="dropdown-item" href="#" @click="changeLanguage('chinese')">中文</a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ translations[selectedLanguage].logout }}</a>
+                  <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ $t('mainPage.logout') }}</a>
                 </div>
                 </div>
             </li>
@@ -50,8 +50,7 @@
           <div class="col-md-2 sideComp text-start">
             <!-- Sidebar Component -->
             <Sidebar @data-type-selected="updateDataType" 
-            :selectedDataType="selectedDataType"
-            :selectedLanguage="selectedLanguage" />
+            :selectedDataType="selectedDataType" />
           </div>
           <div class="col-md-10 text-start">
             <!-- Content Component -->
@@ -65,7 +64,6 @@
               :ChartCurrentY="ChartCurrentY"
               :machineID="machineID"
               :equipment="equipment"
-              :selectedLanguage="selectedLanguage"
             />
         </div>
         </div>
@@ -78,14 +76,12 @@
 import Paho from "paho-mqtt";
 import Sidebar from "../components/Sidebar.vue";
 import Content from "../components/Content.vue";
-import Cookies from 'js-cookie'; // Import the js-cookie library
 
 export default {
   props: {
     username: String,
     password: String,
-    deviceGroupCN: String,
-    deviceGroupEN: String,
+    device: String,
   },
   components: {
     Sidebar,
@@ -106,48 +102,16 @@ export default {
       reconnectStatus: false,
       disconnect: false,
       onlineStatus: true,
-      selectedDataType: "选择设备" || "Choose Equipment", // Default data type
+      selectedDataType: this.$i18n.t('mainPage.default'), // Default data type
       mqttClient: null,
       machineID: null,
       equipment:null,
-      selectedLanguage: 'chinese',
-      translations: {
-        chinese: {
-          temperature: '温度',
-          connectingToMQTT: '正在连接MQTT服务器...',
-          pleaseWait: '这可能需要几秒钟时间。请稍等...',
-          welcomeMessage: '欢迎您,',
-          currentStatus: '目前状态:',
-          connected: '已连接',
-          disconnected: '连接断开',
-          reconnecting: '重新连接中...',
-          networkDisconnect: '网络断开',
-          logoutConfirmation: '确定要登出吗？',
-          logoutSuccessMessage: '您已成功登出',
-          connectionLostAlert: '与MQTT服务器的连接已断开...',
-          mqttConnectionErrorAlert: '无法连接到MQTT服务器, 请检查服务器配置并尝试重新连接。',
-          networkDisconnectMessage: '网络连接已断开，您现在处于离线状态。',
-          logout: '登出',
-        },
-        english: {
-          temperature: 'temperature',
-          connectingToMQTT: 'Currently connecting to MQTT Services...',
-          pleaseWait: 'This will take a few seconds, please wait for a while...',
-          welcomeMessage: 'Welcome,',
-          currentStatus: 'Current Status:',
-          connected: 'Connected',
-          disconnected: 'Disconnected',
-          reconnecting: 'Reconnecting...',
-          networkDisconnect: 'Network Disconnect',
-          logoutConfirmation: 'Are you sure you want to logout?',
-          logoutSuccessMessage: 'You have successfully logged out',
-          connectionLostAlert: 'The connection to the MQTT server has been lost...',
-          mqttConnectionErrorAlert: 'Unable to connect to the MQTT server, please check the server configuration and try to reconnect.',
-          networkDisconnectMessage: 'Network connection is disconnected, you are now in offline mode.',
-          logout: 'Logout',
-        },
-      },
     };
+  },
+  computed: {
+    currentLanguage() {
+      return this.$i18n.locale;
+    },
   },
   created() {
     this.initMQTT();
@@ -193,22 +157,10 @@ export default {
     setInterval(() => {
       this.publishDataToTopic();
     }, 30000);
-
-    const selectedLanguageCookie = Cookies.get('selectedLanguage');
-    
-    // Check if the cookie is set and update the selectedLanguage data property
-    if (selectedLanguageCookie) {
-      this.selectedLanguage = selectedLanguageCookie;
-    }
   },
   methods: {
     changeLanguage(language) {
-      this.selectedLanguage = language;
-      Cookies.set('selectedLanguage', language, { expires: 365 }); // Update the entire cookie with a 1-year expiration
-    },
-    DeviceGroupLanguage(selectedLanguage){
-      if (selectedLanguage === 'chinese') { return this.deviceGroupCN; }
-      else if (selectedLanguage === 'english') { return this.deviceGroupEN; }
+      this.$i18n.locale = language;
     },
     initMQTT() {
       this.disconnect = false;
@@ -222,7 +174,7 @@ export default {
         this.connectStatus = false;
         this.reconnectStatus = false;
         this.disconnect = true;
-        alert(this.translations[this.selectedLanguage].connectionLostAlert);
+        alert(this.$i18n.t('mainPage.connectionLostAlert'));
         setTimeout(() => {
           this.clearConnectionTimer();
           this.reconnect();
@@ -268,7 +220,7 @@ export default {
           console.log('MQTT connection error:', error.errorMessage);
           this.connectStatus = false;
           this.reconnectStatus = true;
-          alert(this.translations[this.selectedLanguage].mqttConnectionErrorAlert);
+          alert(this.$i18n.t('mainPage.mqttConnectionErrorAlert'));
           this.reconnect();
         },
       };
@@ -413,7 +365,7 @@ export default {
       this.onlineStatus = false;
       this.connectStatus = false;
       this.clearConnectionTimer();
-      alert(this.translations[this.selectedLanguage].networkDisconnectMessage);
+      alert(this.$i18n.t('mainPage.networkDisconnectMessage'));
     },
     updateDataType(dataType) {
       this.selectedDataType = dataType;
@@ -425,15 +377,15 @@ export default {
       if (this.disconnect) { return 'disconnected'; }
     },
     getStatusText() {
-      if (!this.onlineStatus) { return this.translations[this.selectedLanguage].networkDisconnect; }
-      if (this.connectStatus) { return this.translations[this.selectedLanguage].connected; }
-      if (this.reconnectStatus) { return this.translations[this.selectedLanguage].reconnecting; }
-      if (this.disconnect) { return this.translations[this.selectedLanguage].disconnected; }
+      if (!this.onlineStatus) { return this.$i18n.t('mainPage.networkDisconnect'); }
+      if (this.connectStatus) { return this.$i18n.t('mainPage.connected'); }
+      if (this.reconnectStatus) { return this.$i18n.t('mainPage.reconnecting'); }
+      if (this.disconnect) { return this.$i18n.t('mainPage.disconnected'); }
     },
     confirmLogout() {
-      const confirmLogout = window.confirm(this.translations[this.selectedLanguage].logoutConfirmation);
+      const confirmLogout = window.confirm(this.$i18n.t('mainPage.logoutConfirmation'));
       if (confirmLogout) {
-        alert(this.translations[this.selectedLanguage].logoutSuccessMessage);
+        alert(this.$i18n.t('mainPage.logoutSuccessMessage'));
         this.$emit('logout');
       }
     },

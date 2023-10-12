@@ -39,7 +39,6 @@ export default {
   },
   props: {
     selectedDataType: String,
-    selectedLanguage: String,
   },
   computed: {
     currentLanguage() {

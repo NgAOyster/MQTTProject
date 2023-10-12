@@ -1,39 +1,39 @@
 <template>
   <div v-if="dataType === '温度' || dataType ==='Temperature'">
-    <h3><i class="fas fa-thermometer-half"></i> {{ translations[selectedLanguage].temperatureDataTitle }}</h3>
+    <h3><i class="fas fa-thermometer-half"></i> {{ $t('content.temperatureDataTitle') }}</h3>
     <br>
     <div class="data-container" v-for="(data, index) in temperatureData" :key="index">
       <table class="data-table">
         <tr>
-          <th>{{ translations[selectedLanguage].timeLabel }}：</th>
+          <th>{{ $t('content.timeLabel') }}：</th>
           <td>{{ data.time }}</td>
         </tr>
         <tr>
-          <th>{{ translations[selectedLanguage].machineIdLabel }}：</th>
+          <th>{{ $t('content.machineIdLabel') }}：</th>
           <td>{{ data.machineId }}</td>
         </tr>
         <tr>
-          <th>{{ translations[selectedLanguage].equipmentLabel }}：</th>
+          <th>{{ $t('content.equipmentLabel') }}：</th>
           <td>{{ PageLanguage(data.equipment) }}</td>
         </tr>
       </table>
       <br>
       <table class="data-table">
         <tr>
-          <th>{{ translations[selectedLanguage].temperatureMessageLabel }}：</th>
+          <th>{{ $t('content.temperatureMessageLabel') }}：</th>
           <td :class="getMessageClass(data.TempdgmgMessage)">{{ PageLanguage(data.TempdgmgMessage) }}</td>
         </tr>
       </table>
       <table class="data-table">
         <thead>
-          <th colspan="4">{{ translations[selectedLanguage].temperatureMonitoringLabel }}</th>
+          <th colspan="4">{{ $t('content.temperatureMonitoringLabel') }}</th>
         </thead>
         <tbody>
           <tr>
-            <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">{{ translations[selectedLanguage].monitorLabel }} {{ i }}</td>
+            <td class="monitorWidth" v-for="i in 4" :key="`tempMonitor${i}`">{{ $t('content.monitorLabel') }} {{ i }}</td>
           </tr>
           <tr>
-            <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} {{ translations[selectedLanguage].celsiusLabel }}</td>
+            <td class="dataWidth" v-for="i in 4" :key="`tempData${i}`">{{ data['temp' + i] }} {{ $t('content.celsiusLabel') }}</td>
           </tr>
         </tbody>
       </table>
@@ -42,40 +42,40 @@
     <br>
   </div>
   <div v-else-if="dataType === '电流' || dataType ==='Current'">
-    <h3><i class="fas fa-bolt"></i> {{ translations[selectedLanguage].currentDataTitle }}</h3>
+    <h3><i class="fas fa-bolt"></i> {{ $t('content.currentDataTitle') }}</h3>
     <br>
     <div class="data-container" v-for="(data, index) in currentData" :key="index">
       <table class="data-table">
         <tr>
-          <th>{{ translations[selectedLanguage].timeLabel }}：</th>
+          <th>{{ $t('content.timeLabel') }}：</th>
           <td>{{ data.time }}</td>
         </tr>
         <tr>
-          <th>{{ translations[selectedLanguage].machineIdLabel }}：</th>
+          <th>{{ $t('content.machineIdLabel') }}：</th>
           <td>{{ data.machineId }}</td>
         </tr>
         <tr>
-          <th>{{ translations[selectedLanguage].equipmentLabel }}：</th>
+          <th>{{ $t('content.equipmentLabel') }}：</th>
           <td>{{ PageLanguage(data.equipment) }}</td>
         </tr>
       </table>
       <br>
       <table class="data-table">
         <tr>
-          <th>{{ translations[selectedLanguage].currentMessageLabel }}：</th>
+          <th>{{ $t('content.currentMessageLabel') }}：</th>
           <td :class="getMessageClass(data.CurrentdgmgMessage)">{{ PageLanguage(data.CurrentdgmgMessage) }}</td>
         </tr>
       </table>
       <table class="data-table">
         <thead>
-          <th colspan="4">{{ translations[selectedLanguage].currentMonitoringLabel }}</th>
+          <th colspan="4">{{$t('content.currentMonitoringLabel') }}</th>
         </thead>
         <tbody>
           <tr>
-            <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">{{ translations[selectedLanguage].monitorLabel }} {{ i }}</td>
+            <td class="monitorWidth" v-for="i in 4" :key="`currentMonitor${i}`">{{ $t('content.monitorLabel') }} {{ i }}</td>
           </tr>
           <tr>
-            <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} {{ translations[selectedLanguage].ampereLabel }}</td>
+            <td class="dataWidth" v-for="i in 4" :key="`currentData${i}`">{{ data['current' + i] }} {{ $t('content.ampereLabel') }}</td>
           </tr>
         </tbody>
       </table>
@@ -85,7 +85,7 @@
   </div>
   <div v-else>
     <i class="fas fa-question-circle"></i>
-    {{ isMobile ? translations[selectedLanguage].selectDataMessageMobile : translations[selectedLanguage].selectDataMessage }}
+    {{ isMobile ? $t('content.selectDataMessageMobile') : $t('content.selectDataMessage') }}
     <br><br>
   </div>
   <div v-if="dataType !== '选择设备' || dataType !== 'Choose Equipment'">
@@ -117,68 +117,72 @@
       ChartCurrentY: Array,
       machineID: String,
       equipment: String,
-      selectedLanguage: String,
     },
     data() {
-    return {
-      initial: true,
-      isMobile: false,
-      translations: {
-        chinese: {
-          temperatureDataTitle: '温度监测数据',
-          currentDataTitle: '电流监测数据',
-          selectDataMessage: '请选择需要监测的数据',
-          selectDataMessageMobile: '请从目录内选择需要监测的数据',
-          timeLabel: '时间',
-          machineIdLabel: '设备编号',
-          equipmentLabel: '设备类型',
-          temperatureMessageLabel: '温度消息等级',
-          currentMessageLabel: '电流消息等级',
-          temperatureMonitoringLabel: '温度监测',
-          currentMonitoringLabel: '电流监测',
-          monitorLabel: '监测',
-          celsiusLabel: '摄氏度',
-          ampereLabel: '安培',
-          temperatureChartTitle: '温度数据',  
-          temperature1: '温度1',             
-          temperature2: '温度2',             
-          temperature3: '温度3',            
-          temperature4: '温度4',            
-          currentChartTitle: '电流数据',     
-          current1: '电流1',                 
-          current2: '电流2',                 
-          current3: '电流3',                 
-          current4: '电流4',
-        },
-        english: {
-          temperatureDataTitle: 'Temperature Monitoring Data',
-          currentDataTitle: 'Current Monitoring Data',
-          selectDataMessage: 'Please select the data to monitor',
-          selectDataMessageMobile: 'Please select the data inside menu to monitor',
-          timeLabel: 'Time',
-          machineIdLabel: 'Machine ID',
-          equipmentLabel: 'Equipment Type',
-          temperatureMessageLabel: 'Temperature Message Level',
-          currentMessageLabel: 'Current Message Level',
-          temperatureMonitoringLabel: 'Temperature Monitoring',
-          currentMonitoringLabel: 'Current Monitoring',
-          monitorLabel: 'Monitor',
-          celsiusLabel: '°C',
-          ampereLabel: 'A',
-          temperatureChartTitle: 'Temperature Data', 
-          temperature1: 'Temp 1',              
-          temperature2: 'Temp 2',              
-          temperature3: 'Temp 3',             
-          temperature4: 'Temp 4',             
-          currentChartTitle: 'Current Data',          
-          current1: 'Current 1',                     
-          current2: 'Current 2',                     
-          current3: 'Current 3',                     
-          current4: 'Current 4',
-        },
+      return {
+        initial: true,
+        isMobile: false,
+        translations: {
+          chinese: {
+            temperatureDataTitle: '温度监测数据',
+            currentDataTitle: '电流监测数据',
+            selectDataMessage: '请选择需要监测的数据',
+            selectDataMessageMobile: '请从目录内选择需要监测的数据',
+            timeLabel: '时间',
+            machineIdLabel: '设备编号',
+            equipmentLabel: '设备类型',
+            temperatureMessageLabel: '温度消息等级',
+            currentMessageLabel: '电流消息等级',
+            temperatureMonitoringLabel: '温度监测',
+            currentMonitoringLabel: '电流监测',
+            monitorLabel: '监测',
+            celsiusLabel: '摄氏度',
+            ampereLabel: '安培',
+            temperatureChartTitle: '温度数据',  
+            temperature1: '温度1',             
+            temperature2: '温度2',             
+            temperature3: '温度3',            
+            temperature4: '温度4',            
+            currentChartTitle: '电流数据',     
+            current1: '电流1',                 
+            current2: '电流2',                 
+            current3: '电流3',                 
+            current4: '电流4',
+          },
+          english: {
+            temperatureDataTitle: 'Temperature Monitoring Data',
+            currentDataTitle: 'Current Monitoring Data',
+            selectDataMessage: 'Please select the data to monitor',
+            selectDataMessageMobile: 'Please select the data inside menu to monitor',
+            timeLabel: 'Time',
+            machineIdLabel: 'Machine ID',
+            equipmentLabel: 'Equipment Type',
+            temperatureMessageLabel: 'Temperature Message Level',
+            currentMessageLabel: 'Current Message Level',
+            temperatureMonitoringLabel: 'Temperature Monitoring',
+            currentMonitoringLabel: 'Current Monitoring',
+            monitorLabel: 'Monitor',
+            celsiusLabel: '°C',
+            ampereLabel: 'A',
+            temperatureChartTitle: 'Temperature Data', 
+            temperature1: 'Temp 1',              
+            temperature2: 'Temp 2',              
+            temperature3: 'Temp 3',             
+            temperature4: 'Temp 4',             
+            currentChartTitle: 'Current Data',          
+            current1: 'Current 1',                     
+            current2: 'Current 2',                     
+            current3: 'Current 3',                     
+            current4: 'Current 4',
+          },
+        }
       }
-    }
-  },
+    },
+    computed: {
+      currentLanguage() {
+        return this.$i18n.locale;
+      },
+    },
     mounted() {
       const TempChart = echarts.getInstanceByDom(this.$refs.tempChart);
       const CurrentChart = echarts.getInstanceByDom(this.$refs.currentChart);
@@ -289,7 +293,7 @@
         const TempChart = echarts.init(this.$refs.tempChart);
         const TempOption = {
           title: {
-            text: this.translations[this.selectedLanguage].temperatureChartTitle,
+            text: this.$i18n.t('content.temperatureChartTitle'),
             left: 'center',
           },
           legend: {  
@@ -316,10 +320,10 @@
             },
           },
           series: [
-          { name: this.translations[this.selectedLanguage].temperature1, type: 'line', data: TempY1 },
-          { name: this.translations[this.selectedLanguage].temperature2, type: 'line', data: TempY2 },
-          { name: this.translations[this.selectedLanguage].temperature3, type: 'line', data: TempY3 },
-          { name: this.translations[this.selectedLanguage].temperature4, type: 'line', data: TempY4 },
+          { name: this.$i18n.t('content.temperature1'), type: 'line', data: TempY1 },
+          { name: this.$i18n.t('content.temperature2'), type: 'line', data: TempY2 },
+          { name: this.$i18n.t('content.temperature3'), type: 'line', data: TempY3 },
+          { name: this.$i18n.t('content.temperature4'), type: 'line', data: TempY4 },
         ],
         };
         TempChart.setOption(TempOption);
@@ -349,7 +353,7 @@
         const CurrentChart = echarts.init(this.$refs.currentChart);
         const CurrentOption = {
           title: {
-            text: this.translations[this.selectedLanguage].currentChartTitle,
+            text: this.$i18n.t('content.currentChartTitle'),
             left: 'center',
           },
           legend: { 
@@ -376,10 +380,10 @@
             },
           },
           series: [
-          { name: this.translations[this.selectedLanguage].current1, type: 'line', data: CurrentY1 },
-          { name: this.translations[this.selectedLanguage].current2, type: 'line', data: CurrentY2 },
-          { name: this.translations[this.selectedLanguage].current3, type: 'line', data: CurrentY3 },
-          { name: this.translations[this.selectedLanguage].current4, type: 'line', data: CurrentY4 },
+          { name: this.$i18n.t('content.current1'), type: 'line', data: CurrentY1 },
+          { name: this.$i18n.t('content.current2'), type: 'line', data: CurrentY2 },
+          { name: this.$i18n.t('content.current3'), type: 'line', data: CurrentY3 },
+          { name: this.$i18n.t('content.current4'), type: 'line', data: CurrentY4 },
         ],
         };
         CurrentChart.setOption(CurrentOption);
@@ -401,8 +405,7 @@
         }
       },
       PageLanguage(dataText){
-        const language = this.selectedLanguage;
-        if (language === 'english'){
+        if (this.$i18n.locale === 'en'){
           switch(dataText){
             case '普通消息': dataText = 'Ordinary Message'; break;
             case '控制消息': dataText = 'Control Message'; break;
