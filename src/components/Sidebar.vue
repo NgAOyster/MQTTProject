@@ -2,12 +2,12 @@
   <div>
     <!-- Header for mobile sidebar -->
     <button class="mobile-toggle-button" @click="toggleMobileSidebar" v-if="isMobile">
-      <i class="fas fa-bars"></i> &nbsp;&nbsp; {{ currentTranslations.menu }}
+      <i class="fas fa-bars"></i> &nbsp;&nbsp; {{ $t('sidebar.menu') }}
     </button>
 
     <!-- Sidebar content -->
     <div class="sidebar" :class="{ 'mobile-visible': isMobileSidebarVisible }">
-      <h5><i class="fas fa-chart-bar"></i>{{ currentTranslations.monitoringData }}</h5>
+      <h5><i class="fas fa-chart-bar"></i>{{ $t('sidebar.monitoringData') }}</h5>
       <ul class="list-group">
         <li
           v-for="dataType in dataTypes"
@@ -15,7 +15,7 @@
           @click="selectDataType(dataType)"
           class="list-group-item"
           :class="{ active: selectedDataType === dataType }"
-          :style="{ backgroundColor: selectedDataType === dataType ? (dataType === currentTranslations.current ? 'green' : (dataType === currentTranslations.temperature ? 'blue' : 'white')) : 'white'}"
+          :style="{ backgroundColor: selectedDataType === dataType ? (dataType === $t('sidebar.current') ? 'green' : (dataType === $t('sidebar.temperature') ? 'blue' : 'white')) : 'white'}"
         >
           {{ dataType }}
         </li>
@@ -33,20 +33,6 @@ export default {
   },
   data() {
     return {
-      translations: {
-        chinese: {
-          menu: '目录',
-          monitoringData: '监测数据',
-          temperature: '温度',
-          current: '电流',
-        },
-        english: {
-          menu: 'Menu',
-          monitoringData: 'Monitoring Data',
-          temperature: 'Temperature',
-          current: 'Current',
-        },
-      },
       dataTypes: [], // Initialize dataTypes as an empty array
       isMobileSidebarVisible: true, // Display sidebar content by default
     };
@@ -56,8 +42,8 @@ export default {
     selectedLanguage: String,
   },
   computed: {
-    currentTranslations() {
-      return this.translations[this.selectedLanguage] || {};
+    currentLanguage() {
+      return this.$i18n.locale;
     },
     isMobile() {
       // Define a breakpoint for mobile screens (adjust as needed)
@@ -73,13 +59,8 @@ export default {
   },
   methods: {
     updateDataTypes() {
-      this.dataTypes = [this.currentTranslations.temperature, this.currentTranslations.current];
-      const language = this.selectedLanguage;
-      if (language === 'chinese') {
-        this.selectDataType("选择设备");
-      } else if (language === 'english') {
-        this.selectDataType("Choose Equipment");
-      }
+      this.dataTypes = [this.$i18n.t('sidebar.temperature'), this.$i18n.t('sidebar.current')];
+      this.selectDataType(this.$i18n.t('sidebar.default'));
     },
     selectDataType(dataType) {
       this.$emit("data-type-selected", dataType);
