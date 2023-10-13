@@ -14,10 +14,6 @@ export default {
   selectionPage: {
     title: '设备',
     selectDevice: '請选择设备',
-    welcomeMessage: '欢迎您',
-    logout: '登出',
-    logoutConfirmation: '确定要登出吗？',
-    logoutSuccessMessage: '您已成功登出',
     getEquipError:'无法获取设备列表',
     mainDeviceA: '主设备A',
     subDeviceA: '子设备A',
@@ -26,18 +22,15 @@ export default {
     temperature: '温度',
     connectingToMQTT: '正在连接MQTT服务器...',
     pleaseWait: '这可能需要几秒钟时间。请稍等...',
-    welcomeMessage: '欢迎您,',
     currentStatus: '目前状态:',
     connected: '已连接',
     disconnected: '连接断开',
     reconnecting: '重新连接中...',
     networkDisconnect: '网络断开',
-    logoutConfirmation: '确定要登出吗？',
-    logoutSuccessMessage: '您已成功登出',
     connectionLostAlert: '与MQTT服务器的连接已断开...',
     mqttConnectionErrorAlert: '无法连接到MQTT服务器, 请检查服务器配置并尝试重新连接。',
     networkDisconnectMessage: '网络连接已断开，您现在处于离线状态。',
-    logout: '登出',
+    
     default: '选择设备',
   },
   sidebar: {
@@ -73,4 +66,10 @@ export default {
     current3: '电流3',                 
     current4: '电流4',
   },
+  navbar: {
+    welcomeMessage: '欢迎您',
+    logout: '登出',
+    logoutConfirmation: '确定要登出吗？',
+    logoutSuccessMessage: '您已成功登出',
+  }
 };

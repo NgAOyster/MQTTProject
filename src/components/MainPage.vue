@@ -31,13 +31,13 @@
             <li class="nav-item">
               <div class="dropdown">
                       <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-                      <i class="fas fa-user"></i> {{ $t('mainPage.welcomeMessage') }} {{ username }}
+                      <i class="fas fa-user"></i> {{ $t('navbar.welcomeMessage') }} {{ username }}
                       </button>
                     <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
                       <a class="dropdown-item" href="#" @click="changeLanguage('en')">English</a>
                       <a class="dropdown-item" href="#" @click="changeLanguage('cn')">中文</a>
                       <div class="dropdown-divider"></div>
-                      <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ $t('mainPage.logout') }}</a>
+                      <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ $t('navbar.logout') }}</a>
                     </div>
                 </div>
             </li>
@@ -82,6 +82,7 @@ export default {
     username: String,
     password: String,
     device: String,
+    topic: String,
   },
   components: {
     Sidebar,
@@ -114,6 +115,8 @@ export default {
     },
   },
   created() {
+    console.log("Device: ", this.device);
+    console.log("Topic: ", this.topic);
     this.initMQTT();
     
     window.addEventListener('online', this.handleOnline);
@@ -207,7 +210,7 @@ export default {
         userName: 'ml001',
         password: 'ml001',
         onSuccess: () => {
-          console.log('Connected to MQTT broker');
+          console.log('Connected to MQTT broker(Testing Use)');
           this.connected = true;
           this.connectStatus = true;
           this.reconnectStatus = false;
@@ -224,7 +227,28 @@ export default {
           this.reconnect();
         },
       };
+      // const options2 = {
+      //   useSSL: false,
+      //   userName: this.username,
+      //   password: this.password,
+      //   onSuccess: () => {
+      //     console.log('Connected to MQTT broker(API returned)');
+      //     this.connected = true;
+      //     this.connectStatus = true;
+      //     this.reconnectStatus = false;
+      //     this.startConnectionTimer();
+      //     this.mqttClient.subscribe(this.topic, { qos: 0 });
+      //   },
+      //   onFailure: (error) => {
+      //     console.log('MQTT connection error:', error.errorMessage);
+      //     this.connectStatus = false;
+      //     this.reconnectStatus = true;
+      //     alert(this.$i18n.t('mainPage.mqttConnectionErrorAlert'));
+      //     this.reconnect();
+      //   },
+      // };
       this.mqttClient.connect(options);
+      //this.mqttClient.connect(options2);
     },
     reconnect() {
       if (!this.reconnectStatus) {
@@ -383,9 +407,9 @@ export default {
       if (this.disconnect) { return this.$i18n.t('mainPage.disconnected'); }
     },
     confirmLogout() {
-      const confirmLogout = window.confirm(this.$i18n.t('mainPage.logoutConfirmation'));
+      const confirmLogout = window.confirm(this.$i18n.t('navbar.logoutConfirmation'));
       if (confirmLogout) {
-        alert(this.$i18n.t('mainPage.logoutSuccessMessage'));
+        alert(this.$i18n.t('navbar.logoutSuccessMessage'));
         this.$emit('logout');
       }
     },

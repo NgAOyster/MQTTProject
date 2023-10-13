@@ -14,10 +14,6 @@ export default {
   selectionPage: {
     title: 'Device',
     selectDevice: 'Please select a device',
-    welcomeMessage: 'Welcome',
-    logout: 'Logout',
-    logoutConfirmation: 'Are you sure you want to logout?',
-    logoutSuccessMessage: 'You have successfully logged out',
     getEquipError:'Cannot get equipment list',
     mainDeviceA: 'MainDeviceA',
     subDeviceA: 'SubDeviceA',
@@ -26,18 +22,15 @@ export default {
     temperature: 'temperature',
     connectingToMQTT: 'Currently connecting to MQTT Services...',
     pleaseWait: 'This will take a few seconds, please wait for a while...',
-    welcomeMessage: 'Welcome,',
     currentStatus: 'Current Status:',
     connected: 'Connected',
     disconnected: 'Disconnected',
     reconnecting: 'Reconnecting...',
     networkDisconnect: 'Network Disconnect',
-    logoutConfirmation: 'Are you sure you want to logout?',
-    logoutSuccessMessage: 'You have successfully logged out',
     connectionLostAlert: 'The connection to the MQTT server has been lost...',
     mqttConnectionErrorAlert: 'Unable to connect to the MQTT server, please check the server configuration and try to reconnect.',
     networkDisconnectMessage: 'Network connection is disconnected, you are now in offline mode.',
-    logout: 'Logout',
+    
     default: 'Choose Equipment',
   },
   sidebar: {
@@ -73,4 +66,10 @@ export default {
     current3: 'Current 3',                     
     current4: 'Current 4',
   },
+  navbar:{
+    welcomeMessage: 'Welcome',
+    logout: 'Logout',
+    logoutConfirmation: 'Are you sure you want to logout?',
+    logoutSuccessMessage: 'You have successfully logged out',
+  }
 };

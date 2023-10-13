@@ -12,13 +12,13 @@
           <li class="nav-item">
             <div class="dropdown">
               <button class="btn dropdown-toggle" type="button" id="languageLogoutDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white;">
-                <i class="fas fa-user"></i> {{ $t('selectionPage.welcomeMessage') }}, {{ username }}
+                <i class="fas fa-user"></i> {{ $t('navbar.welcomeMessage') }}, {{ username }}
               </button>
               <div class="dropdown-menu" aria-labelledby="languageLogoutDropdown">
                 <a class="dropdown-item" href="#" @click="changeLanguage('en')">English</a>
                 <a class="dropdown-item" href="#" @click="changeLanguage('cn')">中文</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ $t('selectionPage.logout') }}</a>
+                <a class="dropdown-item" href="#" @click="confirmLogout()" style="color: black;">{{ $t('navbar.logout') }}</a>
               </div>
             </div>
           </li>
@@ -35,7 +35,7 @@
             <ul class="list-unstyled tree">
               <li>
                 <!-- Apply circular container to the button element -->
-                <button class="circular-btn" @click="ButtonClick(item.equp_name)">
+                <button class="circular-btn" @click="ButtonClick(item.equp_name, item.equp_topic)">
                   <i class="fas fa-folder icon-with-space"></i> {{ item.equp_name }}
                 </button>
                 <br><br>
@@ -73,6 +73,11 @@ export default {
   created() {
     this.getEquipList();
   },
+  watch: {
+    '$i18n.locale'() {
+      this.updateDevices();
+    }, 
+  },
   data() {
     return {
       equiplist: null,
@@ -83,14 +88,14 @@ export default {
       this.$i18n.locale = language;
     },
     confirmLogout() {
-      const confirmLogout = window.confirm(this.$i18n.t('selectionPage.logoutConfirmation'));
+      const confirmLogout = window.confirm(this.$i18n.t('navbar.logoutConfirmation'));
       if (confirmLogout) {
-        alert(this.$i18n.t('selectionPage.logoutSuccessMessage'));
+        alert(this.$i18n.t('navbar.logoutSuccessMessage'));
         this.$emit('logout');
       }
     },
-    ButtonClick(equp_name) {
-      this.$emit('select-item', { device: equp_name });
+    ButtonClick(equp_name, equp_topic) {
+      this.$emit('select-item', { device: equp_name, topic: equp_topic });
     },
     async getEquipList(){
       const apiUrl = 'http://222.222.119.72:15518/equip/allequiplist'; 
@@ -123,7 +128,14 @@ export default {
           { name: this.$i18n.t('selectionPage.subDeviceA'), type: 'sub' }
         ];
       }
-      console.log('Updated Equipment list: ', this.equiplist);
+    },
+    updateDevices() {
+      for (let i = 0; i < this.equiplist.length; i++) {
+        this.equiplist[i].devices = [
+          { name: this.$i18n.t('selectionPage.mainDeviceA'), type: 'main' },
+          { name: this.$i18n.t('selectionPage.subDeviceA'), type: 'sub' }
+        ];
+      }
     },
   },
 };
