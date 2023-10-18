@@ -83,6 +83,7 @@ export default {
     password: String,
     device: String,
     topic: String,
+    item: Array,
   },
   components: {
     Sidebar,
@@ -117,6 +118,7 @@ export default {
   created() {
     console.log("Device: ", this.device);
     console.log("Topic: ", this.topic);
+    console.log("Item: ", this.item);
     this.initMQTT();
     
     window.addEventListener('online', this.handleOnline);
