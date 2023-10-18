@@ -102,7 +102,7 @@ export default {
       const confirmLogout = window.confirm(this.$i18n.t('navbar.logoutConfirmation'));
       if (confirmLogout) {
         alert(this.$i18n.t('navbar.logoutSuccessMessage'));
-        this.$emit('logout');
+        this.$emit('logout'); 
       }
     },
     ButtonClick(equp_name, equp_topic) {
